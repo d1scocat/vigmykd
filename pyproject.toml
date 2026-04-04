@@ -1,0 +1,26 @@
+[project]
+name = "vigmykd"
+version = "0.1.0"
+description = "very intense game makes your keyboard die"
+authors = [
+    { name = "discocat", email = "me@runderscore.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "pygame>=2.6.0"
+]
+license = { file = "LICENSE" }
+
+[project.optional-dependencies]
+dev = [
+    "flake8>=6.0",
+    "mypy>=1.0"
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.flake8]
+max-line-length = 88
+ignore = ["E203", "W503"]
