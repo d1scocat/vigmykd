@@ -14,7 +14,8 @@ license = { file = "LICENSE" }
 [project.optional-dependencies]
 dev = [
     "flake8>=6.0",
-    "mypy>=1.0"
+    "mypy>=1.0",
+    "pytest>=9.0.2"
 ]
 
 [build-system]
