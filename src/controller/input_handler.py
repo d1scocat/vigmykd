@@ -1,10 +1,11 @@
 import pygame
 
 from game.model import GameState
-from game.controller import Action
+from context import GameContext
+from controller import Action
 from typing import Callable, Dict, FrozenSet, Set, TypeAlias
 
-Handler: TypeAlias = Callable[[float, GameState], None]
+Handler: TypeAlias = Callable[[float, GameState, GameContext], None]
 
 
 class InputHandler:
@@ -12,6 +13,8 @@ class InputHandler:
     handlers: Dict[str, Handler]
 
     keymap: Dict[FrozenSet[int], str]
+
+    pressed_keys: Set[int]
 
     activated: Set[FrozenSet[int]]
 
@@ -21,7 +24,15 @@ class InputHandler:
 
         self.keymap = {}
 
+        self.pressed_keys = set()
+
         self.activated = set()
+    
+    def handle_event(self, event: pygame.event.Event):
+        if event.type == pygame.KEYDOWN:
+            self.pressed_keys.add(event.key)
+        elif event.type == pygame.KEYUP:
+            self.pressed_keys.discard(event.key)
 
     def register_handler(self, name: str, continuous: bool, prio: int, func: Handler):
         action = Action(name, continuous, prio)
@@ -40,8 +51,8 @@ class InputHandler:
             )
         )
 
-    def handle_input(self, dt: float, model: GameState):
-        keys_state = pygame.key.get_pressed()
+    def handle_input(self, dt: float, model: GameState, ctx: GameContext):
+        #keys_state = pygame.key.get_pressed()
         used_keys: Set[int] = set()  # in use by higher-prio combos
 
         for keys, action_name in self.keymap.items():
@@ -50,7 +61,8 @@ class InputHandler:
             if not action or not handler:
                 continue  # todo log a warning
 
-            active = all(keys_state[key] for key in keys)
+            #active = all(keys_state[key] for key in keys)
+            active = keys <= self.pressed_keys
             # skip if any key is in use by a higer-prio combo
             if active and keys & used_keys:
                 continue
@@ -58,7 +70,7 @@ class InputHandler:
             # one-shot inputs
             if not action.continuous:
                 if active and keys not in self.activated:
-                    handler(dt, model)
+                    handler(dt, model, ctx)
                     self.activated.add(keys)
                     used_keys.update(keys)
                 elif not active:
@@ -66,5 +78,5 @@ class InputHandler:
             # continuous inputs
             else:
                 if active:
-                    handler(dt, model)
+                    handler(dt, model, ctx)
                     used_keys.update(keys)

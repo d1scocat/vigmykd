@@ -1,3 +1,6 @@
 class GameState:
+    cur: tuple[int, int]
+
     def __init__(self):
-        pass
+        # dev test
+        self.cur = (0, 0)

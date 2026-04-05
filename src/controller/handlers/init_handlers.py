@@ -1,8 +1,6 @@
-from game.controller import InputHandler
-from game.controller.handlers import \
-    handler_move_up, \
-    handler_move_left, \
-    handler_move_right, \
+from controller import InputHandler
+from controller.handlers import handler_move_left, handler_move_right, handler_move_up
+from controller.handlers import \
     handler_move_duck
 
 

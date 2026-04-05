@@ -1,9 +1,12 @@
 from context import GameContext
+
+import pygame
 from pygame import Surface
 
-from game import GameState, InputHandler
-from game.controller.handlers.init_handlers import register_all
-from game.view import Renderer
+from game import GameState
+from controller import InputHandler
+from controller.handlers.init_handlers import register_all
+from view import Renderer
 
 
 class Game:
@@ -27,10 +30,17 @@ class Game:
 
         self.model = GameState()
 
-        self.view = Renderer(self.screen)
+        self.view = Renderer(self.screen, self.ctx.texture_manager, self.ctx)
+    
+    def handle_input_prep(self, event: pygame.event.Event):
+        self.controller.handle_event(event)
 
     def handle_input(self, dt: float):
-        self.controller.handle_input(dt, self.model)
+        #self.ctx.logger.info(f"pressed_keys: {self.controller.pressed_keys}, activated: {self.controller.activated}")
+        self.controller.handle_input(dt, self.model, self.ctx)
 
     def render(self):
-        self.view.draw_screen()
+        self.screen.fill((0,0,0))
+
+        from view import renderable_player
+        self.view.draw_renderable(renderable_player)

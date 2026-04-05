@@ -3,6 +3,7 @@ from log import setup as log_setup
 from game import Game
 from context import GameContext
 from pathlib import Path
+from textures.load_sheets import load_sheets
 
 
 pygame.init()
@@ -28,6 +29,8 @@ ctx = GameContext(
     assets_path=Path("assets")
 )
 
+load_sheets(ctx, ctx.texture_manager)
+
 game = Game(
     ctx=ctx,
     screen=screen
@@ -39,6 +42,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        else:
+            game.handle_input_prep(event)
 
     game.handle_input(dt)
     game.render()
