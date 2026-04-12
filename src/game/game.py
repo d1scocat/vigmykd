@@ -4,7 +4,7 @@ import pygame
 from pygame import Surface
 
 from game import GameState
-from controller import InputHandler
+from controller import InputHandler, PlayerInput
 from controller.handlers.init_handlers import register_all
 from view import Renderer
 
@@ -31,13 +31,24 @@ class Game:
         self.model = GameState()
 
         self.view = Renderer(self.screen, self.ctx.texture_manager, self.ctx)
-    
+
     def handle_input_prep(self, event: pygame.event.Event):
         self.controller.handle_event(event)
 
-    def handle_input(self, dt: float):
-        #self.ctx.logger.info(f"pressed_keys: {self.controller.pressed_keys}, activated: {self.controller.activated}")
-        self.controller.handle_input(dt, self.model, self.ctx)
+    def tick(self):
+        local_player_id = ...  # don't mind
+
+        input = PlayerInput()
+        mutations = self.controller.handle_input(self.ctx)
+        if mutations:
+            for mutation in mutations:
+                input = mutation(input)
+        self.model.buffer_input(local_player_id, input)
+
+        inputs = self.model.consume_inputs()
+        # what now?
+
+        self.model.advance()
 
     def render(self):
         self.screen.fill((0,0,0))

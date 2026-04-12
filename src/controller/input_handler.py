@@ -1,44 +1,33 @@
 import pygame
-
-from game.model import GameState
 from context import GameContext
-from controller import Action
+from controller import Action, PlayerInput
 from typing import Callable, Dict, FrozenSet, Set, TypeAlias
 
-Handler: TypeAlias = Callable[[float, GameState, GameContext], None]
+Mutation: TypeAlias = Callable[[PlayerInput], PlayerInput]
 
 
 class InputHandler:
     action_names: Dict[str, Action]
-    handlers: Dict[str, Handler]
-
+    mutators: Dict[str, Mutation]
     keymap: Dict[FrozenSet[int], str]
-
     pressed_keys: Set[int]
-
     activated: Set[FrozenSet[int]]
 
     def __init__(self):
         self.action_names = {}
-        self.handlers = {}
-
+        self.mutators = {}
         self.keymap = {}
-
         self.pressed_keys = set()
-
         self.activated = set()
-    
+
     def handle_event(self, event: pygame.event.Event):
         if event.type == pygame.KEYDOWN:
             self.pressed_keys.add(event.key)
         elif event.type == pygame.KEYUP:
             self.pressed_keys.discard(event.key)
 
-    def register_handler(self, name: str, continuous: bool, prio: int, func: Handler):
-        action = Action(name, continuous, prio)
-
-        self.action_names[name] = action
-        self.handlers[name] = func
+    def register_mutator(self, name: str, func: Mutation):
+        self.mutators[name] = func
 
     def bind(self, combination: FrozenSet[int], action_name: str):
         self.keymap[combination] = action_name
@@ -51,26 +40,31 @@ class InputHandler:
             )
         )
 
-    def handle_input(self, dt: float, model: GameState, ctx: GameContext):
-        #keys_state = pygame.key.get_pressed()
+    def handle_input(self, ctx: GameContext) -> Set[Mutation]:
         used_keys: Set[int] = set()  # in use by higher-prio combos
+        result: Set[Mutation] = set()
 
         for keys, action_name in self.keymap.items():
             action = self.action_names.get(action_name)
-            handler = self.handlers.get(action_name, None)
-            if not action or not handler:
-                continue  # todo log a warning
+            if not action:
+                ctx.logger.warning(f"{action_name} is not a valid action")
+                continue
 
-            #active = all(keys_state[key] for key in keys)
+            mutator = self.mutators.get(action_name)
+            if not mutator:
+                ctx.logger.warning(f"{action_name} has no input mutator")
+                continue
+
             active = keys <= self.pressed_keys
-            # skip if any key is in use by a higer-prio combo
+            # skip if any key is in use by a higher-prio combo
             if active and keys & used_keys:
                 continue
 
             # one-shot inputs
             if not action.continuous:
                 if active and keys not in self.activated:
-                    handler(dt, model, ctx)
+                    # handler(dt, model, ctx)
+                    result.add(mutator)
                     self.activated.add(keys)
                     used_keys.update(keys)
                 elif not active:
@@ -78,5 +72,8 @@ class InputHandler:
             # continuous inputs
             else:
                 if active:
-                    handler(dt, model, ctx)
+                    # handler(dt, model, ctx)
+                    result.add(mutator)
                     used_keys.update(keys)
+
+        return result

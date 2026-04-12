@@ -15,6 +15,7 @@ class Renderable:
     current_state_id: int
     location: Tuple[int, int] = (0, 0)
 
+
 # dev test
 renderable_player = Renderable(
     {0: RenderState(

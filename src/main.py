@@ -1,9 +1,13 @@
 import pygame
+import math
 from log import setup as log_setup
 from game import Game
 from context import GameContext
 from pathlib import Path
 from textures.load_sheets import load_sheets
+
+from settings import TPS_DELTA, \
+    MAX_TICKS_PER_FRAME as MAX_TICKS
 
 
 pygame.init()
@@ -36,8 +40,12 @@ game = Game(
     screen=screen
 )
 
+# fps/tps separation
+accumulator: float = 0.0
+
 while running:
-    dt = clock.tick(60) / 1000  # seconds
+    frame_dt = clock.tick(60) / 1000
+    accumulator += frame_dt
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -45,7 +53,17 @@ while running:
         else:
             game.handle_input_prep(event)
 
-    game.handle_input(dt)
+    ticks_simulated = 0
+    while accumulator >= TPS_DELTA and ticks_simulated < MAX_TICKS:
+        game.tick()
+        accumulator -= TPS_DELTA
+        ticks_simulated += 1
+
+        # account for marginally small floating point drifting
+        # nvm might be buggy
+        # if accumulator < math.pow(10, -4):
+        #    accumulator = 0.0
+
     game.render()
 
     pygame.display.flip()
