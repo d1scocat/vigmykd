@@ -1,9 +1,10 @@
 import pygame
 import math
-from log import setup as log_setup
-from game import Game
-from context import GameContext
 from pathlib import Path
+
+from context import GameContext
+from game import Game
+from log import setup as log_setup
 from textures.load_sheets import load_sheets
 
 from settings import TPS_DELTA, \

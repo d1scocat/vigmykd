@@ -1,9 +1,11 @@
 from typing import Dict
-from controller import PlayerInput
 from uuid import UUID
 from random import Random
 from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY, \
     SIMUL_DELAY_TICKS as DELAY
+
+from controller import PlayerInput
+from player import Player
 
 
 class GameState:
@@ -15,6 +17,16 @@ class GameState:
         self._tick = 0
         self._input_buffer = {}
         self.rng = Random("this will not be static later")
+
+        self.players: Dict[UUID, Player] = {}
+    
+    def get_player(self, id: UUID) -> Player | None:
+        """
+        Right now this simply does a dictionary lookup and this function
+        exists for the purpose of future compatibility in case there will
+        be a need for extra validity checks.
+        """
+        return self.players.get(id)
 
     def sync_rng(self, seed: int | float | str | bytes | bytearray | Random):
         """

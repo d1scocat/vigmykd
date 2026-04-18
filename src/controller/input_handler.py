@@ -1,21 +1,19 @@
 import pygame
 from context import GameContext
 from controller import Action, PlayerInput
-from typing import Callable, Dict, FrozenSet, Set, TypeAlias
+from typing import Callable, Dict, FrozenSet, List, Set, TypeAlias
 
-Mutation: TypeAlias = Callable[[PlayerInput], PlayerInput]
+Mutation: TypeAlias = Callable[[PlayerInput], None]  # in-place editor
 
 
 class InputHandler:
     action_names: Dict[str, Action]
-    mutators: Dict[str, Mutation]
     keymap: Dict[FrozenSet[int], str]
     pressed_keys: Set[int]
     activated: Set[FrozenSet[int]]
 
     def __init__(self):
         self.action_names = {}
-        self.mutators = {}
         self.keymap = {}
         self.pressed_keys = set()
         self.activated = set()
@@ -25,9 +23,6 @@ class InputHandler:
             self.pressed_keys.add(event.key)
         elif event.type == pygame.KEYUP:
             self.pressed_keys.discard(event.key)
-
-    def register_mutator(self, name: str, func: Mutation):
-        self.mutators[name] = func
 
     def bind(self, combination: FrozenSet[int], action_name: str):
         self.keymap[combination] = action_name
@@ -40,9 +35,9 @@ class InputHandler:
             )
         )
 
-    def handle_input(self, ctx: GameContext) -> Set[Mutation]:
+    def handle_input(self, ctx: GameContext) -> List[Mutation]:
         used_keys: Set[int] = set()  # in use by higher-prio combos
-        result: Set[Mutation] = set()
+        result: List[Mutation] = []  # keep the order
 
         for keys, action_name in self.keymap.items():
             action = self.action_names.get(action_name)
@@ -50,8 +45,8 @@ class InputHandler:
                 ctx.logger.warning(f"{action_name} is not a valid action")
                 continue
 
-            mutator = self.mutators.get(action_name)
-            if not mutator:
+            mutator = ctx.registries.mutators[action_name]
+            if mutator is None:
                 ctx.logger.warning(f"{action_name} has no input mutator")
                 continue
 
@@ -64,16 +59,17 @@ class InputHandler:
             if not action.continuous:
                 if active and keys not in self.activated:
                     # handler(dt, model, ctx)
-                    result.add(mutator)
+                    result.append(mutator)
                     self.activated.add(keys)
                     used_keys.update(keys)
                 elif not active:
                     self.activated.discard(keys)
+
             # continuous inputs
             else:
                 if active:
                     # handler(dt, model, ctx)
-                    result.add(mutator)
+                    result.append(mutator)
                     used_keys.update(keys)
 
         return result
