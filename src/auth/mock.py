@@ -22,8 +22,8 @@ class MockAuthenticator(Authenticator):
     def get_current_user(self) -> uuid.UUID | None:
         if not self.auth_path.exists():
             return None
-        
+
         return uuid.UUID(self.auth_path.read_text())
 
     def _save(self, id: uuid.UUID):
-        self.auth_path.write_text(id)
+        self.auth_path.write_text(str(id))

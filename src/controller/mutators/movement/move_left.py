@@ -1,5 +1,5 @@
 from registry import register_mutator
-from controller import PlayerInput
+from controller.input_model import PlayerInput
 
 
 @register_mutator("move_left")

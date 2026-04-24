@@ -13,7 +13,7 @@ class PlayerAdapter(ViewAdapter[Player]):
                 0: RenderState(
                     sheet_id=1,
                     grid_pos=(0, 0),
-                    origin=(0.5, 0.5)
+                    origin=(0, 0)
                 )
             },
             current_state_id=0,
@@ -21,6 +21,6 @@ class PlayerAdapter(ViewAdapter[Player]):
             # real position and the rendered position (within 1 unit)
             location=(int(object.x), int(object.y))
         )
-    
+
     def update(self, object: Player, renderable: Renderable):
         renderable.location = (int(object.x), int(object.y))

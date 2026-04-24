@@ -4,16 +4,21 @@ from controller.consumers import InputConsumer
 
 from controller.input_model import PlayerInput
 from context import GameContext
-from game import GameState
+from game.model import GameState
 from player import Player
+
 
 @register_consumer
 class MovementConsumer(InputConsumer):
     def consume(
         self,
-        player: Player,
+        player: Player | None,
         state: GameState,
         ctx: GameContext,
         input: PlayerInput
     ):
-        pass
+        ctx.logger.info(f"Received input {input} for player {player.id if player else None}")
+        if not player:
+            return  # Not the appropriate system for movement handling
+
+        # Implement physics later!

@@ -1,0 +1,20 @@
+{
+    "keymap": {
+        "W": "jump",
+        "UP": "jump",
+        "SPACE": "jump",
+
+        "A": "move_left",
+        "LEFT": "move_left",
+
+        "D": "move_right",
+        "RIGHT": "move_right",
+
+        "S": "duck",
+        "DOWN": "duck",
+
+        "TAB": "menu_next",
+        "LSHIFT TAB": "menu_prev",
+        "ENTER": "menu_ok"
+    }
+}

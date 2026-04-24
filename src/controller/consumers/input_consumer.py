@@ -1,6 +1,6 @@
 from controller.input_model import PlayerInput
 from context import GameContext
-from game import GameState
+from game.model import GameState
 from player import Player
 
 from abc import ABC, abstractmethod
@@ -18,7 +18,7 @@ class InputConsumer(ABC):
     @abstractmethod
     def consume(
         self,
-        player: Player,
+        player: Player | None,
         state: GameState,
         ctx: GameContext,
         input: PlayerInput

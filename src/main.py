@@ -1,14 +1,20 @@
 import pygame
-import math
 from pathlib import Path
 
 from context import GameContext
-from game import Game
+from game.game import Game
 from log import setup as log_setup
 from textures.load_sheets import load_sheets
 
 from settings import TPS_DELTA, \
     MAX_TICKS_PER_FRAME as MAX_TICKS
+
+import registry
+
+# Import for registration
+from controller.consumers import *
+from controller.mutators import *
+from view.adapter import *
 
 
 pygame.init()
@@ -19,7 +25,7 @@ screen_height = info.current_h
 
 # debug purposes configuration
 screen = pygame.display.set_mode(
-    (screen_width - 100, screen_height - 100)  # , pygame.FULLSCREEN
+    (screen_width - 250, screen_height - 250)  # , pygame.FULLSCREEN
 )
 
 pygame.display.set_caption("vigmykd")
@@ -31,10 +37,13 @@ running = True
 clock = pygame.time.Clock()
 
 ctx = GameContext(
-    assets_path=Path("assets")
+    assets_path=Path("assets"),
+    cfg_path=Path("cfg")
 )
 
 load_sheets(ctx, ctx.texture_manager)
+
+registry.registries.init_all()
 
 game = Game(
     ctx=ctx,

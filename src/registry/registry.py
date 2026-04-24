@@ -1,5 +1,5 @@
 from controller.consumers.input_consumer import InputConsumer
-from controller import PlayerInput
+from controller.input_model import PlayerInput
 from view.adapter import ViewAdapter
 
 from registry.abstract import AbstractClassRegistry, \
@@ -40,15 +40,16 @@ VAT = TypeVar("VAT")
 class ViewAdapterRegistry:
     def __init__(self):
         self._adapters: Dict[Type[Any], ViewAdapter[Any]] = {}
-    
+
     def register(self, obj_type: Type[VAT], adapter: ViewAdapter[VAT]):
         self._adapters[obj_type] = adapter
-    
+
     def __getitem__(self, obj_type: Type[VAT]) -> ViewAdapter[VAT] | None:
         return self._adapters.get(obj_type)
 
 
 class GlobalRegistries:
+    _accepting_registrations: bool = True
     consumers: ConsumerRegistry
     mutators: InputMutatorRegistry
     view_adapters: ViewAdapterRegistry
@@ -67,6 +68,21 @@ class GlobalRegistries:
             self.mutators
         ]
 
+    def init_all(self):
+        for registry in self:
+            registry.discover()
+            registry.init_all()
+        self._freeze()
+
+    def _freeze(self):
+        self._accepting_registrations = False
+
+    def _unfreeze(self):
+        self._accepting_registrations = True
+
+    def is_frozen(self):
+        return not self._accepting_registrations
+
     def __iter__(self):
         return iter(self.initable_registries)
 
@@ -75,11 +91,17 @@ registries = GlobalRegistries()
 
 
 def register_consumer(cls: Type[InputConsumer]):
+    if registries.is_frozen():
+        raise ValueError("The registry is not accepting new registrations")
+
     registries.consumers.register(cls)
     return cls
 
 
 def register_mutator(name: str):
+    if registries.is_frozen():
+        raise ValueError("The registry is not accepting new registrations")
+
     def wrapper(func: Mutation):
         registries.mutators.register(name, func)
         return func
@@ -87,6 +109,9 @@ def register_mutator(name: str):
 
 
 def register_adapter(target_type: Type[VAT]):
+    if registries.is_frozen():
+        raise ValueError("The registry is not accepting new registrations")
+
     def wrapper(cls: Type[ViewAdapter[VAT]]):
         registries.view_adapters.register(target_type, cls())
         return cls

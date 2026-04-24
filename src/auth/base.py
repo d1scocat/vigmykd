@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
+
 class Authenticator(ABC):
     @abstractmethod
     def login(self, creds) -> UUID:

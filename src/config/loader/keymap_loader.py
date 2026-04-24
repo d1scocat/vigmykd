@@ -43,6 +43,8 @@ _key_to_pygame = {
     "8": pygame.K_8,
     "9": pygame.K_9,
 
+    "enter": pygame.K_RETURN,
+
     "kp_0": pygame.K_KP_0,
     "kp_1": pygame.K_KP_1,
     "kp_2": pygame.K_KP_2,

@@ -4,14 +4,16 @@ from random import Random
 from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY, \
     SIMUL_DELAY_TICKS as DELAY
 
-from controller import PlayerInput
+from controller.input_model import PlayerInput
 from player import Player
 
 
 class GameState:
     _tick: int
-    _input_buffer: Dict[int, Dict[UUID, PlayerInput]]
+    _input_buffer: Dict[int, Dict[UUID | None, PlayerInput]]
     rng: Random  # later will request per-game fetching from server
+
+    players: Dict[UUID, Player]
 
     def __init__(self):
         self._tick = 0
@@ -19,7 +21,7 @@ class GameState:
         self.rng = Random("this will not be static later")
 
         self.players: Dict[UUID, Player] = {}
-    
+
     def get_player(self, id: UUID) -> Player | None:
         """
         Right now this simply does a dictionary lookup and this function
@@ -27,6 +29,10 @@ class GameState:
         be a need for extra validity checks.
         """
         return self.players.get(id)
+
+    def start_match(self, player_id: UUID, opponent_id: UUID):
+        self.players[player_id] = Player(player_id)
+        self.players[opponent_id] = Player(opponent_id)
 
     def sync_rng(self, seed: int | float | str | bytes | bytearray | Random):
         """
@@ -41,14 +47,14 @@ class GameState:
         else:
             self.rng = Random(seed)
 
-    def buffer_input(self, player_id: UUID, input: PlayerInput):
+    def buffer_input(self, player_id: UUID | None, input: PlayerInput):
         tick = self._tick + DELAY
 
         tick_buffer = self._input_buffer.setdefault(tick, {})
         tick_buffer[player_id] = input
         self._input_buffer[tick] = tick_buffer
 
-    def consume_inputs(self):
+    def consume_inputs(self) -> Dict[UUID | None, PlayerInput]:
         return self._input_buffer.pop(self._tick, {})
 
     def clear_redundant(self):

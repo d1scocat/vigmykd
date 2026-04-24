@@ -1,0 +1,10 @@
+{
+  "jump": { "continuous": false, "prio": 10 },
+  "duck": { "continuous": true, "prio": 10 },
+  "move_left": { "continuous": true, "prio": 1 },
+  "move_right": { "continuous": true, "prio": 1 },
+  
+  "menu_next": { "continuous": true, "prio": 2 },
+  "menu_prev": { "continuous": true, "prio": 2 },
+  "menu_ok": { "continuous": true, "prio": 2 }
+}
