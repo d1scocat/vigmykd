@@ -21,6 +21,6 @@ You can expect an initial response within 24–72 hours (best effort).
 - Fixes will be prepared before public disclosure
 - Credit will be given if desired
 
-===
+---
 
 **Thank you!** Responsible disclosure helps keep the project secure.
