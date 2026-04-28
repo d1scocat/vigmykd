@@ -8,7 +8,7 @@ from game.model import GameState
 from player import Player
 
 
-@register_consumer
+@register_consumer(tags=[""])
 class MovementConsumer(InputConsumer):
     def consume(
         self,

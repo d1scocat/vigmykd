@@ -31,6 +31,7 @@ class Game:
     player_adapter: PlayerAdapter
 
     def __init__(self, ctx: GameContext, screen: Surface):
+        from scene.objects import MenuScene
         from view.system import ViewSystem
 
         self.ctx = ctx
@@ -49,7 +50,12 @@ class Game:
 
         self.renderables: Dict[UUID, Renderable] = {}
 
-        self.scene_manager = SceneManager()
+        self.scene_manager = SceneManager(
+            initial=MenuScene(
+                model=self.model,
+                ctx=self.ctx,
+            ),
+        )
 
         # self.model.start_match(self.ctx.auth.get_current_user(), uuid.uuid4())  # testing purpose
 
@@ -78,15 +84,13 @@ class Game:
 
         self.model.buffer_input(self.ctx.local_player_id, input)
 
-        inputs = self.model.consume_inputs()
-        self.simulate(inputs)
+        self.scene_manager.tick()
 
         self.model.advance()
 
     def render(self):
         self.view.drop_queue()
 
-        self.view_system.update(self.model)
-        self.view_system.submit(self.view)
+        self.scene_manager.render(self.view, self.view_system)
 
         self.view.draw_screen()

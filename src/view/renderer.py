@@ -61,6 +61,4 @@ class Renderer:
         origin_x = surface.get_width() * origin_x
         origin_y = surface.get_height() * origin_y
 
-        # print(f"Drawing surface {surface} at x={int(loc_x-origin_x)}, y={int(loc_y-origin_y)}")
-
         self.screen.blit(surface, (int(loc_x - origin_x), int(loc_y - origin_y)))
