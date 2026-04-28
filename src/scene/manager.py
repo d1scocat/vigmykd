@@ -10,7 +10,13 @@ class SceneManager:
         self.current = initial
 
     def switch(self, scene: Scene):
+        if hasattr(self.current, "on_exit"):
+            self.current.on_exit()
+
         self.current = scene
+
+        if hasattr(self.current, "on_enter"):
+            self.current.on_enter()
 
     def tick(self):
         self.current.tick()

@@ -40,4 +40,4 @@ jobs:
         run: pytest tests
 
       - name: Run mypy
-        run: mypy src
+        run: mypy src --check-untyped-defs

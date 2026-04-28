@@ -1,0 +1,55 @@
+name: Gameplay Task
+description: Implement or improve gameplay mechanics
+title: "[GAMEPLAY] "
+labels: ["gameplay"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+    validations:
+      required: true
+
+  - type: textarea
+    id: flow
+    attributes:
+      label: Interaction flow
+
+  - type: checkboxes
+    id: criteria
+    attributes:
+      label: Acceptance criteria
+      options:
+        - label: Behavior works as expected
+        - label: No regressions
+        - label: Edge cases handled
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/d1scocat/vigmykd/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

@@ -1,0 +1,75 @@
+name: Architecture Change
+description: Propose or track changes to core systems or structure
+title: "[ARCH] "
+labels: ["architecture"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      placeholder: What limitation or problem exists?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      placeholder: Describe the change
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: systems
+    attributes:
+      label: Affected systems
+      options:
+        - label: Scene system
+        - label: Input handling
+        - label: GameState / simulation
+        - label: Rendering / ViewSystem
+        - label: Networking
+        - label: Other
+
+  - type: textarea
+    id: tradeoffs
+    attributes:
+      label: Trade-offs
+
+  - type: checkboxes
+    id: migration
+    attributes:
+      label: Migration Plan
+      options:
+        - label: Incremental
+        - label: Breaking change
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/d1scocat/vigmykd/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
