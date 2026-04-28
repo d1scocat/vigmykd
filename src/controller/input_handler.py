@@ -58,11 +58,11 @@ class InputHandler:
         result: List[Mutation] = []  # keep the order
 
         for keys, (action, mutator) in self.keymap.items():
-            action_name = action.name
-            mutator = registries.mutators[action_name]
-            if mutator is None:
-                logger.warning(f"{action_name} has no input mutator")
-                continue
+            # action_name = action.name
+            # mutator = registries.mutators[action_name]
+            # if mutator is None:
+            #     logger.warning(f"{action_name} has no input mutator")
+            #     continue
 
             active = keys <= self.pressed_keys
             # skip if any key is in use by a higher-prio combo

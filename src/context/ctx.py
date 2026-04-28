@@ -26,4 +26,4 @@ class GameContext:
 
         self.texture_manager = TextureManager()
 
-        self.local_player_id: UUID | None = self.auth.get_current_user()
+        self.local_player_id: UUID | None = self.auth.get_current_user(None)

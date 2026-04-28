@@ -1,7 +1,7 @@
 from view.adapter.base import ViewAdapter
 from view.renderable import Renderable, RenderState
 from registry import register_adapter
-from player import Player
+from player.player import Player
 
 
 @register_adapter(Player)

@@ -8,7 +8,7 @@ from game.model import GameState
 from player import Player
 from registry import registries
 from view import Renderer, Renderable
-from view.adapter.player import PlayerAdapter
+from view.adapter import ViewAdapter
 
 from typing import Dict
 from uuid import UUID
@@ -28,7 +28,7 @@ class Game:
     view: Renderer  # intermediate View part
     view_system: ViewSystem
 
-    player_adapter: PlayerAdapter
+    player_adapter: ViewAdapter
 
     def __init__(self, ctx: GameContext, screen: Surface):
         from scene.objects import MenuScene
@@ -46,7 +46,10 @@ class Game:
         self.view = Renderer(self.screen, self.ctx.texture_manager, self.ctx)
         self.view_system = ViewSystem(self.ctx)
 
-        self.player_adapter = registries.view_adapters[Player]
+        player_adapter = registries.view_adapters[Player]
+        if player_adapter is None:
+            raise ValueError("No view adapter found for type Player")
+        self.player_adapter = player_adapter
 
         self.renderables: Dict[UUID, Renderable] = {}
 

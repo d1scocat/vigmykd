@@ -37,14 +37,17 @@ class InputMutatorRegistry(AbstractNamedRegistry[Mutation]):
 VAT = TypeVar("VAT")
 
 
-class ViewAdapterRegistry(AbstractClassRegistry[VAT]):
+class ViewAdapterRegistry(AbstractRegistry):
     def __init__(self):
         self._adapters: Dict[Type[Any], ViewAdapter[Any]] = {}
-    
+
     def discover(self):
         import view.adapter as pkg
         for _, modname, _ in pkgutil.iter_modules(pkg.__path__):
             importlib.import_module(f"{pkg.__name__}.{modname}")
+
+    def init_all(self):
+        pass  # no-op
 
     def register(self, obj_type: Type[VAT], adapter: ViewAdapter[VAT]):
         self._adapters[obj_type] = adapter
@@ -62,7 +65,7 @@ class GlobalRegistries:
     initable_registries: List[AbstractRegistry]
 
     def __init__(self) -> None:
-        self.registries = []
+        self.registries: List[AbstractRegistry] = []
 
         self.consumers = ConsumerRegistry()
         self.mutators = InputMutatorRegistry()
@@ -70,7 +73,8 @@ class GlobalRegistries:
 
         self.initable_registries = [
             self.consumers,
-            self.mutators
+            self.mutators,
+            self.view_adapters
         ]
 
     def init_all(self):

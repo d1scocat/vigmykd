@@ -1,5 +1,6 @@
 import uuid
 from pathlib import Path
+from typing import Any
 
 from auth.base import Authenticator
 
@@ -19,7 +20,7 @@ class MockAuthenticator(Authenticator):
         self._save(id)
         return id
 
-    def get_current_user(self) -> uuid.UUID | None:
+    def get_current_user(self, creds: Any) -> uuid.UUID | None:
         if not self.auth_path.exists():
             return None
 

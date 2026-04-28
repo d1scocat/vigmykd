@@ -12,7 +12,6 @@ class AbstractNamedRegistry(AbstractRegistry, Generic[T]):
         self._tags: Dict[str, List[T]] = {}
 
     def register(self, name: str, value: T, tags: List[str] | None):
-        print("Registering name", name, " and tags", tags)
         self._items[name] = value
 
         if tags is not None:
@@ -28,7 +27,6 @@ class AbstractNamedRegistry(AbstractRegistry, Generic[T]):
         pass  # no-op
 
     def filter(self, tag: str) -> List[T]:
-        print("Filtering for tag", tag, "| Have tags:", self._tags.keys())
         return self._tags.get(tag, [])
 
     def __len__(self):

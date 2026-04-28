@@ -19,6 +19,8 @@ class ViewSystem:
 
     def update(self, model: GameState):
         adapter = registries.view_adapters[Player]  # or just Player?
+        if adapter is None:
+            raise ValueError("No view adapter found for type Player")
 
         for player in model.players.values():
             if player.id not in self.renderables:
