@@ -4,6 +4,7 @@ from pygame import Surface
 from context import GameContext
 from controller.input_handler import InputHandler
 from controller.input_model import PlayerInput
+from event.manager import EventManager
 from game.model import GameState
 from player import Player
 from registry import registries
@@ -30,7 +31,7 @@ class Game:
 
     player_adapter: ViewAdapter
 
-    def __init__(self, ctx: GameContext, screen: Surface):
+    def __init__(self, ctx: GameContext, screen: Surface, event_manager: EventManager):
         from scene.objects import MenuScene
         from view.system import ViewSystem
 
@@ -52,18 +53,22 @@ class Game:
         self.player_adapter = player_adapter
 
         self.renderables: Dict[UUID, Renderable] = {}
+        
+        self.event_manager = self.event_manager
 
         self.scene_manager = SceneManager(
             initial=MenuScene(
                 model=self.model,
                 ctx=self.ctx,
             ),
+            event_manager=event_manager
         )
 
         # self.model.start_match(self.ctx.auth.get_current_user(), uuid.uuid4())  # testing purpose
 
     def handle_input_prep(self, event: pygame.event.Event):
         self.controller.handle_event(event)
+        self.scene_manager.handle_pygame_event(event)
 
     def simulate(self, inputs: Dict[UUID | None, PlayerInput]):
         consumers = registries.consumers

@@ -1,4 +1,4 @@
-from event.event import Event
+from event.model import Event
 from typing import Callable, Dict, Tuple, List
 from collections import defaultdict
 

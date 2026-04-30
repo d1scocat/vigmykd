@@ -12,9 +12,11 @@ from settings import TPS_DELTA, \
 import registry
 
 # Import for registration
-from controller.consumers import *
-from controller.mutators import *
-from view.adapter import *
+# from controller.consumers import *
+# from controller.mutators import *
+# from view.adapter import *
+
+from event import EventManager
 
 
 pygame.init()
@@ -45,9 +47,12 @@ load_sheets(ctx, ctx.texture_manager)
 
 registry.registries.init_all()
 
+event_manager = EventManager()
+
 game = Game(
     ctx=ctx,
-    screen=screen
+    screen=screen,
+    event_manager=event_manager
 )
 
 # fps/tps separation

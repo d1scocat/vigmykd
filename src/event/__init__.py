@@ -1,1 +1,1 @@
-from .event_manager import *
+from .manager import *

@@ -3,7 +3,7 @@ name = "vigmykd"
 version = "0.1.0"
 description = "very intense game makes your keyboard die"
 authors = [
-    { name = "discocat", email = "me@runderscore.com" }
+    { name = "discocat", email = "vigmykd@runderscore.com" }
 ]
 requires-python = ">=3.10"
 dependencies = [
