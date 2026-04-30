@@ -31,6 +31,8 @@ class Game:
 
     player_adapter: ViewAdapter
 
+    event_manager: EventManager
+
     def __init__(self, ctx: GameContext, screen: Surface, event_manager: EventManager):
         from scene.objects import MenuScene
         from view.system import ViewSystem
@@ -53,7 +55,7 @@ class Game:
         self.player_adapter = player_adapter
 
         self.renderables: Dict[UUID, Renderable] = {}
-        
+
         self.event_manager = self.event_manager
 
         self.scene_manager = SceneManager(

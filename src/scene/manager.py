@@ -31,7 +31,7 @@ class SceneManager:
 
     def tick(self):
         self.current.tick()
-    
+
     def handle_pygame_event(self, event: pygame.event.Event):
         if hasattr(self.current, "handle_pygame_event"):
             self.current.handle_pygame_event(event)
