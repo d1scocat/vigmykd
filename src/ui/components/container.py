@@ -1,32 +1,28 @@
 from ui.components.component import UIComponent
 
-from typing import Any, Dict
+from typing import Any, Dict, List
 
-
-class UIButton(UIComponent):
+class UIContainer(UIComponent):
     def __init__(
         self,
         id: str,
         z_index: int,
         position: Dict[str, Any],
         size: Dict[str, int],
-        states: Dict[str, Dict[str, Any]],
-        action: str,
-        text: Dict[str, Any] | None = None,
+        texture: Dict[str, Any] | None,
+        children: List["UIComponent"],
+        states: Dict[str, Dict[str, Any]] | None = None,
     ):
         super().__init__(
             id=id,
-            type="button",
+            type="container",
             z_index=z_index,
             position=position,
             size=size,
             states=states,
         )
 
-        self.action = action
-        self.text = text
+        self.texture = texture
+        self.children = children
 
-        self.hovered = False
-        self.pressed = False
-
-        self.current_state = "normal"
+        self.current_state = "shown"

@@ -40,13 +40,12 @@ class Renderer:
         self.screen.fill((0, 0, 0))
 
         for z in sorted(self.render_queue.keys()):
-            # print(f"Drawing all renderables at {z=}")
             for renderable, surface in self.render_queue[z]:
                 self._draw_surface(renderable, surface)
         self.drop_queue()
 
     def _find_surface(self, renderable: Renderable) -> Surface | None:
-        state = renderable.states[renderable.current_state_id]
+        state = renderable.states[renderable.current_state]
         sheet_id = state.sheet_id
         sheet_pos = state.grid_pos
 
@@ -54,7 +53,7 @@ class Renderer:
         return surface
 
     def _draw_surface(self, renderable: Renderable, surface: Surface):
-        state = renderable.states[renderable.current_state_id]
+        state = renderable.states[renderable.current_state]
         loc_x, loc_y = renderable.location
 
         origin_x, origin_y = state.origin

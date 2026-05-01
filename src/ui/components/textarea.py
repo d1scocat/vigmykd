@@ -2,31 +2,30 @@ from ui.components.component import UIComponent
 
 from typing import Any, Dict
 
-
-class UIButton(UIComponent):
+class UITextArea(UIComponent):
     def __init__(
         self,
         id: str,
         z_index: int,
         position: Dict[str, Any],
         size: Dict[str, int],
-        states: Dict[str, Dict[str, Any]],
-        action: str,
-        text: Dict[str, Any] | None = None,
+        texture: Dict[str, Any] | None,
+        label: Dict[str, Any],
+        hint: Dict[str, Any],
     ):
         super().__init__(
             id=id,
-            type="button",
+            type="textarea",
             z_index=z_index,
             position=position,
             size=size,
-            states=states,
         )
 
-        self.action = action
-        self.text = text
+        self.texture = texture
 
-        self.hovered = False
-        self.pressed = False
+        self.label = label
+        self.hint = hint
 
-        self.current_state = "normal"
+        # runtime
+        self.value: str = ""
+        self.focused: bool = False

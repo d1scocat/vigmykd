@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Tuple
 from uuid import UUID
 
 import logging
@@ -10,10 +11,17 @@ from textures import TextureManager
 
 
 class GameContext:
-    def __init__(self, assets_path: Path, cfg_path: Path):
+    def __init__(
+        self,
+        assets_path: Path,
+        cfg_path: Path,
+        screen_size: Tuple[int, int]
+    ):
         self.event_manager = EventManager()
         self.assets_path = assets_path
         self.cfg_path = cfg_path
+
+        self.screen_size = screen_size
 
         self.cfg = load_config(cfg_path / "config.json")
 

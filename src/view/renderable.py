@@ -12,6 +12,6 @@ class RenderState:
 @dataclass
 class Renderable:
     z_index: int
-    states: dict[int, RenderState]
-    current_state_id: int
+    states: dict[str, RenderState]
+    current_state: str
     location: Tuple[int, int] = (0, 0)

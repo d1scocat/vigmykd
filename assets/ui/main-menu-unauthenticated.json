@@ -1,0 +1,157 @@
+{
+    "id": "main-menu-unauthenticated",
+    "meta": {
+        "resolution": [1920, 1080],
+        "anchor-mode": "relative"
+    },
+
+    "elements": [
+        {
+            "type": "image",
+            "id": "background",
+            "z_index": 0,
+            "position": { "x": 0.5, "y": 0.5, "anchor": "center" },
+            "size": { "mode": "fill" },
+            "texture": { "sheet": 2, "tile": [0, 0] }
+        },
+
+        {
+            "type": "button",
+            "id": "login",
+            "z_index": 10,
+            "position": { "x": 0.5, "y": 0.4, "anchor": "center" },
+            "size": { "mode": "match-texture" },
+
+            "states": {
+                "normal": { "texture": { "sheet": 3, "tile": [0, 0] } },
+                "hover": { "texture": { "sheet": 3, "tile": [0, 1] } },
+                "pressed": { "texture": { "sheet": 3, "tile": [0, 2]  }}
+            },
+
+            "text": {
+                "i18n": "login-button-label",
+                "font": "default",
+                "size": "32",
+                "color": [255, 255, 255]
+            },
+
+            "action": "show_login_overlay"
+        },
+
+        {
+            "type": "form",
+            "id": "login-form",
+            "z_index": 100,
+            "position": { "x": 0.5, "y": 0.5, "anchor": "center" },
+            "size": { "width": 960, "height": 540 },
+            "texture": { "sheet": 4, "tile": [0, 0] },
+            "states": {
+                "hidden": { "visible": false },
+                "shown": { "visible": true }
+            },
+
+            "children": [
+                {
+                    "type": "textarea",
+                    "id": "login-textarea",
+                    "z_index": 110,
+                    "position": { "x": 0.5, "y": 0.2, "anchor": "center" },
+                    "size": { "width": 800, "height": 100 },
+                    "texture": { "sheet": 5, "tile": [0, 0] },
+
+                    "label": {
+                        "i18n": "login-textarea-label",
+                        "font": "default",
+                        "size": 16,
+                        "color": [255, 255, 255]
+                    },
+
+                    "hint": {
+                        "i18n": "login-textarea-hint",
+                        "font": "default",
+                        "size": 16,
+                        "color": [255, 255, 255]
+                    }
+                },
+
+                {
+                    "type": "textarea",
+                    "id": "password-textarea",
+                    "z_index": 110,
+                    "position": { "x": 0.5, "y": 0.5, "anchor": "center" },
+                    "size": { "width": 800, "height": 100 },
+                    "texture": { "sheet": 5, "tile": [0, 0] },
+
+                    "label": {
+                        "i18n": "password-textarea-label",
+                        "font": "default",
+                        "size": 16,
+                        "color": [255, 255, 255]
+                    },
+
+                    "hint": {
+                        "i18n": "password-textarea-hint",
+                        "font": "default",
+                        "size": 16,
+                        "color": [255, 255, 255]
+                    }
+                },
+
+                {
+                    "type": "button",
+                    "id": "attempt-login",
+                    "z_index": 110,
+                    "position": { "x": 0.5, "y": 0.8, "anchor": "center" },
+                    "size": { "mode": "match-texture" },
+
+                    "states": {
+                        "normal": { "texture": { "sheet": 3, "tile": [1, 0] } },
+                        "hover": { "texture": { "sheet": 3, "tile": [1, 1] } },
+                        "pressed": { "texture": { "sheet": 3, "tile": [1, 2] } }
+                    },
+
+                    "text": {
+                        "i18n": "attempt-login-button-label",
+                        "font": "default",
+                        "size": 24,
+                        "color": [255, 255, 255]
+                    },
+
+                    "action": "submit_login_attempt"
+                }
+            ]
+        },
+
+        {
+            "type": "button",
+            "id": "settings",
+            "z_index": 10,
+            "position": { "x": 0.03, "y": 0.97, "anchor": "center" },
+            "size": { "mode": "match-texture" },
+
+            "states": {
+                "normal": { "texture": { "sheet": 6, "tile": [0, 0] } },
+                "hover": { "texture": { "sheet": 6, "tile": [0, 1] } },
+                "pressed": { "texture": { "sheet": 6, "tile": [0, 2] } }
+            },
+            
+            "action": "open_settings"
+        },
+
+        {
+            "type": "button",
+            "id": "exit",
+            "z_index": 10,
+            "position": { "x": 0.03, "y": 0.03, "anchor": "center" },
+            "size": { "mode": "match-texture" },
+
+            "states": {
+                "normal": { "texture": { "sheet": 6, "tile": [1, 0] } },
+                "hover": { "texture": { "sheet": 6, "tile": [1, 1] } },
+                "pressed": { "texture": { "sheet": 6, "tile": [1, 2] } }
+            },
+            
+            "action": "exit"
+        }
+    ]
+}

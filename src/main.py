@@ -25,10 +25,10 @@ info = pygame.display.Info()
 screen_width = info.current_w
 screen_height = info.current_h
 
+screen_size = (screen_width - 200, screen_height - 200)
+
 # debug purposes configuration
-screen = pygame.display.set_mode(
-    (screen_width - 250, screen_height - 250)  # , pygame.FULLSCREEN
-)
+screen = pygame.display.set_mode(screen_size)
 
 pygame.display.set_caption("vigmykd")
 
@@ -40,7 +40,8 @@ clock = pygame.time.Clock()
 
 ctx = GameContext(
     assets_path=Path("assets"),
-    cfg_path=Path("cfg")
+    cfg_path=Path("cfg"),
+    screen_size=screen_size
 )
 
 load_sheets(ctx, ctx.texture_manager)
