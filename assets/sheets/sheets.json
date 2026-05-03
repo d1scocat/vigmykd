@@ -1,0 +1,43 @@
+[
+    {
+        "id": 1,
+        "path": "sheet1.player.png",
+        "tile-size": [44, 44],
+        "grid-size": [9, 41]
+    },
+
+    {
+        "id": 2,
+        "path": "sheet2.bg.jpg",
+        "tile-size": [1280, 720],
+        "grid-size": [1, 1]
+    },
+
+    {
+        "id": 3,
+        "path": "sheet3.btn.png",
+        "tile-size": [84, 24],
+        "grid-size": [3, 1]
+    },
+
+    {
+        "id": 4,
+        "path": "sheet4.form.png",
+        "tile-size": [960, 540],
+        "grid-size": [1, 1]
+    },
+
+    {
+        "id": 5,
+        "path": "sheet5.textarea.png",
+        "tile-size": [800, 100],
+        "grid-size": [1, 1]
+    },
+
+    {
+        "id": 6,
+        "path": "sheet6.btn.png",
+        "tile-size": [100, 100],
+        "grid-size": [3, 2]
+    }
+]

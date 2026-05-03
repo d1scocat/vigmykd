@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import Tuple
 
 
@@ -7,3 +8,10 @@ class UIText:
         self.font = font
         self.size = size
         self.color = color
+
+
+class UITextHolder(ABC):
+    @property
+    @abstractmethod
+    def text(self) -> UIText | None:
+        pass

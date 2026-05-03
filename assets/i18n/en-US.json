@@ -1,0 +1,15 @@
+{
+    "_id": "en-US",
+    
+    "main-menu": {
+        "login-button-label": "Login"
+    },
+
+    "login-form": {
+        "login-textarea-label": "Username/email",
+        "login-textarea-hint": "",
+        "password-textarea-label": "Password",
+        "password-textarea-hint": "",
+        "login-button-label": "Login"
+    }
+}

@@ -1,10 +1,11 @@
+import json
 import pygame
 
 from textures import TextureManager
 from context import GameContext
 
 from pathlib import Path
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 
 
 def load_spritesheet(
@@ -41,11 +42,26 @@ def load_spritesheet(
 
 
 def load_sheets(ctx: GameContext, manager: TextureManager):
-    manager.add_spritesheet(
-        id=1,
-        sheet=load_spritesheet(
-            path=ctx.assets_path / "player-spreadsheet.png",
-            tile_size=(44, 44),
-            grid_size=(9, 41)
+    sheets_path = ctx.sheets_path
+    sheets_file = sheets_path / "sheets.json"
+    sheets: List[Dict[str, Any]] = json.loads(sheets_file.read_text())
+
+    for sheet in sheets:
+        id = sheet["id"]
+        path = sheets_path / sheet["path"]
+        tile_size = tuple(sheet["tile-size"])
+        grid_size = tuple(sheet["grid-size"])
+
+        offset = tuple(sheet.get("offset", [0, 0]))
+        spacing = tuple(sheet.get("spacing", [0, 0]))
+
+        manager.add_spritesheet(
+            id=id,
+            sheet=load_spritesheet(
+                path=path,
+                tile_size=tile_size,
+                grid_size=grid_size,
+                offset=offset,
+                spacing=spacing
+            )
         )
-    )

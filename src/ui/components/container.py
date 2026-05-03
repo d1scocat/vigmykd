@@ -2,6 +2,7 @@ from ui.components.component import UIComponent
 
 from typing import Any, Dict, List
 
+
 class UIContainer(UIComponent):
     def __init__(
         self,
@@ -12,6 +13,7 @@ class UIContainer(UIComponent):
         texture: Dict[str, Any] | None,
         children: List["UIComponent"],
         states: Dict[str, Dict[str, Any]] | None = None,
+        default_state: str | None = None,
     ):
         super().__init__(
             id=id,
@@ -20,9 +22,8 @@ class UIContainer(UIComponent):
             position=position,
             size=size,
             states=states,
+            default_state=default_state
         )
 
         self.texture = texture
         self.children = children
-
-        self.current_state = "shown"

@@ -4,7 +4,7 @@ from pathlib import Path
 from context import GameContext
 from game.game import Game
 from log import setup as log_setup
-from textures.load_sheets import load_sheets
+from textures.loader import load_sheets
 
 from settings import TPS_DELTA, \
     MAX_TICKS_PER_FRAME as MAX_TICKS
@@ -25,7 +25,7 @@ info = pygame.display.Info()
 screen_width = info.current_w
 screen_height = info.current_h
 
-screen_size = (screen_width - 200, screen_height - 200)
+screen_size = (screen_width - 300, screen_height - 300)
 
 # debug purposes configuration
 screen = pygame.display.set_mode(screen_size)

@@ -1,9 +1,24 @@
-from view import Renderable, RenderState
+from textures import TextureManager
+from view import RenderState
 
 from typing import Any, Dict, Tuple
 
 
 class UIComponent:
+    # immutable
+    states: Dict[str, Dict[str, Any]]
+    default_state: str
+    visible_by_default: bool
+
+    # produced by interaction system
+    hovered: bool
+    pressed: bool
+
+    # computed every frame
+    resolved_state: str
+    resolved_visible: bool
+    resolved_texture: Dict[str, Any] | None
+
     def __init__(
         self,
         id: str,
@@ -11,8 +26,8 @@ class UIComponent:
         z_index: int,
         position: Dict[str, Any],
         size: Dict[str, int],
-        visible: bool = True,
         states: Dict[str, Dict[str, Any]] | None = None,
+        default_state: str | None = None,
     ):
         self.id = id
         self.type = type
@@ -21,30 +36,45 @@ class UIComponent:
         self.position = position
         self.size = size
 
-        self.visible = visible
         self.states = states or {}
+        self.default_state = default_state or "normal"
+        self.visible_by_default = True
 
-        self.visual_state: str | None = "normal"
-        self.logical_state: str | None = "normal"
+        # runtime only flags
+        self.hovered = False
+        self.pressed = False
 
-        self.resolved_visible: bool = visible
-        self.resolved_texture: Dict[str, Any] | None = None
+        # computed per frame
+        self.resolved_visible = True
+        self.resolved_texture = None
+
+        self.base_state = default_state or "normal"
+        print(self.id, self.base_state)
 
         self.absolute_position: Tuple[int, int] = (0, 0)
         self.absolute_size: Tuple[int, int] = (0, 0)
 
-        self.hovered = False
-    
     def resolve_state(self) -> str:
-        # interaction overrides logic
-        if self.visual_state:
-            return self.visual_state
-        if self.logical_state:
-            return self.logical_state
-        return "normal"
+        """
+        Resolves the component state based on the current visual
+        state (visible/hidden) and the logical state (hovered/pressed/normal).
+        Interaction overrides logic.
+        """
+        if self.pressed:
+            return "pressed"
+        if self.hovered:
+            return "hovered"
+        return self.base_state
     
+    def set_state(self, state: str):
+        self.base_state = state
+
     def process_component(self):
-        visible = self.visible
+        """
+        Resolve the current visibility and texture in accordance
+        to the current component state.
+        """
+        visible = self.resolved_visible
         texture = getattr(self, "texture", None)
 
         state = self.resolve_state()
@@ -59,12 +89,16 @@ class UIComponent:
         self.resolved_visible = visible
         self.resolved_texture = texture
 
+        if hasattr(self, "children"):
+            for child in getattr(self, "children"):
+                child.process_component()
+
     def build_render_states(self) -> Tuple[Dict[str, RenderState], str]:
         base_texture = getattr(self, "texture", None)
 
         if not base_texture and not self.states:
             return {}, "normal"
-        
+
         states: Dict[str, RenderState] = {}
 
         all_state_names = set(self.states.keys())
@@ -80,16 +114,22 @@ class UIComponent:
             states[state_name] = RenderState(
                 sheet_id=texture["sheet"],
                 grid_pos=tuple(texture["tile"]),
-                origin=self._resolve_origin()
             )
-        
+
         active_state = self.resolve_state()
         if active_state not in states:
             active_state = next(iter(states.keys()), "normal")
-        
+
         return states, active_state
 
-    def _resolve_origin(self) -> Tuple[float, float]:
+    def is_visible(self, parent_visible: bool = True) -> bool:
+        state = self.resolve_state()
+        override = self.states.get(state, {})
+        local = override.get("visible", self.visible_by_default)
+
+        return local and parent_visible
+
+    def resolve_origin(self) -> Tuple[float, float]:
         anchor = self.position.get("anchor", "top-left")
 
         return {
@@ -99,3 +139,24 @@ class UIComponent:
             "top-right": (1.0, 0.0),
             "bottom-right": (1.0, 1.0),
         }.get(anchor, (0.0, 0.0))
+
+    def resolve_size(self, parent_size: Tuple[int, int], texture_manager: TextureManager):
+        size = self.size
+        if "width" in size and "height" in size:
+            self.absolute_size = (size["width"], size["height"])
+            return
+
+        mode = size.get("mode")
+        if mode == "match-texture":
+            texture = self.resolved_texture
+            if texture:
+                surface = texture_manager.lookup_tile(texture["sheet"], tuple(texture["tile"]))
+                if surface:
+                    self.absolute_size = (surface.get_width(), surface.get_height())
+                    return
+
+        if mode == "fill":
+            self.absolute_size = parent_size
+            return
+
+        raise ValueError(f"Unknown size for component {self.id=}, {self.type=}, {self.size=}")

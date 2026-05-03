@@ -16,5 +16,7 @@
         "TAB": "menu_next",
         "LSHIFT TAB": "menu_prev",
         "ENTER": "menu_ok"
-    }
+    },
+
+    "locale": "en-US"
 }

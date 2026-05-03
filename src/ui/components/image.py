@@ -11,7 +11,15 @@ class UIImage(UIComponent):
         position: Dict[str, Any],
         size: Dict[str, int],
         texture: Dict[str, Any] | None,
+        default_state: str | None = None,
     ):
-        super().__init__(id, "image", z_index, position, size)
+        super().__init__(
+            id=id,
+            type="image",
+            z_index=z_index,
+            position=position,
+            size=size,
+            default_state=default_state
+        )
 
         self.texture = texture

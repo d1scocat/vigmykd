@@ -3,6 +3,7 @@ from typing import List, Tuple
 from ui.components.component import UIComponent
 from ui.components.container import UIContainer
 
+
 class UIInteractionSystem:
     def __init__(self):
         self.active_component: UIComponent | None = None
@@ -17,11 +18,15 @@ class UIInteractionSystem:
         flattened = self._flatten_dfs(components)
         flattened.sort(key=lambda c: c.z_index, reverse=True)
 
+        for component in flattened:
+            component.pressed = False
+            component.hovered = False
+
         handled = False
 
         for component in flattened:
             if handled:
-                component.visual_state = "normal"
+                component.pressed = False
                 component.hovered = False
                 continue
 
@@ -38,13 +43,10 @@ class UIInteractionSystem:
         result = []
 
         def dfs(comp: UIComponent, parent_visible: bool):
-            state = comp.resolve_state()
-            override = comp.states.get(state, {})
-            visible = override.get("visible", comp.visible) or parent_visible
-
+            visible = comp.is_visible(parent_visible)
             if not visible:
                 return
-            
+
             result.append(comp)
             if isinstance(comp, UIContainer):
                 for child in comp.children:
@@ -62,10 +64,7 @@ class UIInteractionSystem:
         mouse_down: bool,
         parent_visible: bool = True
     ) -> bool:
-        state = component.resolve_state()
-        override = component.states.get(state, {})
-        visible = override.get("visible", component.visible) and parent_visible
-        if not visible:
+        if not component.is_visible(parent_visible):
             return False
 
         if not hasattr(component, "absolute_position"):
@@ -79,21 +78,19 @@ class UIInteractionSystem:
         if inside:
             component.hovered = True
             if mouse_down:
-                component.visual_state = "pressed"
+                component.pressed = True
                 if not self.prev_mouse_down and hasattr(component, "action"):
                     self.active_component = component
-            else:
-                component.visual_state = "hover"
             return True
+        else:
+            component.hovered = False
+            component.pressed = False
 
-        component.hovered = False
-        component.visual_state = "normal"
         return False
-
 
     def _handle_release(self, mouse_pos: Tuple[int, int]) -> str | None:
         if not self.active_component:
-            return
+            return None
 
         comp = self.active_component
         x, y = comp.absolute_position

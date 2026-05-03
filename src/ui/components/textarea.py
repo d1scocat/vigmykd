@@ -2,6 +2,7 @@ from ui.components.component import UIComponent
 
 from typing import Any, Dict
 
+
 class UITextArea(UIComponent):
     def __init__(
         self,
@@ -12,6 +13,7 @@ class UITextArea(UIComponent):
         texture: Dict[str, Any] | None,
         label: Dict[str, Any],
         hint: Dict[str, Any],
+        default_state: str | None = None,
     ):
         super().__init__(
             id=id,
@@ -19,6 +21,7 @@ class UITextArea(UIComponent):
             z_index=z_index,
             position=position,
             size=size,
+            default_state=default_state
         )
 
         self.texture = texture
@@ -26,6 +29,5 @@ class UITextArea(UIComponent):
         self.label = label
         self.hint = hint
 
-        # runtime
         self.value: str = ""
         self.focused: bool = False

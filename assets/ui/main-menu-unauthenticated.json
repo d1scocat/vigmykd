@@ -17,21 +17,22 @@
 
         {
             "type": "button",
-            "id": "login",
+            "id": "login-button",
             "z_index": 10,
             "position": { "x": 0.5, "y": 0.4, "anchor": "center" },
-            "size": { "mode": "match-texture" },
+            "size": { "width": 400, "height": 100 },
 
             "states": {
                 "normal": { "texture": { "sheet": 3, "tile": [0, 0] } },
-                "hover": { "texture": { "sheet": 3, "tile": [0, 1] } },
-                "pressed": { "texture": { "sheet": 3, "tile": [0, 2]  }}
+                "hovered": { "texture": { "sheet": 3, "tile": [1, 0] } },
+                "pressed": { "texture": { "sheet": 3, "tile": [2, 0] } },
+                "hidden": { "visible": false }
             },
 
             "text": {
-                "i18n": "login-button-label",
+                "i18n": "main-menu.login-button-label",
                 "font": "default",
-                "size": "32",
+                "size": 32,
                 "color": [255, 255, 255]
             },
 
@@ -45,6 +46,8 @@
             "position": { "x": 0.5, "y": 0.5, "anchor": "center" },
             "size": { "width": 960, "height": 540 },
             "texture": { "sheet": 4, "tile": [0, 0] },
+
+            "default-state": "hidden",
             "states": {
                 "hidden": { "visible": false },
                 "shown": { "visible": true }
@@ -60,14 +63,14 @@
                     "texture": { "sheet": 5, "tile": [0, 0] },
 
                     "label": {
-                        "i18n": "login-textarea-label",
+                        "i18n": "login-form.login-textarea-label",
                         "font": "default",
                         "size": 16,
                         "color": [255, 255, 255]
                     },
 
                     "hint": {
-                        "i18n": "login-textarea-hint",
+                        "i18n": "login-form.login-textarea-hint",
                         "font": "default",
                         "size": 16,
                         "color": [255, 255, 255]
@@ -83,14 +86,14 @@
                     "texture": { "sheet": 5, "tile": [0, 0] },
 
                     "label": {
-                        "i18n": "password-textarea-label",
+                        "i18n": "login-form.password-textarea-label",
                         "font": "default",
                         "size": 16,
                         "color": [255, 255, 255]
                     },
 
                     "hint": {
-                        "i18n": "password-textarea-hint",
+                        "i18n": "login-form.password-textarea-hint",
                         "font": "default",
                         "size": 16,
                         "color": [255, 255, 255]
@@ -102,16 +105,16 @@
                     "id": "attempt-login",
                     "z_index": 110,
                     "position": { "x": 0.5, "y": 0.8, "anchor": "center" },
-                    "size": { "mode": "match-texture" },
+                    "size": { "width": 300, "height": 100 },
 
                     "states": {
-                        "normal": { "texture": { "sheet": 3, "tile": [1, 0] } },
-                        "hover": { "texture": { "sheet": 3, "tile": [1, 1] } },
-                        "pressed": { "texture": { "sheet": 3, "tile": [1, 2] } }
+                        "normal": { "texture": { "sheet": 3, "tile": [0, 0] } },
+                        "hovered": { "texture": { "sheet": 3, "tile": [1, 0] } },
+                        "pressed": { "texture": { "sheet": 3, "tile": [2, 0] } }
                     },
 
                     "text": {
-                        "i18n": "attempt-login-button-label",
+                        "i18n": "login-form.login-button-label",
                         "font": "default",
                         "size": 24,
                         "color": [255, 255, 255]
@@ -126,13 +129,13 @@
             "type": "button",
             "id": "settings",
             "z_index": 10,
-            "position": { "x": 0.03, "y": 0.97, "anchor": "center" },
+            "position": { "x": 0.01, "y": 0.97, "anchor": "bottom-left" },
             "size": { "mode": "match-texture" },
 
             "states": {
                 "normal": { "texture": { "sheet": 6, "tile": [0, 0] } },
-                "hover": { "texture": { "sheet": 6, "tile": [0, 1] } },
-                "pressed": { "texture": { "sheet": 6, "tile": [0, 2] } }
+                "hovered": { "texture": { "sheet": 6, "tile": [1, 0] } },
+                "pressed": { "texture": { "sheet": 6, "tile": [2, 0] } }
             },
             
             "action": "open_settings"
@@ -142,13 +145,13 @@
             "type": "button",
             "id": "exit",
             "z_index": 10,
-            "position": { "x": 0.03, "y": 0.03, "anchor": "center" },
+            "position": { "x": 0.01, "y": 0.01, "anchor": "top-left" },
             "size": { "mode": "match-texture" },
 
             "states": {
-                "normal": { "texture": { "sheet": 6, "tile": [1, 0] } },
-                "hover": { "texture": { "sheet": 6, "tile": [1, 1] } },
-                "pressed": { "texture": { "sheet": 6, "tile": [1, 2] } }
+                "normal": { "texture": { "sheet": 6, "tile": [0, 1] } },
+                "hovered": { "texture": { "sheet": 6, "tile": [1, 1] } },
+                "pressed": { "texture": { "sheet": 6, "tile": [2, 1] } }
             },
             
             "action": "exit"

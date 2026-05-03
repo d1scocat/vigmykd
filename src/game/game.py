@@ -34,7 +34,7 @@ class Game:
     event_manager: EventManager
 
     def __init__(self, ctx: GameContext, screen: Surface, event_manager: EventManager):
-        from scene.objects import MenuScene
+        from scene.objects import menu
         from view.system import ViewSystem
 
         self.ctx = ctx
@@ -56,10 +56,10 @@ class Game:
 
         self.renderables: Dict[UUID, Renderable] = {}
 
-        self.event_manager = self.event_manager
+        self.event_manager = event_manager
 
         self.scene_manager = SceneManager(
-            initial=MenuScene(
+            initial=menu.MenuScene(
                 model=self.model,
                 ctx=self.ctx,
             ),
@@ -69,8 +69,8 @@ class Game:
         # self.model.start_match(self.ctx.auth.get_current_user(), uuid.uuid4())  # testing purpose
 
     def handle_input_prep(self, event: pygame.event.Event):
-        self.controller.handle_event(event)
-        self.scene_manager.handle_pygame_event(event)
+        if not self.scene_manager.handle_pygame_event(event):
+            self.controller.handle_event(event)
 
     def simulate(self, inputs: Dict[UUID | None, PlayerInput]):
         consumers = registries.consumers
@@ -99,7 +99,7 @@ class Game:
         self.model.advance()
 
     def render(self):
-        self.view.drop_queue()
+        self.view.drop_render_queue()
 
         self.scene_manager.render(self.view, self.view_system)
 

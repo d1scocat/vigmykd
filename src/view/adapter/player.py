@@ -3,6 +3,8 @@ from view.renderable import Renderable, RenderState
 from registry import register_adapter
 from player.player import Player
 
+import settings
+
 
 @register_adapter(Player)
 class PlayerAdapter(ViewAdapter[Player]):
@@ -10,16 +12,16 @@ class PlayerAdapter(ViewAdapter[Player]):
         return Renderable(
             z_index=0,
             states={
-                0: RenderState(
+                "0": RenderState(
                     sheet_id=1,
                     grid_pos=(0, 0),
-                    origin=(0, 0)
                 )
             },
-            current_state_id=0,
+            current_state="0",
             # there will be an unnoticeable difference between the
             # real position and the rendered position (within 1 unit)
-            location=(int(object.x), int(object.y))
+            location=(int(object.x), int(object.y)),
+            size=(object.height, settings.PLAYER_WIDTH)
         )
 
     def update(self, object: Player, renderable: Renderable):

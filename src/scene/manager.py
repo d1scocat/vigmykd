@@ -32,9 +32,10 @@ class SceneManager:
     def tick(self):
         self.current.tick()
 
-    def handle_pygame_event(self, event: pygame.event.Event):
+    def handle_pygame_event(self, event: pygame.event.Event) -> bool:
         if hasattr(self.current, "handle_pygame_event"):
-            self.current.handle_pygame_event(event)
+            return self.current.handle_pygame_event(event)
+        return False
 
     def render(self, view: Renderer, view_system: ViewSystem):
         self.current.render(view, view_system)
