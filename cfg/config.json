@@ -18,5 +18,7 @@
         "ENTER": "menu_ok"
     },
 
-    "locale": "en-US"
+    "locale": "en-US",
+
+    "server": "https://vigmykd.runderscore.com/api/v1"
 }

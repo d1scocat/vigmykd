@@ -99,20 +99,21 @@ class GlobalRegistries:
 registries = GlobalRegistries()
 
 
-def register_consumer(tags: List[str] | None):
-    def wrapper(cls: Type[InputConsumer]):
-        if registries.is_frozen():
-            raise ValueError("The registry is not accepting new registrations")
+def raise_on_frozen():
+    if registries.is_frozen():
+        raise ValueError("The registry is not accepting new registrations")
 
+
+def register_consumer(tags: List[str] | None):
+    raise_on_frozen()
+    def wrapper(cls: Type[InputConsumer]):
         registries.consumers.register(cls, tags)
         return cls
     return wrapper
 
 
 def register_mutator(name: str):
-    if registries.is_frozen():
-        raise ValueError("The registry is not accepting new registrations")
-
+    raise_on_frozen()
     def wrapper(func: Mutation):
         registries.mutators.register(name, func, [])
         return func
@@ -120,9 +121,7 @@ def register_mutator(name: str):
 
 
 def register_adapter(target_type: Type[VAT]):
-    if registries.is_frozen():
-        raise ValueError("The registry is not accepting new registrations")
-
+    raise_on_frozen()
     def wrapper(cls: Type[ViewAdapter[VAT]]):
         registries.view_adapters.register(target_type, cls())
         return cls

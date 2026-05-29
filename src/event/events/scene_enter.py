@@ -1,25 +1,19 @@
+from dataclasses import dataclass
+
 from event.model import Event
 
 
+@dataclass
 class ScenePreEnterEvent(Event):
-    from scene.scene import Scene  # type-checking purposes
-
-    entered: Scene
-
-    def __init__(self, scene: Scene) -> None:
-        self.entered = scene
+    entered: "scene.scene.Scene"
 
     def get_name(self) -> str:
         return "ScenePreEnterEvent"
 
 
+@dataclass
 class ScenePostEnterEvent(Event):
-    from scene.scene import Scene  # type-checking purposes
-
-    entered: Scene
-
-    def __init__(self, scene: Scene) -> None:
-        self.entered = scene
+    entered: "scene.scene.Scene"
 
     def get_name(self) -> str:
         return "ScenePostEnterEvent"

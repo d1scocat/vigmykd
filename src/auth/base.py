@@ -1,16 +1,34 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
+from typing import Any, Dict
 
 
 class Authenticator(ABC):
     @abstractmethod
-    def login(self, creds) -> UUID:
+    def login(self, creds: Dict[str, str]) -> UUID:
+        """Returns the HTTP request UUID, not the player UUID."""
         pass
 
     @abstractmethod
-    def register(self, creds) -> UUID:
+    def logout(self):
         pass
 
     @abstractmethod
-    def get_current_user(self, creds) -> UUID | None:
+    def set_token(self, token: str):
+        pass
+
+    @abstractmethod
+    def clear_token(self):
+        pass
+
+    @abstractmethod
+    def get_token(self) -> str | None:
+        pass
+
+    @abstractmethod
+    def get_current_user(self) -> Dict[str, Any] | None:
+        pass
+
+    @abstractmethod
+    def get_user_id(self) -> UUID | None:
         pass

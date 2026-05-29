@@ -7,7 +7,9 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "pygame>=2.6.0"
+    "pygame>=2.6.0",
+    "httpx>=0.28.1",
+    "jwt>=1.4.0"
 ]
 license = { file = "LICENSE" }
 

@@ -1,25 +1,19 @@
+from dataclasses import dataclass
+
 from event.model import Event
 
 
+@dataclass
 class ScenePreExitEvent(Event):
-    from scene.scene import Scene  # type-checking purposes
-
-    exited: Scene
-
-    def __init__(self, scene: Scene) -> None:
-        self.exited = scene
+    exited: "scene.scene.Scene"
 
     def get_name(self) -> str:
         return "ScenePreExitEvent"
 
 
+@dataclass
 class ScenePostExitEvent(Event):
-    from scene.scene import Scene  # type-checking purposes
-
-    exited: Scene
-
-    def __init__(self, scene: Scene) -> None:
-        self.exited = scene
+    exited: "scene.scene.Scene"
 
     def get_name(self) -> str:
         return "ScenePostExitEvent"

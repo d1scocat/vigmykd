@@ -11,7 +11,7 @@ class UIContainer(UIComponent):
         position: Dict[str, Any],
         size: Dict[str, int],
         texture: Dict[str, Any] | None,
-        children: List["UIComponent"],
+        children: List[UIComponent],
         states: Dict[str, Dict[str, Any]] | None = None,
         default_state: str | None = None,
     ):

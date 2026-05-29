@@ -1,4 +1,4 @@
-from textures import TextureManager
+from context import GameContext
 from view import RenderState
 
 from typing import Any, Dict, Tuple
@@ -13,6 +13,7 @@ class UIComponent:
     # produced by interaction system
     hovered: bool
     pressed: bool
+    focused: bool
 
     # computed every frame
     resolved_state: str
@@ -43,13 +44,13 @@ class UIComponent:
         # runtime only flags
         self.hovered = False
         self.pressed = False
+        self.focused = False
 
         # computed per frame
         self.resolved_visible = True
         self.resolved_texture = None
 
         self.base_state = default_state or "normal"
-        print(self.id, self.base_state)
 
         self.absolute_position: Tuple[int, int] = (0, 0)
         self.absolute_size: Tuple[int, int] = (0, 0)
@@ -100,9 +101,7 @@ class UIComponent:
             return {}, "normal"
 
         states: Dict[str, RenderState] = {}
-
-        all_state_names = set(self.states.keys())
-        all_state_names.add("normal")  # ensure it exists bc it's the default state
+        all_state_names = set(self.states.keys()) | {"normal"}
 
         for state_name in all_state_names:
             override = self.states.get(state_name, {})
@@ -140,7 +139,11 @@ class UIComponent:
             "bottom-right": (1.0, 1.0),
         }.get(anchor, (0.0, 0.0))
 
-    def resolve_size(self, parent_size: Tuple[int, int], texture_manager: TextureManager):
+    def resolve_size(
+        self,
+        parent_size: Tuple[int, int],
+        ctx: GameContext
+    ):
         size = self.size
         if "width" in size and "height" in size:
             self.absolute_size = (size["width"], size["height"])
@@ -150,13 +153,29 @@ class UIComponent:
         if mode == "match-texture":
             texture = self.resolved_texture
             if texture:
-                surface = texture_manager.lookup_tile(texture["sheet"], tuple(texture["tile"]))
+                surface = ctx.texture_manager.lookup_tile(texture["sheet"], tuple(texture["tile"]))
                 if surface:
                     self.absolute_size = (surface.get_width(), surface.get_height())
                     return
 
         if mode == "fill":
             self.absolute_size = parent_size
+            return
+
+        if mode == "match-text" and hasattr(self, "resolved_text_key"):
+            base_text = getattr(self, "text", None)
+            if not base_text:
+                raise ValueError(f"match-text mode requires UITextHolder on {self.id}")
+
+            text_key = getattr(self, "resolved_text_key", base_text.raw or base_text.i18n)
+            font_name = getattr(self, "resolved_font", base_text.font)
+            font_size = getattr(self, "resolved_font_size", base_text.size)
+
+            content = text_key if base_text.raw else ctx.ui_i18n(text_key, strict=False)
+            font = ctx.fetch_font(font_name, font_size)
+
+            self.absolute_size = font.size(content)
+            self.resolved_text_content = content
             return
 
         raise ValueError(f"Unknown size for component {self.id=}, {self.type=}, {self.size=}")

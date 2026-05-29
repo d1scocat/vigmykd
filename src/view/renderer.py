@@ -4,7 +4,7 @@ from view.renderable import Renderable
 
 from typing import Dict, List, Tuple
 
-from pygame import Surface
+from pygame import Surface, Rect, Color
 import pygame
 
 
@@ -20,9 +20,9 @@ class Renderer:
 
         self.render_queue: Dict[int, List[Tuple[Renderable, Surface]]] = {}
         self.text_queue: List[Tuple[int, Surface, Tuple[int, int]]] = []
+        self.rect_queue: List[Tuple[int, Rect, Color]] = []
 
-    def queue_text(self, z_index: int, surface: Surface, pos: Tuple[int, int]):
-        self.text_queue.append((z_index, surface, pos))
+        self.scale_cache: Dict[Tuple[int, Tuple[int, int], int, int], Surface] = {}
 
     def drop_render_queue(self):
         self.render_queue.clear()
@@ -30,9 +30,16 @@ class Renderer:
     def drop_text_queue(self):
         self.text_queue.clear()
 
+    def drop_rect_queue(self):
+        self.rect_queue.clear()
+
+    def clear_texture_scale_cache(self):
+        self.scale_cache.clear()
+
     def drop_queue(self):
         self.drop_render_queue()
         self.drop_text_queue()
+        self.drop_rect_queue()
 
     def queue_renderable(self, renderable: Renderable):
         surface = self._find_surface(renderable)
@@ -42,6 +49,23 @@ class Renderer:
         self.render_queue.setdefault(renderable.z_index, []).append(
             (renderable, surface)
         )
+    
+    def queue_text(self, z_index: int, surface: Surface, pos: Tuple[int, int]):
+        self.text_queue.append((z_index, surface, pos))
+    
+    def queue_rect(
+        self,
+        z_index: int,
+        dimensions: Tuple[float, float, float, float],
+        color: Tuple[int, int, int]
+    ):
+        x, y, w, h = dimensions
+        r, g, b = color
+        self.rect_queue.append((
+            z_index,
+            Rect(x, y, w, h),
+            Color(r, g, b)
+        ))
 
     def draw_renderable(self, renderable: Renderable):
         surface = self._find_surface(renderable)
@@ -59,6 +83,9 @@ class Renderer:
 
         for z, surface, pos in sorted(self.text_queue, key=lambda x: x[0]):
             self.screen.blit(surface, pos)
+        
+        for z, rect, color in sorted(self.rect_queue, key=lambda x: x[0]):
+            pygame.draw.rect(self.screen, color, rect)
 
         self.drop_queue()
 
@@ -74,6 +101,13 @@ class Renderer:
         loc_x, loc_y = renderable.location
         w, h = renderable.size
 
-        if surface.get_size() != (w, h):
-            surface = pygame.transform.scale(surface, (w, h))
-        self.screen.blit(surface, (int(loc_x), int(loc_y)))
+        if surface.get_size() == (w, h):
+            self.screen.blit(surface, (int(loc_x), int(loc_y)))
+            return
+
+        state = renderable.states[renderable.current_state]
+        cache_key = (state.sheet_id, state.grid_pos, w, h)
+
+        if cache_key not in self.scale_cache:
+            self.scale_cache[cache_key] = pygame.transform.smoothscale(surface, (w, h))
+        self.screen.blit(self.scale_cache[cache_key], (int(loc_x), int(loc_y)))

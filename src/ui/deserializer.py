@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 from ui.components import button, component, container, image, page, \
-    textarea
+    text, textarea
 
 
 def build_component(obj: Dict[str, Any]) -> component.UIComponent:
@@ -65,7 +65,20 @@ def build_component(obj: Dict[str, Any]) -> component.UIComponent:
                 size=size,
                 texture=texture,
                 label=obj["label"],
-                hint=obj["hint"]
+                hint=obj["hint"],
+                states=states,
+                default_state=default_state
+            )
+
+        case "text":
+            comp = text.UITextElement(
+                id=id,
+                z_index=z_index,
+                position=position,
+                size=size,
+                text=obj.get("text", {}),
+                states=states,
+                default_state=default_state
             )
 
         case _:

@@ -2,11 +2,15 @@ from typing import List, Tuple
 
 from ui.components.component import UIComponent
 from ui.components.container import UIContainer
+from ui.components.textarea import UITextArea
+
+import pygame
 
 
 class UIInteractionSystem:
     def __init__(self):
         self.active_component: UIComponent | None = None
+        self.focused_component: UIComponent | None = None
         self.prev_mouse_down: bool = False
 
     def update(
@@ -38,6 +42,43 @@ class UIInteractionSystem:
 
         self.prev_mouse_down = mouse_down
         return action
+    
+    def handle_key(self, event: pygame.event.Event, components: List[UIComponent]):
+        if event.type != pygame.KEYDOWN:
+            return
+
+        if event.key == pygame.K_TAB:
+            focusables = self._get_focusable(components)
+            if not focusables:
+                return
+
+            if self.focused_component not in focusables:
+                next_comp = focusables[0]
+            else:
+                idx = focusables.index(self.focused_component)
+
+                if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                    idx -= 1
+                else:
+                    idx += 1
+
+                next_comp = focusables[idx % len(focusables)]
+
+            # should always be true
+            # but when ill be adding more focusable components,
+            # i'll abstract this into UIFocusable
+            if isinstance(next_comp, UITextArea):
+                self._set_focus(next_comp)
+    
+    def _set_focus(self, component: UITextArea):
+        if self.focused_component:
+            self.focused_component.focused = False
+
+        self.focused_component = component
+        component.focused = True
+
+        if hasattr(component, "value"):
+            component.cursor = len(component.value)
 
     def _flatten_dfs(self, components: List[UIComponent]) -> List[UIComponent]:
         result = []
@@ -56,6 +97,10 @@ class UIInteractionSystem:
             dfs(component, True)
 
         return result
+    
+    def _get_focusable(self, components: List[UIComponent]) -> List[UIComponent]:
+        flat = self._flatten_dfs(components)
+        return [comp for comp in flat if isinstance(comp, UITextArea)]
 
     def _process_single(
         self,
@@ -81,10 +126,17 @@ class UIInteractionSystem:
                 component.pressed = True
                 if not self.prev_mouse_down and hasattr(component, "action"):
                     self.active_component = component
+
+                if isinstance(component, UITextArea):
+                    self._set_focus(component)
             return True
         else:
             component.hovered = False
             component.pressed = False
+
+            if mouse_down and self.focused_component:
+                self.focused_component.focused = False
+                self.focused_component = None
 
         return False
 

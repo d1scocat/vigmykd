@@ -1,5 +1,5 @@
 from context import GameContext
-from controller.consumers import InputConsumer
+from controller.consumers.input_consumer import InputConsumer
 from controller.input_model import PlayerInput
 from game.model import GameState
 from player import Player

@@ -20,22 +20,17 @@ from scene.manager import SceneManager
 class Game:
     from view.system import ViewSystem
 
-    ctx: GameContext
-    screen: Surface
-
     # MVC
     controller: InputHandler
     model: GameState
     view: Renderer  # intermediate View part
     view_system: ViewSystem
 
-    player_adapter: ViewAdapter
-
-    event_manager: EventManager
-
     def __init__(self, ctx: GameContext, screen: Surface, event_manager: EventManager):
         from scene.objects import menu
         from view.system import ViewSystem
+
+        from registry import registration_imports
 
         self.ctx = ctx
         self.screen = screen
@@ -92,8 +87,9 @@ class Game:
             for mutation in mutations:
                 mutation(input)  # edits in-place
 
-        self.model.buffer_input(self.ctx.local_player_id, input)
+        self.event_manager.push()
 
+        self.model.buffer_input(self.ctx.local_player_id, input)
         self.scene_manager.tick()
 
         self.model.advance()

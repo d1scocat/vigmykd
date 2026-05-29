@@ -6,21 +6,28 @@ import logging
 
 import pygame
 
-from auth.mock import MockAuthenticator
-from config import load_config
+from auth.server import ServerAuthenticator
+from config import Config
 from event import EventManager
 from i18n import Localization
+from network import ApiClient
 from textures import TextureManager
 
 
 class GameContext:
     def __init__(
         self,
+        logger: logging.Logger,
+        event_manager: EventManager,
         assets_path: Path,
         cfg_path: Path,
+        cfg: Config,
+        client: ApiClient,
         screen_size: Tuple[int, int]
     ):
-        self.event_manager = EventManager()
+        self.logger = logger
+        self.event_manager = event_manager
+        self.screen_size = screen_size
 
         self.assets_path = assets_path
         self.cfg_path = cfg_path
@@ -29,24 +36,20 @@ class GameContext:
         self.ui_path = assets_path / "ui"
         self.font_path = assets_path / "fonts"
 
-        self.screen_size = screen_size
-
-        self.cfg = load_config(cfg_path / "config.json")
+        self.cfg = cfg
         self.localization = Localization(assets_path / "i18n", "en-US")
 
         self.font_sources = self._preload_fonts()
         self.font_cache: Dict[Tuple[str, int], pygame.font.Font] = {}
 
         self.auth_path = cfg_path / "auth.dat"
-        self.auth = MockAuthenticator(self.auth_path)
-        if not self.auth_path.exists():
-            self.auth.login(None)
-
-        self.logger = logging.getLogger("vigmykd")
+        self.auth = ServerAuthenticator(client, self.auth_path)
 
         self.texture_manager = TextureManager()
 
-        self.local_player_id: UUID | None = self.auth.get_current_user(None)
+    @property
+    def local_player_id(self):
+        return self.auth.get_user_id()
 
     def i18n(self, key: str, strict: bool = False, **kwargs) -> str:
         """
@@ -64,6 +67,29 @@ class GameContext:
             The formatted localized string for the active locale.
         """
         return self.localization.t(self.cfg.locale, key, strict, **kwargs)
+    
+    def ui_i18n(self, text: "ui.components.text.UIText", strict: bool = False, **kwargs) -> str:
+        """
+        Resolve a localized string using the current context locale.
+
+        Convenience wrapper around `Localization.t`, using the locale
+        defined in this context's configuration.
+
+        Args:
+            text: The text object - may contain a i18n key or raw content.
+            strict: If True, do not fall back to the default locale.
+            **kwargs: Values used to format the string.
+
+        Returns:
+            The formatted localized string for the active locale.
+        """
+        if text.raw is not None:
+            return format(text.raw, **kwargs)
+
+        if text.i18n is None:
+            raise ValueError("Text object doesn't contain i18n or raw content")
+
+        return self.localization.t(self.cfg.locale, text.i18n, strict, **kwargs)
 
     def _preload_fonts(self) -> Dict[str, Path]:
         result = {}

@@ -1,7 +1,10 @@
+import settings
+
 from context import GameContext
 from ui.components.component import UIComponent
 from ui.components.container import UIContainer
 from ui.components.text import UITextHolder
+from ui.components.textarea import UITextArea
 from view import Renderable, Renderer
 
 from typing import Any, Dict, List, Tuple
@@ -46,7 +49,7 @@ class UIPage:
         x = pos["x"] * parent_size[0]
         y = pos["y"] * parent_size[1]
 
-        component.resolve_size(parent_size, ctx.texture_manager)
+        component.resolve_size(parent_size, ctx)
 
         w, h = component.absolute_size
         anchor_x, anchor_y = component.resolve_origin()
@@ -102,18 +105,40 @@ class UIPage:
             return
 
         ctx = renderer.ctx
-        text = component.text
+        base_text = component.text
 
-        content = ctx.i18n(text.i18n, strict=False)
-        font = ctx.fetch_font(text.font, text.size)
+        # For UITextElement
+        content = getattr(component, "resolved_text_content", None)
+        if not content:
+            text_key = base_text.raw or base_text.i18n
+            content = \
+                text_key \
+                if base_text.raw \
+                else ctx.localization.t(ctx.cfg.locale, text_key, False)
 
-        surface = font.render(content, True, text.color)
+        if isinstance(component, UITextArea):
+            if component.focused and not component.value:
+                content = ""
+
+        font_name = getattr(component, "resolved_font", base_text.font)
+        font_size = getattr(component, "resolved_font_size", base_text.size)
+        color = getattr(component, "resolved_color", base_text.color)
+
+        font = ctx.fetch_font(font_name, font_size)
+        surface = font.render(content, True, color)
 
         x, y = component.absolute_position
         w, h = component.absolute_size
         text_w, text_h = surface.get_size()
 
-        draw_x = int(x + (w - text_w) / 2)
+        if isinstance(component, UITextArea):
+            draw_x = x + settings.PADDING_LEFT
+            cursor = component.calculate_cursor(renderer)
+            if cursor:
+                renderer.queue_rect(component.z_index + 2, cursor, (0, 0, 0))
+        else:
+            draw_x = int(x + (w - text_w) / 2)
+
         draw_y = int(y + (h - text_h) / 2)
 
         renderer.queue_text(
@@ -123,14 +148,22 @@ class UIPage:
         )
 
     def by_id(self, id: str) -> UIComponent | None:
-        for element in self.elements:
-            if element.id == id:
-                return element
+        stack = list(self.elements)
+        while stack:
+            el = stack.pop()
+            if el.id == id:
+                return el
+            if isinstance(el, UIContainer):
+                stack.extend(el.children)
         return None
 
     def by_type(self, type: str) -> List[UIComponent]:
         result = []
-        for element in self.elements:
-            if element.type == type:
-                result.append(element)
+        stack = list(self.elements)
+        while stack:
+            el = stack.pop()
+            if el.type == type:
+                result.append(el)
+            if isinstance(el, UIContainer):
+                stack.extend(el.children)
         return result

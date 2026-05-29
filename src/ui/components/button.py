@@ -31,7 +31,8 @@ class UIButton(UIComponent, UITextHolder):
         self.text_obj = None
         if text is not None:
             self.text_obj = UIText(
-                i18n=text["i18n"],
+                raw=text.get("raw", None),
+                i18n=text.get("i18n", None),
                 font=text["font"],
                 size=text["size"],
                 color=tuple(text["color"])

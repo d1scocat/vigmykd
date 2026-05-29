@@ -32,7 +32,7 @@
             "text": {
                 "i18n": "main-menu.login-button-label",
                 "font": "default",
-                "size": 32,
+                "size": 60,
                 "color": [255, 255, 255]
             },
 
@@ -63,16 +63,15 @@
                     "texture": { "sheet": 5, "tile": [0, 0] },
 
                     "label": {
-                        "i18n": "login-form.login-textarea-label",
                         "font": "default",
-                        "size": 16,
+                        "size": 32,
                         "color": [255, 255, 255]
                     },
 
                     "hint": {
                         "i18n": "login-form.login-textarea-hint",
                         "font": "default",
-                        "size": 16,
+                        "size": 32,
                         "color": [255, 255, 255]
                     }
                 },
@@ -86,16 +85,15 @@
                     "texture": { "sheet": 5, "tile": [0, 0] },
 
                     "label": {
-                        "i18n": "login-form.password-textarea-label",
                         "font": "default",
-                        "size": 16,
+                        "size": 32,
                         "color": [255, 255, 255]
                     },
 
                     "hint": {
                         "i18n": "login-form.password-textarea-hint",
                         "font": "default",
-                        "size": 16,
+                        "size": 32,
                         "color": [255, 255, 255]
                     }
                 },
@@ -104,8 +102,8 @@
                     "type": "button",
                     "id": "attempt-login",
                     "z_index": 110,
-                    "position": { "x": 0.5, "y": 0.8, "anchor": "center" },
-                    "size": { "width": 300, "height": 100 },
+                    "position": { "x": 0.5, "y": 0.75, "anchor": "center" },
+                    "size": { "width": 300, "height": 50 },
 
                     "states": {
                         "normal": { "texture": { "sheet": 3, "tile": [0, 0] } },
@@ -116,11 +114,29 @@
                     "text": {
                         "i18n": "login-form.login-button-label",
                         "font": "default",
-                        "size": 24,
+                        "size": 36,
                         "color": [255, 255, 255]
                     },
 
                     "action": "submit_login_attempt"
+                },
+
+                {
+                    "type": "text",
+                    "id": "stub-error",
+                    "z-index": 110,
+                    "position": { "x": 0.5, "y": 0.9, "anchor": "center" },
+                    "size": { "width": 600, "height": 100 },
+
+                    "default-state": "hidden",
+                    "states": {"hidden": { "visible": false }, "shown": { "visible": true }},
+
+                    "text": {
+                        "i18n": "login-form.not-everything-filled-error",
+                        "font": "default",
+                        "size": 30,
+                        "color": [255, 0, 0]
+                    }
                 }
             ]
         },

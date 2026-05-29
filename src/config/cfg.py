@@ -9,7 +9,9 @@ from config.loader import keymap_loader
 @dataclass
 class Config:
     keymap: Dict[FrozenSet[int], str]
+
     locale: str
+    server: str
 
 
 def load_config(path: Path) -> Config:
@@ -20,5 +22,7 @@ def load_config(path: Path) -> Config:
 
     return Config(
         keymap=keymap,
-        locale=data["locale"]
+
+        locale=data["locale"],
+        server=data["server"]
     )
