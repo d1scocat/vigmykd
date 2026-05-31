@@ -1,4 +1,7 @@
+from typing import Any, Callable, Dict
+
 from pygame.event import Event
+
 from context import GameContext
 from game.model import GameState
 from scene.scene import Scene
@@ -22,14 +25,14 @@ class LimboScene(Scene):
 
         self._ui_interaction = UIInteractionSystem()
 
-        self._ui_page = self.get_ui(ctx.ui_path / f"limbo.json")
+        self._ui_page = self.get_ui(ctx.ui_path / "limbo.json")
 
-        self.action_mapping = {}
-    
+        self.action_mapping: Dict[str, Callable[[Scene, GameContext], Any] | None] = {}
+
     @property
     def page(self) -> UIPage:
         return self._ui_page
-    
+
     @property
     def interaction(self) -> UIInteractionSystem:
         return self._ui_interaction
@@ -55,6 +58,6 @@ class LimboScene(Scene):
 
     def find_action(self, action_name: str):
         return None
-    
+
     def on_event(self, event: Event) -> bool:
         return False

@@ -13,15 +13,13 @@ class ServerAuthenticator(Authenticator):
         super().__init__()
 
         self._client = client
-        self._auth_path = Path("D:/test.dat")#auth_path.resolve()
+        self._auth_path = Path("D:/test.dat")
         self._token = None
 
-        self._cached_payload = None
+        self._cached_payload: Dict[str, Any] | None = None
 
         if self._auth_path.exists():
-            print(1)
             data = self._auth_path.read_text().strip()
-            print("data", len(data), "end data")
             if data:
                 self._token = data
 
@@ -69,11 +67,11 @@ class ServerAuthenticator(Authenticator):
             self._cached_payload = jwt.JWT().decode(
                 self._token,
                 self.key,
-                algorithms={"RS256"}, 
+                algorithms={"RS256"},
                 do_verify=True
             )
             return self._cached_payload
-        except Exception as ex:
+        except Exception:
             self.clear_token()
             return None
 

@@ -110,7 +110,10 @@ class UIPage:
         # For UITextElement
         content = getattr(component, "resolved_text_content", None)
         if not content:
-            text_key = base_text.raw or base_text.i18n
+            text_key = (base_text.raw or base_text.i18n)
+            if not text_key:
+                raise ValueError("base_text.raw and base_text.i18n cannot be None at"
+                                 " the same time:", repr(base_text))
             content = \
                 text_key \
                 if base_text.raw \

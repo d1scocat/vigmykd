@@ -1,5 +1,5 @@
 from pygame.event import Event
-from dataclasses import asdict
+
 from context import GameContext
 from event.events import HTTPResponseEvent, SceneSwitchRequestEvent
 from game.model import GameState
@@ -12,9 +12,8 @@ from view import Renderer
 from view.system import ViewSystem
 
 import pygame
-import uuid
 
-from typing import Any, Callable
+from typing import Any, Callable, Dict
 
 
 class MenuScene(Scene):
@@ -32,24 +31,23 @@ class MenuScene(Scene):
         self._ui_interaction = UIInteractionSystem()
 
         local = ctx.local_player_id
-        authenticated = local is not None # model.get_player(local) is not None
-        print(local, model.players, authenticated)
+        authenticated = local is not None  # model.get_player(local) is not None
 
         self._ui_page = self.get_ui(
             ctx.ui_path / f"main-menu-{'' if authenticated else 'un'}authenticated.json"
         )
 
-        self.action_mapping = {
+        self.action_mapping: Dict[str, Callable[['Scene', GameContext], Any] | None] = {
             "show_login_overlay": actions.show_login_overlay,
-            "open_settings": ...,
-            "exit": ...,
+            # "open_settings": ...,
+            # "exit": ...,
             "submit_login_attempt": actions.submit_login_attempt
         }
-    
+
     @property
     def page(self) -> UIPage:
         return self._ui_page
-    
+
     @property
     def interaction(self) -> UIInteractionSystem:
         return self._ui_interaction
@@ -115,6 +113,6 @@ class MenuScene(Scene):
 
     def find_action(self, action_name: str) -> Callable[[Scene, GameContext], Any] | None:
         return self.action_mapping.get(action_name)
-    
+
     def on_event(self, event: Event) -> bool:
         return False

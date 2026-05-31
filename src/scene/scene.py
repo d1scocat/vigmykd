@@ -38,7 +38,7 @@ class Scene(ABC):
             component = self.interaction.focused_component
             if isinstance(component, UITextArea):
                 component.update(keys)
-        
+
         self.tick()
 
     def handle_pygame_event(self, event: pygame.event.Event) -> bool:
@@ -53,7 +53,7 @@ class Scene(ABC):
             if focused and isinstance(focused, UITextArea):
                 if focused.handle_event(event):
                     return True
-        
+
         if hasattr(self, "on_event"):
             return self.on_event(event)
         return False

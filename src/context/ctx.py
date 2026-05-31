@@ -71,7 +71,7 @@ class GameContext:
             The formatted localized string for the active locale.
         """
         return self.localization.t(self.cfg.locale, key, strict, **kwargs)
-    
+
     def ui_i18n(self, text: "ui.components.text.UIText", strict: bool = False, **kwargs) -> str:
         """
         Resolve a localized string using the current context locale.

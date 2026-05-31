@@ -42,7 +42,7 @@ class UIInteractionSystem:
 
         self.prev_mouse_down = mouse_down
         return action
-    
+
     def handle_key(self, event: pygame.event.Event, components: List[UIComponent]):
         if event.type != pygame.KEYDOWN:
             return
@@ -69,7 +69,7 @@ class UIInteractionSystem:
             # i'll abstract this into UIFocusable
             if isinstance(next_comp, UITextArea):
                 self._set_focus(next_comp)
-    
+
     def _set_focus(self, component: UITextArea):
         if self.focused_component:
             self.focused_component.focused = False
@@ -97,7 +97,7 @@ class UIInteractionSystem:
             dfs(component, True)
 
         return result
-    
+
     def _get_focusable(self, components: List[UIComponent]) -> List[UIComponent]:
         flat = self._flatten_dfs(components)
         return [comp for comp in flat if isinstance(comp, UITextArea)]

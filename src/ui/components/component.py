@@ -66,7 +66,7 @@ class UIComponent:
         if self.hovered:
             return "hovered"
         return self.base_state
-    
+
     def set_state(self, state: str):
         self.base_state = state
 

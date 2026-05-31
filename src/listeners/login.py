@@ -2,6 +2,7 @@ from context import GameContext
 from event.events import HTTPResponseEvent
 from listeners import Listener
 
+
 class LoginListener(Listener[HTTPResponseEvent]):
     def __init__(self, ctx: GameContext):
         super().__init__()

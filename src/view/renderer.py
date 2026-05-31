@@ -49,10 +49,10 @@ class Renderer:
         self.render_queue.setdefault(renderable.z_index, []).append(
             (renderable, surface)
         )
-    
+
     def queue_text(self, z_index: int, surface: Surface, pos: Tuple[int, int]):
         self.text_queue.append((z_index, surface, pos))
-    
+
     def queue_rect(
         self,
         z_index: int,
@@ -83,7 +83,7 @@ class Renderer:
 
         for z, surface, pos in sorted(self.text_queue, key=lambda x: x[0]):
             self.screen.blit(surface, pos)
-        
+
         for z, rect, color in sorted(self.rect_queue, key=lambda x: x[0]):
             pygame.draw.rect(self.screen, color, rect)
 

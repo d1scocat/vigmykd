@@ -106,6 +106,7 @@ def raise_on_frozen():
 
 def register_consumer(tags: List[str] | None):
     raise_on_frozen()
+
     def wrapper(cls: Type[InputConsumer]):
         registries.consumers.register(cls, tags)
         return cls
@@ -114,6 +115,7 @@ def register_consumer(tags: List[str] | None):
 
 def register_mutator(name: str):
     raise_on_frozen()
+
     def wrapper(func: Mutation):
         registries.mutators.register(name, func, [])
         return func
@@ -122,6 +124,7 @@ def register_mutator(name: str):
 
 def register_adapter(target_type: Type[VAT]):
     raise_on_frozen()
+
     def wrapper(cls: Type[ViewAdapter[VAT]]):
         registries.view_adapters.register(target_type, cls())
         return cls

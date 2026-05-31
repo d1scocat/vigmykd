@@ -56,7 +56,7 @@ class UITextArea(UIComponent, UITextHolder):
             "ctrl_left": lambda: self.move_cursor_word(-1),
             "ctrl_right": lambda: self.move_cursor_word(1),
         }
-    
+
     @property
     def text(self) -> UIText:
         if not self.value:
@@ -67,7 +67,7 @@ class UITextArea(UIComponent, UITextHolder):
                 size=self.hint["size"],
                 color=self.hint["color"],
             )
-        
+
         if self.password_mode:
             return UIText(
                 raw="*" * len(self.value),
@@ -76,7 +76,7 @@ class UITextArea(UIComponent, UITextHolder):
                 size=self.label["size"],
                 color=self.label["color"],
             )
-        
+
         return UIText(
             raw=self.value,
             i18n=None,
@@ -100,7 +100,7 @@ class UITextArea(UIComponent, UITextHolder):
         else:
             self._repeat_timers[value] = None
             self._repeat_timers[f"ctrl_{value}"] = None
-    
+
     def update(self, keys: pygame.key.ScancodeWrapper):
         if not self.focused:
             return
@@ -111,7 +111,7 @@ class UITextArea(UIComponent, UITextHolder):
         self._update_timer_handle(keys, pygame.K_LEFT, mods, "left")
         self._update_timer_handle(keys, pygame.K_RIGHT, mods, "right")
         self._update_timer_handle(keys, pygame.K_DELETE, mods, "delete")
-    
+
     def _trigger(self, key: str):
         action = self._actions.get(key)
         if action:
@@ -140,10 +140,10 @@ class UITextArea(UIComponent, UITextHolder):
             if now - state["last"] >= settings.TEXT_INPUT_HOLD_INTERVAL:
                 state["last"] = now
                 self._trigger(key)
-    
+
     def move_cursor(self, delta: int):
         self.cursor = max(0, min(len(self.value), self.cursor + delta))
-    
+
     def move_cursor_word(self, direction: int):
         if direction < 0:
             i = self.cursor - 1
@@ -160,11 +160,11 @@ class UITextArea(UIComponent, UITextHolder):
             while i < n and self.value[i].isspace():
                 i += 1
             self.cursor = i
-    
+
     def calculate_cursor(self, renderer: Renderer) -> Tuple[int, int, int, int] | None:
         if not self.focused:
             return None
-        
+
         text = self.text
         font = renderer.ctx.fetch_font(text.font, text.size)
 
@@ -178,28 +178,29 @@ class UITextArea(UIComponent, UITextHolder):
         x, y = self.absolute_position
         w, h = self.absolute_size
 
-        padding_left = settings.PADDING_LEFT  # make this configurable later in the text object itself
+        # make this configurable later in the text object itself
+        padding_left = settings.PADDING_LEFT
         cursor_x = int(x + padding_left + text_w)
         cursor_y = int(y + (h - text_h) / 2)
         cursor_h = text_h
 
         return (cursor_x, cursor_y, settings.TEXT_CURSOR_WIDTH, cursor_h)
-    
+
     def handle_event(self, event: pygame.event.Event) -> bool:
         if event.type != pygame.KEYDOWN:
             return False
-        
+
         mods = pygame.key.get_mods()
 
         if mods & pygame.KMOD_CTRL:
             if event.key == pygame.K_a:
                 self.move_cursor(len(self.value) - self.cursor)
                 return True
-            
+
             if event.key == pygame.K_c:
                 pygame.scrap.put(pygame.SCRAP_TEXT, self.value.encode())
                 return True
-            
+
             if event.key == pygame.K_v:
                 clipboard = pygame.scrap.get(pygame.SCRAP_TEXT)
                 if clipboard:
@@ -208,19 +209,19 @@ class UITextArea(UIComponent, UITextHolder):
                                 .replace("\x00", "")
                                 .replace("\n", " ")
                                 .replace("\t", " ")
-                    )
+                                )
                 return True
-        
+
         if event.unicode and event.unicode.isprintable():
             self.insert(event.unicode)
             return True
-        
+
         return False
 
     def insert(self, text: str):
         self.value = self.value[:self.cursor] + text + self.value[self.cursor:]
         self.cursor += len(text)
-    
+
     def delete_char(self):
         if self.cursor > 0:
             self.value = self.value[:self.cursor - 1] + self.value[self.cursor:]

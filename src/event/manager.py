@@ -22,7 +22,7 @@ class EventManager:
         self.latest_id = 0
 
         self._lock = threading.Lock()
-        self._queue = queue.Queue()
+        self._queue: queue.Queue[Event] = queue.Queue()
 
     def register_listener(self, event_type: type[Event], func: Callable) -> int:
         with self._lock:
@@ -51,9 +51,9 @@ class EventManager:
                     except Exception as ex:
                         name = getattr(callback, "__name__", type(callback).__name__)
                         self.logger.warning("Unhandled exception at event callback:\n"
-                                    f"- Event type {event} encountered an exception"
-                                    f" while being intercepted by {name}:\n{str(ex)}",
-                                    exc_info=True)
+                                            f"- Event type {event} encountered an exception"
+                                            f" while being intercepted by {name}:\n{str(ex)}",
+                                            exc_info=True)
 
         except queue.Empty:
             pass

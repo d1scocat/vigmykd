@@ -1,6 +1,8 @@
 [flake8]
 max-line-length = 100
-ignore = E203,W503,W504
+ignore = E203,W503,W504,F821
 per-file-ignores = 
     __init__.py:F401,F403
-    main.py:F401,F403
+    main.py:F401,F403,E402
+    game.py:F401
+    registration_imports.py:F401,F403

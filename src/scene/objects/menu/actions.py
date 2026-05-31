@@ -16,20 +16,20 @@ def show_login_overlay(scene: Scene, ctx: GameContext):
 
 
 def submit_login_attempt(scene: Scene, ctx: GameContext):
-    login = scene.page.by_id("login-textarea")
-    password = scene.page.by_id("password-textarea")
-    if not login or not password:
+    login_field = scene.page.by_id("login-textarea")
+    password_field = scene.page.by_id("password-textarea")
+    if not login_field or not password_field:
         ctx.logger.warning("No 'login-textarea' or no 'password-textarea' "
-                                 "available for MenuScene")
-        return
-    
-    if not (isinstance(login, UITextArea) and isinstance(password, UITextArea)):
-        ctx.logger.warning("'login-textarea' or 'password-textarea' in MenuScene "
-                                 "is not textarea")
+                           "available for MenuScene")
         return
 
-    login = login.value
-    password = password.value
+    if not (isinstance(login_field, UITextArea) and isinstance(password_field, UITextArea)):
+        ctx.logger.warning("'login-textarea' or 'password-textarea' in MenuScene "
+                           "is not textarea")
+        return
+
+    login = login_field.value
+    password = password_field.value
 
     try:
         req_id = ctx.auth.login({"login": login, "password": password})
