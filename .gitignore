@@ -8,6 +8,8 @@ VENV/
 .env
 .env.*
 
+*.pem
+
 __pycache__/
 *.py[cod]
 *$py.class

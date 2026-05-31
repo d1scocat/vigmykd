@@ -1,0 +1,74 @@
+{
+    "id": "main-menu-authenticated",
+    "meta": {
+        "resolution": [1920, 1080],
+        "anchor-mode": "relative"
+    },
+
+    "elements": [
+        {
+            "type": "image",
+            "id": "background",
+            "z_index": 0,
+            "position": { "x": 0.5, "y": 0.5, "anchor": "center" },
+            "size": { "mode": "fill" },
+            "texture": { "sheet": 2, "tile": [0, 0] }
+        },
+
+        {
+            "type": "button",
+            "id": "play-button",
+            "z_index": 10,
+            "position": { "x": 0.5, "y": 0.4, "anchor": "center" },
+            "size": { "width": 400, "height": 100 },
+
+            "states": {
+                "normal": { "texture": { "sheet": 3, "tile": [0, 0] } },
+                "hovered": { "texture": { "sheet": 3, "tile": [1, 0] } },
+                "pressed": { "texture": { "sheet": 3, "tile": [2, 0] } },
+                "hidden": { "visible": false }
+            },
+
+            "text": {
+                "i18n": "main-menu.play-button-label",
+                "font": "default",
+                "size": 60,
+                "color": [255, 255, 255]
+            },
+
+            "action": "play"
+        },
+
+        {
+            "type": "button",
+            "id": "settings",
+            "z_index": 10,
+            "position": { "x": 0.01, "y": 0.97, "anchor": "bottom-left" },
+            "size": { "mode": "match-texture" },
+
+            "states": {
+                "normal": { "texture": { "sheet": 6, "tile": [0, 0] } },
+                "hovered": { "texture": { "sheet": 6, "tile": [1, 0] } },
+                "pressed": { "texture": { "sheet": 6, "tile": [2, 0] } }
+            },
+            
+            "action": "open_settings"
+        },
+
+        {
+            "type": "button",
+            "id": "exit",
+            "z_index": 10,
+            "position": { "x": 0.01, "y": 0.01, "anchor": "top-left" },
+            "size": { "mode": "match-texture" },
+
+            "states": {
+                "normal": { "texture": { "sheet": 6, "tile": [0, 1] } },
+                "hovered": { "texture": { "sheet": 6, "tile": [1, 1] } },
+                "pressed": { "texture": { "sheet": 6, "tile": [2, 1] } }
+            },
+            
+            "action": "exit"
+        }
+    ]
+}

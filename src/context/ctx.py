@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import Dict, Tuple
-from uuid import UUID
 
 import logging
 
@@ -35,6 +34,7 @@ class GameContext:
         self.sheets_path = assets_path / "sheets"
         self.ui_path = assets_path / "ui"
         self.font_path = assets_path / "fonts"
+        self.key_path = assets_path / "pubkey.pem"
 
         self.cfg = cfg
         self.localization = Localization(assets_path / "i18n", "en-US")
@@ -50,6 +50,10 @@ class GameContext:
     @property
     def local_player_id(self):
         return self.auth.get_user_id()
+
+    def set_key(self, key: str):
+        self.key_path.write_text(key)
+        self.auth._set_key(key)
 
     def i18n(self, key: str, strict: bool = False, **kwargs) -> str:
         """

@@ -9,7 +9,6 @@ from game.model import GameState
 from player import Player
 from registry import registries
 from view import Renderer, Renderable
-from view.adapter import ViewAdapter
 
 from typing import Dict
 from uuid import UUID
@@ -27,7 +26,7 @@ class Game:
     view_system: ViewSystem
 
     def __init__(self, ctx: GameContext, screen: Surface, event_manager: EventManager):
-        from scene.objects import menu
+        from scene.objects import limbo
         from view.system import ViewSystem
 
         from registry import registration_imports
@@ -54,11 +53,12 @@ class Game:
         self.event_manager = event_manager
 
         self.scene_manager = SceneManager(
-            initial=menu.MenuScene(
+            initial=limbo.LimboScene(
                 model=self.model,
                 ctx=self.ctx,
             ),
-            event_manager=event_manager
+            event_manager=event_manager,
+            renderer=self.view
         )
 
         # self.model.start_match(self.ctx.auth.get_current_user(), uuid.uuid4())  # testing purpose

@@ -48,7 +48,9 @@ class UITextArea(UIComponent, UITextHolder):
 
         self._actions = {
             "backspace": self.delete_char,
+            "delete": self.delete_next_char,
             "ctrl_backspace": self.delete_word,
+            "ctrl_delete": self.delete_next_word,
             "left": lambda: self.move_cursor(-1),
             "right": lambda: self.move_cursor(1),
             "ctrl_left": lambda: self.move_cursor_word(-1),
@@ -56,7 +58,7 @@ class UITextArea(UIComponent, UITextHolder):
         }
     
     @property
-    def text(self) -> UIText:        
+    def text(self) -> UIText:
         if not self.value:
             return UIText(
                 raw=self.hint.get("raw"),
@@ -82,6 +84,22 @@ class UITextArea(UIComponent, UITextHolder):
             size=self.label["size"],
             color=self.label["color"],
         )
+
+    def _update_timer_handle(
+        self,
+        keys: pygame.key.ScancodeWrapper,
+        key: int,
+        mods: int,
+        value: str
+    ):
+        if keys[key]:
+            if mods & pygame.KMOD_CTRL:
+                self._handle_repeat(f"ctrl_{value}")
+            else:
+                self._handle_repeat(value)
+        else:
+            self._repeat_timers[value] = None
+            self._repeat_timers[f"ctrl_{value}"] = None
     
     def update(self, keys: pygame.key.ScancodeWrapper):
         if not self.focused:
@@ -89,32 +107,10 @@ class UITextArea(UIComponent, UITextHolder):
 
         mods = pygame.key.get_mods()
 
-        if keys[pygame.K_BACKSPACE]:
-            if mods & pygame.KMOD_CTRL:
-                self._handle_repeat("ctrl_backspace")
-            else:
-                self._handle_repeat("backspace")
-        else:
-            self._repeat_timers["backspace"] = None
-            self._repeat_timers["ctrl_backspace"] = None
-        
-        if keys[pygame.K_LEFT]:
-            if mods & pygame.KMOD_CTRL:
-                self._handle_repeat("ctrl_left")
-            else:
-                self._handle_repeat("left")
-        else:
-            self._repeat_timers["left"] = None
-            self._repeat_timers["ctrl_left"] = None
-
-        if keys[pygame.K_RIGHT]:
-            if mods & pygame.KMOD_CTRL:
-                self._handle_repeat("ctrl_right")
-            else:
-                self._handle_repeat("right")
-        else:
-            self._repeat_timers["right"] = None
-            self._repeat_timers["ctrl_right"] = None
+        self._update_timer_handle(keys, pygame.K_BACKSPACE, mods, "backspace")
+        self._update_timer_handle(keys, pygame.K_LEFT, mods, "left")
+        self._update_timer_handle(keys, pygame.K_RIGHT, mods, "right")
+        self._update_timer_handle(keys, pygame.K_DELETE, mods, "delete")
     
     def _trigger(self, key: str):
         action = self._actions.get(key)
@@ -230,6 +226,10 @@ class UITextArea(UIComponent, UITextHolder):
             self.value = self.value[:self.cursor - 1] + self.value[self.cursor:]
             self.cursor -= 1
 
+    def delete_next_char(self):
+        if self.cursor < len(self.value):
+            self.value = self.value[:self.cursor] + self.value[self.cursor + 1:]
+
     def delete_word(self):
         if self.cursor == 0:
             return
@@ -242,3 +242,15 @@ class UITextArea(UIComponent, UITextHolder):
 
         self.value = self.value[:i] + self.value[self.cursor:]
         self.cursor = i
+
+    def delete_next_word(self):
+        if self.cursor >= len(self.value):
+            return
+
+        i = self.cursor
+        while i < len(self.value) and self.value[i].isspace():
+            i += 1
+        while i < len(self.value) and not self.value[i].isspace():
+            i += 1
+
+        self.value = self.value[:self.cursor] + self.value[i:]

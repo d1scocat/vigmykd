@@ -21,7 +21,7 @@ class MenuScene(Scene):
     def __init__(
         self,
         model: GameState,
-        ctx: GameContext
+        ctx: GameContext,
     ):
         from registry import registries
         self.input_router = registries.consumers.router_by_tag("menu")
@@ -31,8 +31,9 @@ class MenuScene(Scene):
 
         self._ui_interaction = UIInteractionSystem()
 
-        local = ctx.local_player_id or uuid.uuid4()
-        authenticated = model.get_player(local) is not None
+        local = ctx.local_player_id
+        authenticated = local is not None # model.get_player(local) is not None
+        print(local, model.players, authenticated)
 
         self._ui_page = self.get_ui(
             ctx.ui_path / f"main-menu-{'' if authenticated else 'un'}authenticated.json"

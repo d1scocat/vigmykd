@@ -90,6 +90,8 @@
                         "color": [255, 255, 255]
                     },
 
+                    "password_mode": true,
+
                     "hint": {
                         "i18n": "login-form.password-textarea-hint",
                         "font": "default",

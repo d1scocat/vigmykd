@@ -1,8 +1,11 @@
 {
     "_id": "en-US",
+
+    "please-wait": "Please wait",
     
     "main-menu": {
-        "login-button-label": "Login"
+        "login-button-label": "Login",
+        "play-button-label": "Play"
     },
 
     "login-form": {

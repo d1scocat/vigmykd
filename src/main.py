@@ -68,12 +68,17 @@ load_sheets(ctx, ctx.texture_manager)
 
 registry.registries.init_all()
 
+# ===== Requesting key ===== #
+api_client.get("/key/public")
+
 # ===== LISTENERS ===== #
 # TODO: extract this somewhere
 from event.events import HTTPResponseEvent
-from listeners import LoginListener
+from listeners import LoginListener, PubkeyListener
+
 listeners = [
-    (LoginListener(ctx), HTTPResponseEvent)
+    (LoginListener(ctx), HTTPResponseEvent),
+    (PubkeyListener(ctx, game.model), HTTPResponseEvent)
 ]
 
 for (listener, type) in listeners:

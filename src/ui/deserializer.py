@@ -67,6 +67,7 @@ def build_component(obj: Dict[str, Any]) -> component.UIComponent:
                 label=obj["label"],
                 hint=obj["hint"],
                 states=states,
+                password_mode=obj.get("password_mode", False),
                 default_state=default_state
             )
 
