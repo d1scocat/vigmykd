@@ -1,11 +1,3 @@
-from context import GameContext
-from ui.components.page import UIPage
-from ui.components.textarea import UITextArea
-from ui.deserializer import deserialize_into_ui
-from ui.interaction import UIInteractionSystem
-from view import Renderer
-from view.system import ViewSystem
-
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Callable
@@ -14,8 +6,19 @@ import json
 
 import pygame
 
+from context import GameContext
+from game.model import GameState
+from ui.components.page import UIPage
+from ui.components.textarea import UITextArea
+from ui.deserializer import deserialize_into_ui
+from ui.interaction import UIInteractionSystem
+from view import Renderer
+from view.system import ViewSystem
+
 
 class Scene(ABC):
+    model: GameState
+
     @abstractmethod
     def tick(self):
         pass
@@ -33,6 +36,7 @@ class Scene(ABC):
         pass
 
     def do_tick(self):
+        self.model.server_client.pump()
         keys = pygame.key.get_pressed()
         if self.interaction.focused_component:
             component = self.interaction.focused_component
@@ -63,7 +67,7 @@ class Scene(ABC):
         pass
 
     @abstractmethod
-    def find_action(self, action_name: str) -> Callable[['Scene', GameContext], Any] | None:
+    def find_action(self, action_name: str) -> Callable[['Scene', GameState, GameContext], Any] | None:
         pass
 
     @property

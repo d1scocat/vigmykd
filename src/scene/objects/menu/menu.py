@@ -31,17 +31,18 @@ class MenuScene(Scene):
         self._ui_interaction = UIInteractionSystem()
 
         local = ctx.local_player_id
-        authenticated = local is not None  # model.get_player(local) is not None
+        authenticated = local is not None
 
         self._ui_page = self.get_ui(
             ctx.ui_path / f"main-menu-{'' if authenticated else 'un'}authenticated.json"
         )
 
-        self.action_mapping: Dict[str, Callable[['Scene', GameContext], Any] | None] = {
+        self.action_mapping: Dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
             "show_login_overlay": actions.show_login_overlay,
             # "open_settings": ...,
             # "exit": ...,
-            "submit_login_attempt": actions.submit_login_attempt
+            "submit_login_attempt": actions.submit_login_attempt,
+            "play": actions.play,
         }
 
     @property
@@ -68,7 +69,7 @@ class MenuScene(Scene):
         if perform is not None:
             action = self.find_action(perform)
             if action is not None:
-                action(self, self.ctx)
+                action(self, self.model, self.ctx)
 
     def render(self, view: Renderer, view_system: ViewSystem):
         view.drop_render_queue()
@@ -111,7 +112,7 @@ class MenuScene(Scene):
     def on_exit(self):
         self.ctx.event_manager.unregister_listener(self.lid)
 
-    def find_action(self, action_name: str) -> Callable[[Scene, GameContext], Any] | None:
+    def find_action(self, action_name: str) -> Callable[[Scene, GameState, GameContext], Any] | None:
         return self.action_mapping.get(action_name)
 
     def on_event(self, event: Event) -> bool:

@@ -11,7 +11,7 @@ from context import GameContext
 from event import EventManager
 from game.game import Game
 from log import setup as log_setup
-from network import ApiClient
+from network import ApiClient, GameServerClient
 from textures.loader import load_sheets
 
 from settings import TPS_DELTA, \
@@ -38,11 +38,15 @@ log_setup()
 logger = logging.getLogger("vigmykd")
 
 # ===== INITIALIZING GLOBALLY SHARED DATA ===== #
+registry.registries.init_all()
+
 CFG_PATH = Path("cfg")
 ASSETS_PATH = Path("assets")
 
 cfg = load_config(CFG_PATH / "config.json")
+
 event_manager = EventManager(logger=logger)
+
 api_client = ApiClient(
     base_url=cfg.server,
     event_manager=event_manager
@@ -58,15 +62,20 @@ ctx = GameContext(
     screen_size=screen_size
 )
 
+server_client = GameServerClient(
+    logger=logger,
+    event_manager=event_manager,
+    cfg_path=CFG_PATH
+)
+
 game = Game(
     ctx=ctx,
     screen=screen,
-    event_manager=event_manager
+    event_manager=event_manager,
+    server_client=server_client
 )
 
 load_sheets(ctx, ctx.texture_manager)
-
-registry.registries.init_all()
 
 # ===== Requesting key ===== #
 api_client.get("/key/public")

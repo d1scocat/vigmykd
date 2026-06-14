@@ -13,7 +13,7 @@ class ServerAuthenticator(Authenticator):
         super().__init__()
 
         self._client = client
-        self._auth_path = Path("D:/test.dat")
+        self._auth_path = auth_path.resolve()
         self._token = None
 
         self._cached_payload: Dict[str, Any] | None = None

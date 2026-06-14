@@ -6,3 +6,4 @@ per-file-ignores =
     main.py:F401,F403,E402
     game.py:F401
     registration_imports.py:F401,F403
+exclude = generated

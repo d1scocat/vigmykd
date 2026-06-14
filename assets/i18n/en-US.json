@@ -2,6 +2,8 @@
     "_id": "en-US",
 
     "please-wait": "Please wait",
+    "matchmaking": "Matchmaking",
+    "waiting-to-matchmake": "Waiting to matchmake",
     
     "main-menu": {
         "login-button-label": "Login",

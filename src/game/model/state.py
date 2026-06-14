@@ -5,6 +5,7 @@ from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY, \
     SIMUL_DELAY_TICKS as DELAY
 
 from controller.input_model import PlayerInput
+from network import GameServerClient
 from player import Player
 
 
@@ -15,7 +16,9 @@ class GameState:
 
     players: Dict[UUID, Player]
 
-    def __init__(self):
+    def __init__(self, server_client: GameServerClient):
+        self.server_client = server_client
+
         self._tick = 0
         self._input_buffer = {}
         self.rng = Random("this will not be static later")

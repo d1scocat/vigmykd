@@ -3,31 +3,39 @@ from typing import Any, Callable, Dict
 from pygame.event import Event
 
 from context import GameContext
+from event.events import HTTPResponseEvent, SceneSwitchRequestEvent, UDPAckEvent
 from game.model import GameState
+from network.udp.factory import Packets
+from scene.objects.matchmaking import waiting_actions
+from scene.objects.menu import MenuScene
 from scene.scene import Scene
 from ui.components.page import UIPage
 from ui.interaction import UIInteractionSystem
 from view import Renderer
 from view.system import ViewSystem
 
+from generated.proto.v1 import packet_pb2 as packet_pb2
 
-class LimboScene(Scene):
+
+class Matchmaking(Scene):
     def __init__(
         self,
         model: GameState,
         ctx: GameContext,
     ):
         from registry import registries
-        self.input_router = registries.consumers.router_by_tag("menu")
+        self.input_router = registries.consumers.router_by_tag("matchmaking")
 
         self.model = model
         self.ctx = ctx
 
         self._ui_interaction = UIInteractionSystem()
 
-        self._ui_page = self.get_ui(ctx.ui_path / "limbo.json")
+        self._ui_page = self.get_ui(ctx.ui_path / "matchmaking.json")
 
-        self.action_mapping: Dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {}
+        self.action_mapping: Dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
+            "quit": waiting_actions.quit_matchmaking
+        }
 
     @property
     def page(self) -> UIPage:
@@ -55,7 +63,7 @@ class LimboScene(Scene):
 
     def on_exit(self):
         pass
-
+        
     def find_action(self, action_name: str):
         return None
 

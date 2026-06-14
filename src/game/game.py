@@ -6,6 +6,7 @@ from controller.input_handler import InputHandler
 from controller.input_model import PlayerInput
 from event.manager import EventManager
 from game.model import GameState
+from network import GameServerClient
 from player import Player
 from registry import registries
 from view import Renderer, Renderable
@@ -25,7 +26,13 @@ class Game:
     view: Renderer  # intermediate View part
     view_system: ViewSystem
 
-    def __init__(self, ctx: GameContext, screen: Surface, event_manager: EventManager):
+    def __init__(
+        self,
+        ctx: GameContext,
+        screen: Surface, 
+        event_manager: EventManager,
+        server_client: GameServerClient
+    ):
         from scene.objects import limbo
         from view.system import ViewSystem
 
@@ -38,7 +45,8 @@ class Game:
         for mapping, action in ctx.cfg.keymap.items():
             self.controller.bind(mapping, action)
 
-        self.model = GameState()
+        self.server_client = server_client
+        self.model = GameState(server_client=server_client)
 
         self.view = Renderer(self.screen, self.ctx.texture_manager, self.ctx)
         self.view_system = ViewSystem(self.ctx)

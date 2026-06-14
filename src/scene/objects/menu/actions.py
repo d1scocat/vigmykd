@@ -1,10 +1,12 @@
 from context import GameContext
+from event.events import SceneSwitchRequestEvent
+from game.model import GameState
 from scene.scene import Scene
 from ui.components.text import UITextElement
 from ui.components.textarea import UITextArea
 
 
-def show_login_overlay(scene: Scene, ctx: GameContext):
+def show_login_overlay(scene: Scene, _: GameState, ctx: GameContext):
     form = scene.page.by_id("login-form")
     button = scene.page.by_id("login-button")
     if not form or not button:
@@ -15,7 +17,7 @@ def show_login_overlay(scene: Scene, ctx: GameContext):
     button.set_state("hidden")
 
 
-def submit_login_attempt(scene: Scene, ctx: GameContext):
+def submit_login_attempt(scene: Scene, _: GameState, ctx: GameContext):
     login_field = scene.page.by_id("login-textarea")
     password_field = scene.page.by_id("password-textarea")
     if not login_field or not password_field:
@@ -43,3 +45,11 @@ def submit_login_attempt(scene: Scene, ctx: GameContext):
         return
 
     setattr(scene, "login_req_id", req_id)
+
+
+def play(scene: Scene, model: GameState, ctx: GameContext):
+    from scene.objects.matchmaking import WaitingToMatchmake
+
+    ctx.event_manager.invoke_event(SceneSwitchRequestEvent(WaitingToMatchmake(
+        model, ctx
+    )))

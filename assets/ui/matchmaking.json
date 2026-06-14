@@ -1,0 +1,24 @@
+{
+    "id": "matchmaking",
+    "meta": {
+        "resolution": [1920, 1080],
+        "anchor-mode": "relative"
+    },
+
+    "elements": [
+        {
+            "type": "text",
+            "id": "matchmaking",
+            "z-index": 110,
+            "position": { "x": 0.5, "y": 0.5, "anchor": "center" },
+            "size": { "width": 600, "height": 100 },
+
+            "text": {
+                "i18n": "matchmaking",
+                "font": "default",
+                "size": 100,
+                "color": [255, 0, 0]
+            }
+        }
+    ]
+}

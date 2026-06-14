@@ -23,6 +23,7 @@ class Renderer:
         self.rect_queue: List[Tuple[int, Rect, Color]] = []
 
         self.scale_cache: Dict[Tuple[int, Tuple[int, int], int, int], Surface] = {}
+        self.max_cache_size = 2**14 - 1  # Later extract into settings
 
     def drop_render_queue(self):
         self.render_queue.clear()
@@ -105,9 +106,15 @@ class Renderer:
             self.screen.blit(surface, (int(loc_x), int(loc_y)))
             return
 
+        loc = (int(loc_x), int(loc_y))
+
         state = renderable.states[renderable.current_state]
         cache_key = (state.sheet_id, state.grid_pos, w, h)
 
         if cache_key not in self.scale_cache:
+            if len(self.scale_cache) >= self.max_cache_size:
+                self.screen.blit(pygame.transform.smoothscale(surface, (w, h)), loc)
+                return
+
             self.scale_cache[cache_key] = pygame.transform.smoothscale(surface, (w, h))
-        self.screen.blit(self.scale_cache[cache_key], (int(loc_x), int(loc_y)))
+        self.screen.blit(self.scale_cache[cache_key], loc)

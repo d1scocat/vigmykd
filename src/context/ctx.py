@@ -42,6 +42,8 @@ class GameContext:
         self.font_sources = self._preload_fonts()
         self.font_cache: Dict[Tuple[str, int], pygame.font.Font] = {}
 
+        self.api_client = client
+
         self.auth_path = cfg_path / "auth.dat"
         self.auth = ServerAuthenticator(client, self.auth_path)
 

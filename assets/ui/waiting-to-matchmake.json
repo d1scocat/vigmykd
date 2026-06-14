@@ -1,0 +1,24 @@
+{
+    "id": "waiting-to-matchmake",
+    "meta": {
+        "resolution": [1920, 1080],
+        "anchor-mode": "relative"
+    },
+
+    "elements": [
+        {
+            "type": "text",
+            "id": "waiting-to-matchmake",
+            "z-index": 110,
+            "position": { "x": 0.5, "y": 0.5, "anchor": "center" },
+            "size": { "width": 600, "height": 100 },
+
+            "text": {
+                "i18n": "waiting-to-matchmake",
+                "font": "default",
+                "size": 60,
+                "color": [255, 0, 0]
+            }
+        }
+    ]
+}
