@@ -1,2 +1,2 @@
-from .waiting_matchmaking import WaitingToMatchmake
-from .matchmaking import Matchmaking
+from .waiting_matchmaking import WaitingToMatchmakeScene
+from .matchmaking import MatchmakingScene

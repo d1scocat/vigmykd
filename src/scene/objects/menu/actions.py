@@ -48,8 +48,8 @@ def submit_login_attempt(scene: Scene, _: GameState, ctx: GameContext):
 
 
 def play(scene: Scene, model: GameState, ctx: GameContext):
-    from scene.objects.matchmaking import WaitingToMatchmake
+    from scene.objects.matchmaking import WaitingToMatchmakeScene
 
-    ctx.event_manager.invoke_event(SceneSwitchRequestEvent(WaitingToMatchmake(
+    ctx.event_manager.invoke_event(SceneSwitchRequestEvent(WaitingToMatchmakeScene(
         model, ctx
     )))

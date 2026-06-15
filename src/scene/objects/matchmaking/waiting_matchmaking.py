@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict
 from pygame.event import Event
 
 from context import GameContext
-from event.events import HTTPResponseEvent, SceneSwitchRequestEvent, UDPAckEvent
+from event.events import HTTPResponseEvent, SceneSwitchRequestEvent, UDPAckEvent, UDPReceivedEvent
 from game.model import GameState
 from network.udp.factory import Packets
 from scene.objects.matchmaking import waiting_actions
@@ -17,7 +17,7 @@ from view.system import ViewSystem
 from generated.proto.v1 import packet_pb2 as packet_pb2
 
 
-class WaitingToMatchmake(Scene):
+class WaitingToMatchmakeScene(Scene):
     def __init__(
         self,
         model: GameState,
@@ -37,9 +37,16 @@ class WaitingToMatchmake(Scene):
             "quit": waiting_actions.quit_matchmaking
         }
 
-        ctx.api_client.post(
+        self.ready_state = 0
+        self.match_id: str
+        self.lids = []
+
+        self.init_matchmaking_flow()
+
+    def init_matchmaking_flow(self):
+        self.ctx.api_client.post(
             "/matchmaking/start",
-            headers={"Authorization": f"Bearer {ctx.auth.get_token()}"}
+            headers={"Authorization": f"Bearer {self.ctx.auth.get_token()}"}
         )
 
     @property
@@ -64,24 +71,20 @@ class WaitingToMatchmake(Scene):
         view_system.submit(view)
 
     def on_enter(self):
-        self.mr_lid = self.ctx.event_manager.register_listener(
+        self.lids.append(self.ctx.event_manager.register_listener(
             event_type=HTTPResponseEvent,
             func=self.match_register_listener
-        )
+        ))
 
     def on_exit(self):
-        if hasattr(self, "mr_lid"):
-            self.ctx.event_manager.unregister_listener(self.mr_lid)
-        if hasattr(self, "ms_lid"):
-            self.ctx.event_manager.unregister_listener(self.ms_lid)
+        for lid in self.lids:
+            self.ctx.event_manager.unregister_listener(lid)
 
     def match_register_listener(self, event: HTTPResponseEvent):
         if event.endpoint != "/matchmaking/start":
             return
         if not event.success:
-            self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(MenuScene(
-                self.model, self.ctx
-            )))
+            self._back_to_menu()
             return
 
         match_id = event.payload["match_id"]
@@ -91,10 +94,17 @@ class WaitingToMatchmake(Scene):
             join_token=join_token
         )
 
-        self.ms_lid = self.ctx.event_manager.register_listener(
-            event_type=UDPAckEvent,
-            func=self.match_start_listener
-        )
+        self.lids.extend([
+            self.ctx.event_manager.register_listener(
+                event_type=UDPAckEvent,
+                func=self.match_start_listener
+            ),
+
+            self.ctx.event_manager.register_listener(
+                event_type=UDPReceivedEvent,
+                func=self.match_id_received_listener
+            )
+        ])
 
         self.msg_id = packet.msg_id
 
@@ -103,14 +113,37 @@ class WaitingToMatchmake(Scene):
     def match_start_listener(self, event: UDPAckEvent):
         if event.msg_id != self.msg_id:
             return
-        if event.ok:
+        if not event.ok:
+            self.ctx.logger.info(f"Not OK | {event!r}")
+            self._back_to_menu()
+            return
+        self.ctx.logger.info("UDPAckEvent OK: calling CASM")
+        self.check_and_start_matchmaking()
+
+    def match_id_received_listener(self, event: UDPReceivedEvent):
+        self.ctx.logger.info(f"{event.message_type} vs {packet_pb2.MatchmakingEnterResponse}")
+        if event.message_type != packet_pb2.MatchmakingEnterResponse:
+            return
+        self.match_id = event.message.match_id
+        self.ctx.logger.info("UDPReceivedEvent OK: calling CASM")
+        self.check_and_start_matchmaking()
+
+    def check_and_start_matchmaking(self):
+        self.ready_state += 1
+        self.ctx.logger.info(f"CASM got, now: {self.ready_state}")
+        if self.ready_state == 2:
             # or it will scream at me for circular imports etc!
             # ...probably
-            from scene.objects.matchmaking import Matchmaking
+            from scene.objects.matchmaking import MatchmakingScene
 
-            self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(Matchmaking(
-                self.model, self.ctx
+            self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(MatchmakingScene(
+                self.model, self.ctx, self.match_id
             )))
+
+    def _back_to_menu(self):
+        self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(MenuScene(
+            self.model, self.ctx
+        )))
 
     def find_action(self, action_name: str):
         return None

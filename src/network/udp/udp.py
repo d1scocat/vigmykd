@@ -8,11 +8,13 @@ from socket import socket, AF_INET, SOCK_DGRAM
 from typing import Protocol, runtime_checkable
 
 from event import EventManager
-from event.events import UDPAckEvent
+from event.events import UDPAckEvent, UDPReceivedEvent
 from settings import NETWORK_TICK_LIMIT
 from network.udp.config import GameServerConfig
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
+
+from google.protobuf.message import Message
 
 
 @runtime_checkable
@@ -96,6 +98,7 @@ class GameServerClient:
             try:
                 packet, _ = self.sock.recvfrom(2048)
                 self._check_ack(packet)
+                self._invoke_event(packet)
             except BlockingIOError:
                 return
 
@@ -135,6 +138,26 @@ class GameServerClient:
         callback = self._waits_ack.pop(ack.acknowledged_msg_id, None)
         if callback is not None:
             callback(ack.ok)
+
+    def _invoke_event(self, data: bytes):
+        envelope = packet_pb2.Envelope()
+        envelope.ParseFromString(data)
+
+        inner = self._innermost_message(envelope)
+        msg_type = type(inner)
+
+        self.event_manager.invoke_event(UDPReceivedEvent(msg_type, inner))
+
+    def _innermost_message(self, message: Message):
+        while True:
+            try:
+                oneof = message.WhichOneof("payload")
+                if oneof is None:
+                    return message
+                message = getattr(message, oneof)
+            except ValueError:  # no 'payload'
+                return message
+
 
     def _push_drop_oldest(self, q: queue.Queue[bytes], item: bytes) -> None:
         try:
