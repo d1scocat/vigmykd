@@ -15,7 +15,7 @@
 
             "text": {
                 "i18n": "waiting-to-matchmake",
-                "font": "default",
+                "font": "LuckiestGuy-Regular",
                 "size": 60,
                 "color": [255, 0, 0]
             }

@@ -8,6 +8,7 @@ import pygame
 
 from context import GameContext
 from game.model import GameState
+from scene.router import SceneInputRouter
 from ui.components.page import UIPage
 from ui.components.textarea import UITextArea
 from ui.deserializer import deserialize_into_ui
@@ -48,6 +49,24 @@ class Scene(ABC):
                 component.update(keys)
 
         self.tick()
+
+    def default_tick(self, ctx: GameContext, input_router: SceneInputRouter):
+        inputs = self.model.consume_inputs()
+        input_router.simulate_route(inputs, self.model, ctx)
+
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_down = pygame.mouse.get_pressed()[0]
+
+        perform = self.interaction.update(
+            self.page.elements,
+            mouse_pos,
+            mouse_down
+        )
+
+        if perform is not None:
+            action = self.find_action(perform)
+            if action is not None:
+                action(self, self.model, ctx)
 
     def handle_pygame_event(self, event: pygame.event.Event) -> bool:
         """

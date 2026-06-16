@@ -35,15 +35,24 @@ class MatchmakingScene(Scene):
         self._ui_page = self.get_ui(ctx.ui_path / "matchmaking.json")
 
         self.action_mapping: dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
+            "quit": matchmaking_actions.quit_matchmaking
         }
 
-        self.match_id = match_id
+        self._match_id = match_id
+
+    @property
+    def match_id(self):
+        return self._match_id
+
+    @match_id.setter
+    def match_id(self, value: str):
+        self._match_id = value
 
         id_box = self.page.by_id("match-id-textbox")
         if id_box is None or not isinstance(id_box, UITextElement):
             self.ctx.logger.warning("No 'match-id-textbox' available for MatchmakingScene")
             return
-        id_box.set_raw(match_id)
+        id_box.set_raw(value)
 
     @property
     def page(self) -> UIPage:
@@ -54,7 +63,7 @@ class MatchmakingScene(Scene):
         return self._ui_interaction
 
     def tick(self):
-        pass
+        super().default_tick(self.ctx, self.input_router)
 
     def render(self, view: Renderer, view_system: ViewSystem):
         view.drop_render_queue()
@@ -71,7 +80,6 @@ class MatchmakingScene(Scene):
             UDPReceivedEvent,
             self.match_start_listener
         )
-        self.ctx.logger.info("Registered listener with id %d", self.lid)
 
     def on_enter(self):
         pass
@@ -95,7 +103,7 @@ class MatchmakingScene(Scene):
         id_box.set_font_size(id_box.text_obj.size // 2)
         
     def find_action(self, action_name: str):
-        return None
+        return self.action_mapping.get(action_name, None)
 
     def on_event(self, event: Event) -> bool:
         return False

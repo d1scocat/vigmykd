@@ -85,7 +85,7 @@
                     "texture": { "sheet": 5, "tile": [0, 0] },
 
                     "label": {
-                        "font": "default",
+                        "font": "LuckiestGuy-Regular",
                         "size": 32,
                         "color": [255, 255, 255]
                     },

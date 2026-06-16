@@ -54,22 +54,7 @@ class MenuScene(Scene):
         return self._ui_interaction
 
     def tick(self):
-        inputs = self.model.consume_inputs()
-        self.input_router.simulate_route(inputs, self.model, self.ctx)
-
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_down = pygame.mouse.get_pressed()[0]
-
-        perform = self.interaction.update(
-            self.page.elements,
-            mouse_pos,
-            mouse_down
-        )
-
-        if perform is not None:
-            action = self.find_action(perform)
-            if action is not None:
-                action(self, self.model, self.ctx)
+        super().default_tick(self.ctx, self.input_router)
 
     def render(self, view: Renderer, view_system: ViewSystem):
         view.drop_render_queue()

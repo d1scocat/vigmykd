@@ -14,6 +14,21 @@ class Packets:
         return Packets._id
 
     @staticmethod
+    def matchmaking_quit(
+        msg_id: int | None = None
+    ):
+        """`envelope()` a packet before sending!"""
+        if msg_id is None:
+            msg_id = Packets.get_next_id()
+
+        packet = packet_pb2.Packet()
+        packet.msg_id = msg_id
+
+        packet.client_to_server.matchmaking_quit.SetInParent()
+
+        return packet
+
+    @staticmethod
     def matchmaking_enter(
         match_id: str,
         join_token: str,
