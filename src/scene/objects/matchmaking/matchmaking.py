@@ -66,11 +66,15 @@ class MatchmakingScene(Scene):
         view_system.update(self.model)
         view_system.submit(view)
 
-    def on_enter(self):
+    def on_load(self):
         self.lid = self.ctx.event_manager.register_listener(
             UDPReceivedEvent,
             self.match_start_listener
         )
+        self.ctx.logger.info("Registered listener with id %d", self.lid)
+
+    def on_enter(self):
+        pass
 
     def on_exit(self):
         if hasattr(self, "lid"):
@@ -79,6 +83,10 @@ class MatchmakingScene(Scene):
     def match_start_listener(self, event: UDPReceivedEvent):
         if event.message_type != packet_pb2.InformMatchStart:
             return
+        
+        ack_packet = Packets.ack(event.envelope.packet.msg_id, True)
+        self.model.server_client.enqueue(Packets.envelope(ack_packet), ack_packet.msg_id)
+
         id_box = self.page.by_id("match-id-textbox")
         if id_box is None or not isinstance(id_box, UITextElement):
             self.ctx.logger.warning("No 'match-id-textbox' available for MatchmakingScene")

@@ -39,7 +39,7 @@ class GameServerClient:
         self._perform_on_ack = {}
         self._waiting_ack = {}
 
-        self.incoming = deque(maxlen=2048)
+        # self.incoming = deque(maxlen=2048)
         self.outgoing = deque(maxlen=2048)
 
         self.config = GameServerConfig(logger, cfg_path)
@@ -114,6 +114,7 @@ class GameServerClient:
         while time.perf_counter() < deadline:
             try:
                 packet, _ = self.sock.recvfrom(2048)
+                self.logger.debug("Got packet of size %d", len(packet))
             except BlockingIOError:
                 return
             except OSError:
@@ -129,7 +130,7 @@ class GameServerClient:
 
             self._check_ack(envelope)
             self._invoke_event(envelope)
-            self.incoming.append(packet)
+            # self.incoming.append(packet)
 
     def _send(self, start_time):
         deadline = start_time + NETWORK_TICK_LIMIT * 0.4
@@ -212,7 +213,7 @@ class GameServerClient:
         inner = self._innermost_message(envelope)
         msg_type = type(inner)
 
-        self.event_manager.invoke_event(UDPReceivedEvent(msg_type, inner))
+        self.event_manager.invoke_event(UDPReceivedEvent(msg_type, inner, envelope))
 
     def _innermost_message(self, message: Message):
         while True:

@@ -3,7 +3,8 @@ from typing import Any, Callable
 from pygame.event import Event
 
 from context import GameContext
-from event.events import HTTPResponseEvent, SceneSwitchRequestEvent, UDPAckEvent, UDPReceivedEvent
+from event.events import HTTPResponseEvent, UDPReceivedEvent, UDPAckEvent, \
+    SceneSwitchRequestEvent, PrepareSceneRequestEvent
 from game.model import GameState
 from network.udp.factory import Packets
 from scene.objects.matchmaking import matchmaking_actions
@@ -41,9 +42,16 @@ class WaitingToMatchmakeScene(Scene):
         self.match_id: str
         self.lids = []
 
-        self.init_matchmaking_flow()
+        self._prepare_matchmaking_scene()
+        self._init_matchmaking_flow()
 
-    def init_matchmaking_flow(self):
+    def _prepare_matchmaking_scene(self):
+        from scene.objects.matchmaking import MatchmakingScene
+
+        self.matchmaking_scene = MatchmakingScene(self.model, self.ctx, '...')
+        self.ctx.event_manager.invoke_event(PrepareSceneRequestEvent(self.matchmaking_scene))
+
+    def _init_matchmaking_flow(self):
         self.ctx.api_client.post(
             "/matchmaking/start",
             headers={"Authorization": f"Bearer {self.ctx.auth.get_token()}"}
@@ -121,19 +129,16 @@ class WaitingToMatchmakeScene(Scene):
     def match_id_received_listener(self, event: UDPReceivedEvent):
         if event.message_type != packet_pb2.MatchmakingEnterResponse:
             return
-        self.match_id = event.message.match_id
+        self.matchmaking_scene.match_id = event.message.match_id
         self.check_and_start_matchmaking()
 
     def check_and_start_matchmaking(self):
         self.ready_state += 1
         if self.ready_state == 2:
-            # or it will scream at me for circular imports etc!
-            # ...probably
-            from scene.objects.matchmaking import MatchmakingScene
+            self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(self.matchmaking_scene))
 
-            self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(MatchmakingScene(
-                self.model, self.ctx, self.match_id
-            )))
+    def on_load(self):
+        pass
 
     def _back_to_menu(self):
         self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(MenuScene(

@@ -46,14 +46,14 @@ class EventManager:
                 with self._lock:
                     callbacks = [func for _, func in self.listeners.get(type(event), [])]
                 for callback in callbacks:
+                    name = getattr(callback, "__name__", type(callback).__name__)
                     try:
                         callback(event)
                     except Exception as ex:
-                        name = getattr(callback, "__name__", type(callback).__name__)
                         self.logger.warning("Unhandled exception at event callback:\n"
-                                            f"- Event type {event} encountered an exception"
-                                            f" while being intercepted by {name}:\n{str(ex)}",
-                                            exc_info=True)
+                                            "- Event type %s encountered an exception"
+                                            " while being intercepted by %s:\n%s",
+                                            event, name, str(ex), exc_info=True)
 
         except queue.Empty:
             pass

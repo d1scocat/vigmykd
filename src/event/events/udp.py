@@ -17,6 +17,7 @@ class UDPAckEvent(Event):
 class UDPReceivedEvent(Event):
     message_type: type[Message]
     message: Message
+    envelope: Message
 
     def get_name(self) -> str:
         return "UDPReceivedEvent"

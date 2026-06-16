@@ -32,6 +32,10 @@ class Scene(ABC):
         pass
 
     @abstractmethod
+    def on_load(self):
+        pass
+    
+    @abstractmethod
     def on_event(self, event: pygame.event.Event) -> bool:
         pass
 

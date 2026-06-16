@@ -113,7 +113,7 @@ class UIPage:
             text_key = (base_text.raw or base_text.i18n)
             if not text_key:
                 raise ValueError("base_text.raw and base_text.i18n cannot be None at"
-                                 " the same time:", repr(base_text))
+                                 " the same time:", repr(base_text.__dict__))
             content = \
                 text_key \
                 if base_text.raw \

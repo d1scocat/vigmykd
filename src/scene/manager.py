@@ -3,7 +3,8 @@ from event.events import ScenePreExitEvent, \
     ScenePostEnterEvent, \
     ScenePostExitEvent, \
     ScenePreEnterEvent, \
-    SceneSwitchRequestEvent
+    SceneSwitchRequestEvent, \
+    PrepareSceneRequestEvent
 from scene.scene import Scene
 from view import Renderer
 from view.system import ViewSystem
@@ -22,6 +23,7 @@ class SceneManager:
         self._enter_scene(initial)
 
         self.event_manager.register_listener(SceneSwitchRequestEvent, self.switch_req_handler)
+        self.event_manager.register_listener(PrepareSceneRequestEvent, self.prep_scene_handler)
 
     def switch(self, scene: Scene):
         self._exit_scene(self.renderer)
@@ -29,6 +31,9 @@ class SceneManager:
 
     def switch_req_handler(self, event: SceneSwitchRequestEvent):
         self.switch(event.target)
+
+    def prep_scene_handler(self, event: PrepareSceneRequestEvent):
+        event.scene.on_load()
 
     def tick(self):
         self.current.do_tick()

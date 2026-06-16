@@ -107,7 +107,6 @@ class GameContext:
 
             name = file.stem
             result[name] = file
-        self.logger.info(f"{result!r}")
         return result
 
     def fetch_font(self, name: str, size: int) -> pygame.font.Font:
@@ -119,7 +118,7 @@ class GameContext:
         if name in self.font_sources:
             font = pygame.font.Font(str(self.font_sources[name]), size)
         else:
-            self.logger.warning(f"Font '{name}' not found, using fallback")
+            self.logger.warning("Font '%s' not found, using fallback", {name})
             font = pygame.font.SysFont(None, size)
 
         self.font_cache[key] = font

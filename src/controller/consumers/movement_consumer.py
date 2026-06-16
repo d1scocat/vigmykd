@@ -17,7 +17,7 @@ class MovementConsumer(InputConsumer):
         ctx: GameContext,
         input: PlayerInput
     ):
-        ctx.logger.info(f"Received input {input} for player {player.id if player else None}")
+        ctx.logger.info("Received input %s for player %s", input, player.id if player else None)
         if not player:
             return  # Not the appropriate system for movement handling
 

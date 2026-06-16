@@ -56,6 +56,9 @@ class LimboScene(Scene):
     def on_exit(self):
         pass
 
+    def on_load(self):
+        pass
+
     def find_action(self, action_name: str):
         return None
 

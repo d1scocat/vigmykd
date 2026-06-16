@@ -32,6 +32,19 @@ class Packets:
         return packet
 
     @staticmethod
+    def ack(
+        msg_id: int,
+        ok: bool
+    ):
+        """`envelope()` a packet before sending!"""
+        packet = packet_pb2.Packet()
+        packet.msg_id = Packets.get_next_id()
+        packet.client_to_server.ack.acknowledged_msg_id = msg_id
+        packet.client_to_server.ack.ok = ok
+
+        return packet
+
+    @staticmethod
     @overload
     def envelope(
         payload: packet_pb2.Packet,

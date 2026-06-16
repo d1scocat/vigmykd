@@ -112,6 +112,9 @@ class MenuScene(Scene):
     def on_exit(self):
         self.ctx.event_manager.unregister_listener(self.lid)
 
+    def on_load(self):
+        pass
+
     def find_action(self, action_name: str) -> Callable[[Scene, GameState, GameContext], Any] | None:
         return self.action_mapping.get(action_name)
 
