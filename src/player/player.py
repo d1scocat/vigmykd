@@ -47,7 +47,7 @@ class Player:
     @classmethod
     def from_packet(cls, player_data: packet_pb2.PlayerData, is_client: bool):
         """Can raise!"""
-        player_id = uuid.UUID(player_data.id)
+        player_id = uuid.UUID(player_data.uuid)
         name = player_data.name
         position = player_data.position
 

@@ -82,8 +82,8 @@ class MatchScene(Scene):
         try:
             client_id = uuid.UUID(event.message.your_id)
 
-            player1_id = uuid.UUID(player1.id)
-            player2_id = uuid.UUID(player2.id)
+            player1_id = uuid.UUID(player1.uuid)
+            player2_id = uuid.UUID(player2.uuid)
 
             player1 = Player.from_packet(player1, client_id == player1_id)
             player2 = Player.from_packet(player2, client_id == player2_id)
