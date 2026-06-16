@@ -6,6 +6,7 @@ from context import GameContext
 from event.events import HTTPResponseEvent, SceneSwitchRequestEvent, UDPAckEvent, UDPReceivedEvent
 from game.model import GameState
 from network.udp.factory import Packets
+from scene.objects.matchmaking import matchmaking_actions
 from scene.objects.menu import MenuScene
 from scene.scene import Scene
 from ui.components.page import UIPage
@@ -33,6 +34,7 @@ class WaitingToMatchmakeScene(Scene):
         self._ui_page = self.get_ui(ctx.ui_path / "waiting-to-matchmake.json")
 
         self.action_mapping: dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
+            "quit": matchmaking_actions.quit_matchmaking
         }
 
         self.ready_state = 0

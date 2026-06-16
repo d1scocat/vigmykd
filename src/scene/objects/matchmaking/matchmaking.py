@@ -35,7 +35,6 @@ class MatchmakingScene(Scene):
         self._ui_page = self.get_ui(ctx.ui_path / "matchmaking.json")
 
         self.action_mapping: dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
-            "quit": waiting_actions.quit_matchmaking
         }
 
         self.match_id = match_id
