@@ -1,6 +1,6 @@
 from ui.components.component import UIComponent
 
-from typing import Any, Dict, List
+from typing import Any
 
 
 class UIContainer(UIComponent):
@@ -8,11 +8,11 @@ class UIContainer(UIComponent):
         self,
         id: str,
         z_index: int,
-        position: Dict[str, Any],
-        size: Dict[str, int],
-        texture: Dict[str, Any] | None,
-        children: List[UIComponent],
-        states: Dict[str, Dict[str, Any]] | None = None,
+        position: dict[str, Any],
+        size: dict[str, int],
+        texture: dict[str, Any] | None,
+        children: list[UIComponent],
+        states: dict[str, dict[str, Any]] | None = None,
         default_state: str | None = None,
     ):
         super().__init__(

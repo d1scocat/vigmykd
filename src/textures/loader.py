@@ -5,16 +5,16 @@ from textures import TextureManager
 from context import GameContext
 
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 
 def load_spritesheet(
     path: Path,
-    tile_size: Tuple[int, int],
-    grid_size: Tuple[int, int],
-    offset: Tuple[int, int] = (0, 0),
-    spacing: Tuple[int, int] = (0, 0),
-) -> List[List[pygame.Surface]]:
+    tile_size: tuple[int, int],
+    grid_size: tuple[int, int],
+    offset: tuple[int, int] = (0, 0),
+    spacing: tuple[int, int] = (0, 0),
+) -> list[list[pygame.Surface]]:
     sheet = pygame.image.load(path).convert_alpha()
 
     tile_w, tile_h = tile_size
@@ -44,7 +44,7 @@ def load_spritesheet(
 def load_sheets(ctx: GameContext, manager: TextureManager):
     sheets_path = ctx.sheets_path
     sheets_file = sheets_path / "sheets.json"
-    sheets: List[Dict[str, Any]] = json.loads(sheets_file.read_text())
+    sheets: list[dict[str, Any]] = json.loads(sheets_file.read_text())
 
     for sheet in sheets:
         id = sheet["id"]

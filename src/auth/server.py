@@ -1,7 +1,7 @@
 import jwt
 
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 from uuid import UUID
 
 from auth.base import Authenticator
@@ -16,7 +16,7 @@ class ServerAuthenticator(Authenticator):
         self._auth_path = auth_path.resolve()
         self._token = None
 
-        self._cached_payload: Dict[str, Any] | None = None
+        self._cached_payload: dict[str, Any] | None = None
 
         if self._auth_path.exists():
             data = self._auth_path.read_text().strip()
@@ -26,7 +26,7 @@ class ServerAuthenticator(Authenticator):
     def _set_key(self, key: str):
         self.key = jwt.jwk_from_pem(key.encode())
 
-    def login(self, creds: Dict[str, str]) -> UUID:
+    def login(self, creds: dict[str, str]) -> UUID:
         login = creds.get("login", None)
         password = creds.get("password", None)
 
@@ -54,7 +54,7 @@ class ServerAuthenticator(Authenticator):
     def get_token(self) -> str | None:
         return self._token
 
-    def get_current_user(self) -> Dict[str, Any] | None:
+    def get_current_user(self) -> dict[str, Any] | None:
         if not hasattr(self, "key"):
             return None  # wait for it to appear
         if not self._token:

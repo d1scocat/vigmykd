@@ -3,17 +3,17 @@ import pygame
 
 from logging import Logger
 from pathlib import Path
-from typing import Dict, FrozenSet, List, Set
+from typing import FrozenSet
 
 from registry import registries
 from controller.input_model import Action, Mutation, BoundAction
 
 
 class InputHandler:
-    action_names: Dict[str, Action]
-    keymap: Dict[FrozenSet[int], BoundAction]
-    pressed_keys: Set[int]
-    activated: Set[FrozenSet[int]]
+    action_names: dict[str, Action]
+    keymap: dict[FrozenSet[int], BoundAction]
+    pressed_keys: set[int]
+    activated: set[FrozenSet[int]]
 
     def __init__(self, assets_path: Path):
         with open(assets_path / "actions.json") as f:
@@ -53,9 +53,9 @@ class InputHandler:
     def handle_input(
         self,
         logger: Logger
-    ) -> List[Mutation]:
-        used_keys: Set[int] = set()  # in use by higher-prio combos
-        result: List[Mutation] = []  # keep the order
+    ) -> list[Mutation]:
+        used_keys: set[int] = set()  # in use by higher-prio combos
+        result: list[Mutation] = []  # keep the order
 
         for keys, (action, mutator) in self.keymap.items():
             # action_name = action.name

@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Dict, Tuple
 
 import logging
 
@@ -22,7 +21,7 @@ class GameContext:
         cfg_path: Path,
         cfg: Config,
         client: ApiClient,
-        screen_size: Tuple[int, int]
+        screen_size: tuple[int, int]
     ):
         self.logger = logger
         self.event_manager = event_manager
@@ -40,7 +39,7 @@ class GameContext:
         self.localization = Localization(assets_path / "i18n", "en-US")
 
         self.font_sources = self._preload_fonts()
-        self.font_cache: Dict[Tuple[str, int], pygame.font.Font] = {}
+        self.font_cache: dict[tuple[str, int], pygame.font.Font] = {}
 
         self.api_client = client
 
@@ -97,10 +96,10 @@ class GameContext:
 
         return self.localization.t(self.cfg.locale, text.i18n, strict, **kwargs)
 
-    def _preload_fonts(self) -> Dict[str, Path]:
+    def _preload_fonts(self) -> dict[str, Path]:
         result = {}
         for file in self.font_path.iterdir():
-            if not file.is_dir():
+            if file.is_dir():
                 continue
 
             if file.suffix.lower() not in [".ttf", ".otf"]:
@@ -108,6 +107,7 @@ class GameContext:
 
             name = file.stem
             result[name] = file
+        self.logger.info(f"{result!r}")
         return result
 
     def fetch_font(self, name: str, size: int) -> pygame.font.Font:

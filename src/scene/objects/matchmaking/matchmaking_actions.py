@@ -4,4 +4,4 @@ from scene.scene import Scene
 
 
 def quit_matchmaking(scene: Scene, model: GameState, ctx: GameContext):
-    ...
+    ctx.logger.info("---quit matchmaking--- xd")

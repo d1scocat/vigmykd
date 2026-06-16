@@ -3,7 +3,7 @@ import threading
 import queue
 
 from event.model import Event
-from typing import Callable, Dict, List, Tuple
+from typing import Callable
 from collections import defaultdict
 
 
@@ -13,7 +13,7 @@ class EventManager:
     This event management system tries to work alongside that fact
     """
 
-    listeners: Dict[type[Event], List[Tuple[int, Callable[[Event], None]]]]
+    listeners: dict[type[Event], list[tuple[int, Callable[[Event], None]]]]
     latest_id: int
 
     def __init__(self, logger: logging.Logger):

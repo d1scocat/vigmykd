@@ -3,7 +3,7 @@ import uuid
 
 import httpx
 
-from typing import Any, Dict
+from typing import Any
 
 from event.events import HTTPResponseEvent
 from event.manager import EventManager
@@ -18,8 +18,8 @@ class ApiClient:
         self,
         endpoint: str,
         method: str,
-        payload: Dict[str, Any] | None = None,
-        headers: Dict[str, Any] | None = None
+        payload: dict[str, Any] | None = None,
+        headers: dict[str, Any] | None = None
     ) -> uuid.UUID:
         request_id = uuid.uuid4()
 
@@ -65,15 +65,15 @@ class ApiClient:
     def get(
         self,
         endpoint: str,
-        params: Dict[str, Any] | None = None,
-        headers: Dict[str, Any] | None = None
+        params: dict[str, Any] | None = None,
+        headers: dict[str, Any] | None = None
     ) -> uuid.UUID:
         return self._request(endpoint, "GET", params, headers)
 
     def post(
         self,
         endpoint: str,
-        params: Dict[str, Any] | None = None,
-        headers: Dict[str, Any] | None = None
+        params: dict[str, Any] | None = None,
+        headers: dict[str, Any] | None = None
     ) -> uuid.UUID:
         return self._request(endpoint, "POST", params, headers)

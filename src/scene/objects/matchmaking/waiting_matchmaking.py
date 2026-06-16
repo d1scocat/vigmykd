@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 
 from pygame.event import Event
 
@@ -6,7 +6,6 @@ from context import GameContext
 from event.events import HTTPResponseEvent, SceneSwitchRequestEvent, UDPAckEvent, UDPReceivedEvent
 from game.model import GameState
 from network.udp.factory import Packets
-from scene.objects.matchmaking import waiting_actions
 from scene.objects.menu import MenuScene
 from scene.scene import Scene
 from ui.components.page import UIPage
@@ -33,8 +32,7 @@ class WaitingToMatchmakeScene(Scene):
 
         self._ui_page = self.get_ui(ctx.ui_path / "waiting-to-matchmake.json")
 
-        self.action_mapping: Dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
-            "quit": waiting_actions.quit_matchmaking
+        self.action_mapping: dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
         }
 
         self.ready_state = 0
@@ -97,7 +95,7 @@ class WaitingToMatchmakeScene(Scene):
         self.lids.extend([
             self.ctx.event_manager.register_listener(
                 event_type=UDPAckEvent,
-                func=self.match_start_listener
+                func=self.queue_enter_listener
             ),
 
             self.ctx.event_manager.register_listener(
@@ -110,27 +108,22 @@ class WaitingToMatchmakeScene(Scene):
 
         self.model.server_client.enqueue(Packets.envelope(packet), self.msg_id)
 
-    def match_start_listener(self, event: UDPAckEvent):
+    def queue_enter_listener(self, event: UDPAckEvent):
         if event.msg_id != self.msg_id:
             return
         if not event.ok:
-            self.ctx.logger.info(f"Not OK | {event!r}")
             self._back_to_menu()
             return
-        self.ctx.logger.info("UDPAckEvent OK: calling CASM")
         self.check_and_start_matchmaking()
 
     def match_id_received_listener(self, event: UDPReceivedEvent):
-        self.ctx.logger.info(f"{event.message_type} vs {packet_pb2.MatchmakingEnterResponse}")
         if event.message_type != packet_pb2.MatchmakingEnterResponse:
             return
         self.match_id = event.message.match_id
-        self.ctx.logger.info("UDPReceivedEvent OK: calling CASM")
         self.check_and_start_matchmaking()
 
     def check_and_start_matchmaking(self):
         self.ready_state += 1
-        self.ctx.logger.info(f"CASM got, now: {self.ready_state}")
         if self.ready_state == 2:
             # or it will scream at me for circular imports etc!
             # ...probably

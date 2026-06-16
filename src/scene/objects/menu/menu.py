@@ -13,7 +13,7 @@ from view.system import ViewSystem
 
 import pygame
 
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 
 
 class MenuScene(Scene):
@@ -37,7 +37,7 @@ class MenuScene(Scene):
             ctx.ui_path / f"main-menu-{'' if authenticated else 'un'}authenticated.json"
         )
 
-        self.action_mapping: Dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
+        self.action_mapping: dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
             "show_login_overlay": actions.show_login_overlay,
             # "open_settings": ...,
             # "exit": ...,

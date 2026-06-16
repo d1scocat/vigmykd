@@ -1,7 +1,7 @@
 from ui.components.component import UIComponent
 from ui.components.text import UIText, UITextHolder
 
-from typing import Any, Dict
+from typing import Any
 
 
 class UIButton(UIComponent, UITextHolder):
@@ -9,11 +9,11 @@ class UIButton(UIComponent, UITextHolder):
         self,
         id: str,
         z_index: int,
-        position: Dict[str, Any],
-        size: Dict[str, int],
-        states: Dict[str, Dict[str, Any]],
+        position: dict[str, Any],
+        size: dict[str, int],
+        states: dict[str, dict[str, Any]],
         action: str,
-        text: Dict[str, Any] | None = None,
+        text: dict[str, Any] | None = None,
         default_state: str | None = None,
     ):
         super().__init__(

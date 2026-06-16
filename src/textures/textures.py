@@ -1,17 +1,16 @@
-from typing import Dict, List, Tuple
 import pygame
 
 
 class TextureManager:
-    spritesheets: Dict[int, List[List[pygame.Surface]]]
+    spritesheets: dict[int, list[list[pygame.Surface]]]
 
     def __init__(self):
         self.spritesheets = {}
 
-    def add_spritesheet(self, id: int, sheet: List[List[pygame.Surface]]):
+    def add_spritesheet(self, id: int, sheet: list[list[pygame.Surface]]):
         self.spritesheets[id] = sheet
 
-    def lookup_tile(self, sheet_id: int, pos: Tuple[int, int]) -> pygame.Surface | None:
+    def lookup_tile(self, sheet_id: int, pos: tuple[int, int]) -> pygame.Surface | None:
         sheet = self.spritesheets.get(sheet_id)
         assert sheet is not None and sheet[0], f"Spritesheet {sheet_id} not found"
 

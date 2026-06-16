@@ -1,10 +1,10 @@
-from typing import Any, Dict
+from typing import Any
 
 from ui.components import button, component, container, image, page, \
     text, textarea
 
 
-def build_component(obj: Dict[str, Any]) -> component.UIComponent:
+def build_component(obj: dict[str, Any]) -> component.UIComponent:
     type = obj["type"].lower()
 
     id = obj["id"]
@@ -90,7 +90,7 @@ def build_component(obj: Dict[str, Any]) -> component.UIComponent:
     return comp
 
 
-def deserialize_into_ui(data: Dict[str, Any]) -> page.UIPage:
+def deserialize_into_ui(data: dict[str, Any]) -> page.UIPage:
     elements = [build_component(elem) for elem in data["elements"]]
     return page.UIPage(
         id=data["id"],

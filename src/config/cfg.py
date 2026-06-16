@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Dict, FrozenSet
+from typing import FrozenSet
 from dataclasses import dataclass
 
 from config.loader import keymap_loader
@@ -8,7 +8,7 @@ from config.loader import keymap_loader
 
 @dataclass
 class Config:
-    keymap: Dict[FrozenSet[int], str]
+    keymap: dict[FrozenSet[int], str]
 
     locale: str
     server: str

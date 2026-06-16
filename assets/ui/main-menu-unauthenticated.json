@@ -31,7 +31,7 @@
 
             "text": {
                 "i18n": "main-menu.login-button-label",
-                "font": "default",
+                "font": "LuckiestGuy-Regular",
                 "size": 60,
                 "color": [255, 255, 255]
             },
@@ -63,14 +63,14 @@
                     "texture": { "sheet": 5, "tile": [0, 0] },
 
                     "label": {
-                        "font": "default",
+                        "font": "LuckiestGuy-Regular",
                         "size": 32,
                         "color": [255, 255, 255]
                     },
 
                     "hint": {
                         "i18n": "login-form.login-textarea-hint",
-                        "font": "default",
+                        "font": "LuckiestGuy-Regular",
                         "size": 32,
                         "color": [255, 255, 255]
                     }
@@ -94,9 +94,9 @@
 
                     "hint": {
                         "i18n": "login-form.password-textarea-hint",
-                        "font": "default",
+                        "font": "LuckiestGuy-Regular",
                         "size": 32,
-                        "color": [255, 255, 255]
+                        "color": [0, 0, 0]
                     }
                 },
 
@@ -115,9 +115,9 @@
 
                     "text": {
                         "i18n": "login-form.login-button-label",
-                        "font": "default",
+                        "font": "LuckiestGuy-Regular",
                         "size": 36,
-                        "color": [255, 255, 255]
+                        "color": [0, 0, 0]
                     },
 
                     "action": "submit_login_attempt"
@@ -135,7 +135,7 @@
 
                     "text": {
                         "i18n": "login-form.not-everything-filled-error",
-                        "font": "default",
+                        "font": "LuckiestGuy-Regular",
                         "size": 30,
                         "color": [255, 0, 0]
                     }

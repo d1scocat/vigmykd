@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Tuple
+from typing import Any
 
 from ui.components.component import UIComponent
 
@@ -11,7 +11,7 @@ class UIText:
         raw: str | None,
         font: str,
         size: int,
-        color: Tuple[int, int, int]
+        color: tuple[int, int, int]
     ):
         if not i18n and not raw:
             raise ValueError("i18n and raw can't be None at the same time:"
@@ -40,10 +40,10 @@ class UITextElement(UIComponent, UITextHolder):
         self,
         id: str,
         z_index: int,
-        position: Dict[str, Any],
-        size: Dict[str, int],
-        text: Dict[str, Any],
-        states: Dict[str, Dict[str, Any]] | None = None,
+        position: dict[str, Any],
+        size: dict[str, int],
+        text: dict[str, Any],
+        states: dict[str, dict[str, Any]] | None = None,
         default_state: str | None = None,
     ):
         super().__init__(
@@ -77,6 +77,9 @@ class UITextElement(UIComponent, UITextHolder):
     def set_i18n(self, key: str):
         self.text_obj.i18n = key
         self.text_obj.raw = None
+
+    def set_font_size(self, size: int):
+        self.text_obj.size = size
 
     def process_component(self):
         super().process_component()

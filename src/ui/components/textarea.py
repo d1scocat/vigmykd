@@ -4,7 +4,7 @@ from ui.components.component import UIComponent
 from ui.components.text import UIText, UITextHolder
 from view.renderer import Renderer
 
-from typing import Any, Dict, Tuple
+from typing import Any
 
 import pygame
 
@@ -14,13 +14,13 @@ class UITextArea(UIComponent, UITextHolder):
         self,
         id: str,
         z_index: int,
-        position: Dict[str, Any],
-        size: Dict[str, int],
-        texture: Dict[str, Any] | None,
-        label: Dict[str, Any],
-        hint: Dict[str, Any],
+        position: dict[str, Any],
+        size: dict[str, int],
+        texture: dict[str, Any] | None,
+        label: dict[str, Any],
+        hint: dict[str, Any],
         default_state: str | None = None,
-        states: Dict[str, Dict[str, Any]] | None = None,
+        states: dict[str, dict[str, Any]] | None = None,
         password_mode: bool = False
     ):
         super().__init__(
@@ -44,7 +44,7 @@ class UITextArea(UIComponent, UITextHolder):
 
         self.cursor = 0
 
-        self._repeat_timers: Dict[str, Any | None] = {}
+        self._repeat_timers: dict[str, Any | None] = {}
 
         self._actions = {
             "backspace": self.delete_char,
@@ -161,7 +161,7 @@ class UITextArea(UIComponent, UITextHolder):
                 i += 1
             self.cursor = i
 
-    def calculate_cursor(self, renderer: Renderer) -> Tuple[int, int, int, int] | None:
+    def calculate_cursor(self, renderer: Renderer) -> tuple[int, int, int, int] | None:
         if not self.focused:
             return None
 

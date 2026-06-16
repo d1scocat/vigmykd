@@ -3,7 +3,7 @@ import json
 from logging import Logger
 from pathlib import Path
 
-from typing import Any, Dict, get_type_hints, get_origin
+from typing import Any, get_type_hints, get_origin
 
 
 class GameServerConfig:
@@ -11,8 +11,12 @@ class GameServerConfig:
 
     port: int
     scan_for_max: int
+    
     server_addr: str
     server_port: int
+
+    reack_interval: float
+    max_ack_attempts: int
 
     def __init__(self, logger: Logger, cfg_path: Path):
         self._schema = get_type_hints(self.__class__)
@@ -27,7 +31,7 @@ class GameServerConfig:
             self.logger.error("Malformed socket configuration", exc_info=True)
             raise
 
-    def _dump(self, cfg: Dict[str, Any], prefix = ""):
+    def _dump(self, cfg: dict[str, Any], prefix = ""):
         for key, value in cfg.items():
             name = f"{prefix}{key}"
 

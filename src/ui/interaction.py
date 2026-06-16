@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 from ui.components.component import UIComponent
 from ui.components.container import UIContainer
 from ui.components.textarea import UITextArea
@@ -15,8 +13,8 @@ class UIInteractionSystem:
 
     def update(
         self,
-        components: List[UIComponent],
-        mouse_pos: Tuple[int, int],
+        components: list[UIComponent],
+        mouse_pos: tuple[int, int],
         mouse_down: bool
     ) -> str | None:
         flattened = self._flatten_dfs(components)
@@ -43,7 +41,7 @@ class UIInteractionSystem:
         self.prev_mouse_down = mouse_down
         return action
 
-    def handle_key(self, event: pygame.event.Event, components: List[UIComponent]):
+    def handle_key(self, event: pygame.event.Event, components: list[UIComponent]):
         if event.type != pygame.KEYDOWN:
             return
 
@@ -80,7 +78,7 @@ class UIInteractionSystem:
         if hasattr(component, "value"):
             component.cursor = len(component.value)
 
-    def _flatten_dfs(self, components: List[UIComponent]) -> List[UIComponent]:
+    def _flatten_dfs(self, components: list[UIComponent]) -> list[UIComponent]:
         result = []
 
         def dfs(comp: UIComponent, parent_visible: bool):
@@ -98,14 +96,14 @@ class UIInteractionSystem:
 
         return result
 
-    def _get_focusable(self, components: List[UIComponent]) -> List[UIComponent]:
+    def _get_focusable(self, components: list[UIComponent]) -> list[UIComponent]:
         flat = self._flatten_dfs(components)
         return [comp for comp in flat if isinstance(comp, UITextArea)]
 
     def _process_single(
         self,
         component: UIComponent,
-        mouse_pos: Tuple[int, int],
+        mouse_pos: tuple[int, int],
         mouse_down: bool,
         parent_visible: bool = True
     ) -> bool:
@@ -140,7 +138,7 @@ class UIInteractionSystem:
 
         return False
 
-    def _handle_release(self, mouse_pos: Tuple[int, int]) -> str | None:
+    def _handle_release(self, mouse_pos: tuple[int, int]) -> str | None:
         if not self.active_component:
             return None
 

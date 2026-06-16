@@ -11,7 +11,6 @@ from player import Player
 from registry import registries
 from view import Renderer, Renderable
 
-from typing import Dict
 from uuid import UUID
 
 from scene.manager import SceneManager
@@ -56,7 +55,7 @@ class Game:
             raise ValueError("No view adapter found for type Player")
         self.player_adapter = player_adapter
 
-        self.renderables: Dict[UUID, Renderable] = {}
+        self.renderables: dict[UUID, Renderable] = {}
 
         self.event_manager = event_manager
 
@@ -75,7 +74,7 @@ class Game:
         if not self.scene_manager.handle_pygame_event(event):
             self.controller.handle_event(event)
 
-    def simulate(self, inputs: Dict[UUID | None, PlayerInput]):
+    def simulate(self, inputs: dict[UUID | None, PlayerInput]):
         consumers = registries.consumers
 
         for player_id, input in inputs.items():

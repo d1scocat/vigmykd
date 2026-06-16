@@ -1,18 +1,18 @@
 from pathlib import Path
-from typing import Any, Dict, TypeAlias
+from typing import Any
 
 import json
 
 
-_LocValue: TypeAlias = Dict[str, 'str | _LocValue']
+_LocValue = dict[str, 'str | _LocValue']
 
 
 class Localization:
     def __init__(self, directory: Path, default: str):
-        self._i18n: Dict[str, Dict[str, str]] = {}
+        self._i18n: dict[str, dict[str, str]] = {}
 
         for loc_path in directory.glob("*.json"):
-            data: Dict[str, _LocValue] = json.loads(loc_path.read_text())
+            data: dict[str, _LocValue] = json.loads(loc_path.read_text())
 
             loc_id = data.get("_id")
             if not isinstance(loc_id, str):
@@ -72,10 +72,10 @@ class Localization:
     def _resolve_data(
         self,
         holder_id: str,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         parent: str = ""
-    ) -> Dict[str, str]:
-        result: Dict[str, str] = {}
+    ) -> dict[str, str]:
+        result: dict[str, str] = {}
 
         for key, value in data.items():
             full_key = parent + key

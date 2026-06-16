@@ -15,7 +15,7 @@
 
             "text": {
                 "i18n": "please-wait",
-                "font": "default",
+                "font": "LuckiestGuy-Regular",
                 "size": 100,
                 "color": [255, 0, 0]
             }

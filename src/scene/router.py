@@ -4,17 +4,17 @@ from controller.input_model import PlayerInput
 from game.model import GameState
 from player import Player
 
-from typing import Dict, List, Optional
+from typing import Optional
 from uuid import UUID
 
 
 class SceneInputRouter:
-    def __init__(self, consumers: List[InputConsumer]):
+    def __init__(self, consumers: list[InputConsumer]):
         self.consumers = consumers
 
     def simulate_route(
         self,
-        inputs: Dict[Optional[UUID], PlayerInput],
+        inputs: dict[Optional[UUID], PlayerInput],
         model: GameState,
         ctx: GameContext
     ):

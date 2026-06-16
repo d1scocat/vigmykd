@@ -1,6 +1,6 @@
 from ui.components.component import UIComponent
 
-from typing import Any, Dict
+from typing import Any
 
 
 class UIImage(UIComponent):
@@ -8,9 +8,9 @@ class UIImage(UIComponent):
         self,
         id: str,
         z_index: int,
-        position: Dict[str, Any],
-        size: Dict[str, int],
-        texture: Dict[str, Any] | None,
+        position: dict[str, Any],
+        size: dict[str, int],
+        texture: dict[str, Any] | None,
         default_state: str | None = None,
     ):
         super().__init__(

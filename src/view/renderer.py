@@ -2,8 +2,6 @@ from context import GameContext
 from textures import TextureManager
 from view.renderable import Renderable
 
-from typing import Dict, List, Tuple
-
 from pygame import Surface, Rect, Color
 import pygame
 
@@ -18,11 +16,11 @@ class Renderer:
         self.textures = textures
         self.ctx = ctx
 
-        self.render_queue: Dict[int, List[Tuple[Renderable, Surface]]] = {}
-        self.text_queue: List[Tuple[int, Surface, Tuple[int, int]]] = []
-        self.rect_queue: List[Tuple[int, Rect, Color]] = []
+        self.render_queue: dict[int, list[tuple[Renderable, Surface]]] = {}
+        self.text_queue: list[tuple[int, Surface, tuple[int, int]]] = []
+        self.rect_queue: list[tuple[int, Rect, Color]] = []
 
-        self.scale_cache: Dict[Tuple[int, Tuple[int, int], int, int], Surface] = {}
+        self.scale_cache: dict[tuple[int, tuple[int, int], int, int], Surface] = {}
         self.max_cache_size = 2**14 - 1  # Later extract into settings
 
     def drop_render_queue(self):
@@ -51,14 +49,14 @@ class Renderer:
             (renderable, surface)
         )
 
-    def queue_text(self, z_index: int, surface: Surface, pos: Tuple[int, int]):
+    def queue_text(self, z_index: int, surface: Surface, pos: tuple[int, int]):
         self.text_queue.append((z_index, surface, pos))
 
     def queue_rect(
         self,
         z_index: int,
-        dimensions: Tuple[float, float, float, float],
-        color: Tuple[int, int, int]
+        dimensions: tuple[float, float, float, float],
+        color: tuple[int, int, int]
     ):
         x, y, w, h = dimensions
         r, g, b = color

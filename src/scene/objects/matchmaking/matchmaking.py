@@ -1,11 +1,12 @@
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 
 from pygame.event import Event
 
 from context import GameContext
+from event.events import UDPReceivedEvent
 from game.model import GameState
 from network.udp.factory import Packets
-from scene.objects.matchmaking import waiting_actions
+from scene.objects.matchmaking import matchmaking_actions
 from scene.scene import Scene
 from ui.components.page import UIPage
 from ui.components.text import UITextElement
@@ -33,9 +34,11 @@ class MatchmakingScene(Scene):
 
         self._ui_page = self.get_ui(ctx.ui_path / "matchmaking.json")
 
-        self.action_mapping: Dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
+        self.action_mapping: dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
             "quit": waiting_actions.quit_matchmaking
         }
+
+        self.match_id = match_id
 
         id_box = self.page.by_id("match-id-textbox")
         if id_box is None or not isinstance(id_box, UITextElement):
@@ -65,10 +68,24 @@ class MatchmakingScene(Scene):
         view_system.submit(view)
 
     def on_enter(self):
-        pass
+        self.lid = self.ctx.event_manager.register_listener(
+            UDPReceivedEvent,
+            self.match_start_listener
+        )
 
     def on_exit(self):
-        pass
+        if hasattr(self, "lid"):
+            self.ctx.event_manager.unregister_listener(self.lid)
+
+    def match_start_listener(self, event: UDPReceivedEvent):
+        if event.message_type != packet_pb2.InformMatchStart:
+            return
+        id_box = self.page.by_id("match-id-textbox")
+        if id_box is None or not isinstance(id_box, UITextElement):
+            self.ctx.logger.warning("No 'match-id-textbox' available for MatchmakingScene")
+            return
+        id_box.set_raw(f"{self.match_id} (started)")
+        id_box.set_font_size(id_box.text_obj.size // 2)
         
     def find_action(self, action_name: str):
         return None

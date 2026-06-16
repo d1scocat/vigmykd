@@ -5,7 +5,7 @@ from scene.router import SceneInputRouter
 from registry.abstract import AbstractClassRegistry, \
     AbstractNamedRegistry, AbstractRegistry
 
-from typing import Any, Dict, List, Type, TypeVar
+from typing import Any, TypeVar
 
 import pkgutil
 import importlib
@@ -39,7 +39,7 @@ VAT = TypeVar("VAT")
 
 class ViewAdapterRegistry(AbstractRegistry):
     def __init__(self):
-        self._adapters: Dict[Type[Any], ViewAdapter[Any]] = {}
+        self._adapters: dict[type[Any], ViewAdapter[Any]] = {}
 
     def discover(self):
         import view.adapter as pkg
@@ -49,10 +49,10 @@ class ViewAdapterRegistry(AbstractRegistry):
     def init_all(self):
         pass  # no-op
 
-    def register(self, obj_type: Type[VAT], adapter: ViewAdapter[VAT]):
+    def register(self, obj_type: type[VAT], adapter: ViewAdapter[VAT]):
         self._adapters[obj_type] = adapter
 
-    def __getitem__(self, obj_type: Type[VAT]) -> ViewAdapter[VAT] | None:
+    def __getitem__(self, obj_type: type[VAT]) -> ViewAdapter[VAT] | None:
         return self._adapters.get(obj_type)
 
 
@@ -62,10 +62,10 @@ class GlobalRegistries:
     mutators: InputMutatorRegistry
     view_adapters: ViewAdapterRegistry
 
-    initable_registries: List[AbstractRegistry]
+    initable_registries: list[AbstractRegistry]
 
     def __init__(self) -> None:
-        self.registries: List[AbstractRegistry] = []
+        self.registries: list[AbstractRegistry] = []
 
         self.consumers = ConsumerRegistry()
         self.mutators = InputMutatorRegistry()
@@ -104,10 +104,10 @@ def raise_on_frozen():
         raise ValueError("The registry is not accepting new registrations")
 
 
-def register_consumer(tags: List[str] | None):
+def register_consumer(tags: list[str] | None):
     raise_on_frozen()
 
-    def wrapper(cls: Type[InputConsumer]):
+    def wrapper(cls: type[InputConsumer]):
         registries.consumers.register(cls, tags)
         return cls
     return wrapper
@@ -122,10 +122,10 @@ def register_mutator(name: str):
     return wrapper
 
 
-def register_adapter(target_type: Type[VAT]):
+def register_adapter(target_type: type[VAT]):
     raise_on_frozen()
 
-    def wrapper(cls: Type[ViewAdapter[VAT]]):
+    def wrapper(cls: type[ViewAdapter[VAT]]):
         registries.view_adapters.register(target_type, cls())
         return cls
     return wrapper

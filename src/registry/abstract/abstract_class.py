@@ -1,6 +1,6 @@
 from registry.abstract.abstract import AbstractRegistry
 
-from typing import Dict, Generic, List, Type, TypeVar
+from typing import Generic, TypeVar
 
 
 T = TypeVar("T")
@@ -8,12 +8,12 @@ T = TypeVar("T")
 
 class AbstractClassRegistry(AbstractRegistry, Generic[T]):
     def __init__(self):
-        self._classes: List[Type[T]] = []
-        self.objects: List[T] = []
-        self._tagged_classes: Dict[str, List[Type[T]]] = {}
-        self._tagged_objects: Dict[str, List[T]] = {}
+        self._classes: list[type[T]] = []
+        self.objects: list[T] = []
+        self._tagged_classes: dict[str, list[type[T]]] = {}
+        self._tagged_objects: dict[str, list[T]] = {}
 
-    def register(self, cls: Type[T], tags: List[str] | None = None):
+    def register(self, cls: type[T], tags: list[str] | None = None):
         if cls not in self._classes:
             self._classes.append(cls)
 
@@ -36,7 +36,7 @@ class AbstractClassRegistry(AbstractRegistry, Generic[T]):
 
             self.objects.append(obj)
 
-    def filter(self, tag: str) -> List[T]:
+    def filter(self, tag: str) -> list[T]:
         return self._tagged_objects.get(tag, [])
 
     def __len__(self):

@@ -7,11 +7,11 @@ from ui.components.text import UITextHolder
 from ui.components.textarea import UITextArea
 from view import Renderable, Renderer
 
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 
 class UIPage:
-    def __init__(self, id: str, meta: Dict[str, Any], elements: List[UIComponent]):
+    def __init__(self, id: str, meta: dict[str, Any], elements: list[UIComponent]):
         self.id = id
         self.meta = meta
         self.elements = elements
@@ -33,7 +33,7 @@ class UIPage:
         for component in self.elements:
             component.process_component()
 
-    def resolve_layout(self, screen_size: Tuple[int, int], ctx: GameContext):
+    def resolve_layout(self, screen_size: tuple[int, int], ctx: GameContext):
         for root in self.elements:
             self.process_page_component(root, ctx, screen_size)
 
@@ -41,8 +41,8 @@ class UIPage:
         self,
         component: UIComponent,
         ctx: GameContext,
-        parent_size: Tuple[int, int],
-        parent_pos: Tuple[int, int] = (0, 0),
+        parent_size: tuple[int, int],
+        parent_pos: tuple[int, int] = (0, 0),
     ):
         pos = component.position
 
@@ -160,7 +160,7 @@ class UIPage:
                 stack.extend(el.children)
         return None
 
-    def by_type(self, type: str) -> List[UIComponent]:
+    def by_type(self, type: str) -> list[UIComponent]:
         result = []
         stack = list(self.elements)
         while stack:

@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
-from typing import Any, Dict
+from typing import Any
 
 
 class Authenticator(ABC):
     @abstractmethod
-    def login(self, creds: Dict[str, str]) -> UUID:
+    def login(self, creds: dict[str, str]) -> UUID:
         """Returns the HTTP request UUID, not the player UUID."""
         pass
 
@@ -26,7 +26,7 @@ class Authenticator(ABC):
         pass
 
     @abstractmethod
-    def get_current_user(self) -> Dict[str, Any] | None:
+    def get_current_user(self) -> dict[str, Any] | None:
         pass
 
     @abstractmethod

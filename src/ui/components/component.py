@@ -1,12 +1,12 @@
 from context import GameContext
 from view import RenderState
 
-from typing import Any, Dict, Tuple
+from typing import Any
 
 
 class UIComponent:
     # immutable
-    states: Dict[str, Dict[str, Any]]
+    states: dict[str, dict[str, Any]]
     default_state: str
     visible_by_default: bool
 
@@ -18,16 +18,16 @@ class UIComponent:
     # computed every frame
     resolved_state: str
     resolved_visible: bool
-    resolved_texture: Dict[str, Any] | None
+    resolved_texture: dict[str, Any] | None
 
     def __init__(
         self,
         id: str,
         type: str,
         z_index: int,
-        position: Dict[str, Any],
-        size: Dict[str, int],
-        states: Dict[str, Dict[str, Any]] | None = None,
+        position: dict[str, Any],
+        size: dict[str, int],
+        states: dict[str, dict[str, Any]] | None = None,
         default_state: str | None = None,
     ):
         self.id = id
@@ -52,8 +52,8 @@ class UIComponent:
 
         self.base_state = default_state or "normal"
 
-        self.absolute_position: Tuple[int, int] = (0, 0)
-        self.absolute_size: Tuple[int, int] = (0, 0)
+        self.absolute_position: tuple[int, int] = (0, 0)
+        self.absolute_size: tuple[int, int] = (0, 0)
 
     def resolve_state(self) -> str:
         """
@@ -94,13 +94,13 @@ class UIComponent:
             for child in getattr(self, "children"):
                 child.process_component()
 
-    def build_render_states(self) -> Tuple[Dict[str, RenderState], str]:
+    def build_render_states(self) -> tuple[dict[str, RenderState], str]:
         base_texture = getattr(self, "texture", None)
 
         if not base_texture and not self.states:
             return {}, "normal"
 
-        states: Dict[str, RenderState] = {}
+        states: dict[str, RenderState] = {}
         all_state_names = set(self.states.keys()) | {"normal"}
 
         for state_name in all_state_names:
@@ -128,7 +128,7 @@ class UIComponent:
 
         return local and parent_visible
 
-    def resolve_origin(self) -> Tuple[float, float]:
+    def resolve_origin(self) -> tuple[float, float]:
         anchor = self.position.get("anchor", "top-left")
 
         return {
@@ -141,7 +141,7 @@ class UIComponent:
 
     def resolve_size(
         self,
-        parent_size: Tuple[int, int],
+        parent_size: tuple[int, int],
         ctx: GameContext
     ):
         size = self.size

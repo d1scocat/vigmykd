@@ -1,7 +1,7 @@
 import uuid
 
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any
 
 from event.model import Event
 
@@ -13,7 +13,7 @@ class HTTPResponseEvent(Event):
     method: str
     successful: bool
     status_code: int
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     exc_info: str | None = None
 
     @property

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, NamedTuple, TypeAlias
+from typing import Callable, NamedTuple
 
 
 @dataclass
@@ -23,7 +23,7 @@ class Action:
     prio: int
 
 
-Mutation: TypeAlias = Callable[[PlayerInput], None]  # in-place editor
+Mutation = Callable[[PlayerInput], None]  # in-place editor
 
 
 class BoundAction(NamedTuple):  # type hints

@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 
 from pygame.event import Event
 
@@ -27,7 +27,7 @@ class LimboScene(Scene):
 
         self._ui_page = self.get_ui(ctx.ui_path / "limbo.json")
 
-        self.action_mapping: Dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {}
+        self.action_mapping: dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {}
 
     @property
     def page(self) -> UIPage:

@@ -4,5 +4,7 @@
     "server": {
         "addr": "45.132.245.196",
         "port": 12478
-    }
+    },
+    "reack_interval": 0.3,
+    "max_ack_attempts": 7
 }

@@ -31,7 +31,7 @@
 
             "text": {
                 "i18n": "main-menu.play-button-label",
-                "font": "default",
+                "font": "LuckiestGuy-Regular",
                 "size": 60,
                 "color": [255, 255, 255]
             },

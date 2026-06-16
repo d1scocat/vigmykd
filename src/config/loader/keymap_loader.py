@@ -1,4 +1,4 @@
-from typing import Dict, FrozenSet
+from typing import FrozenSet
 import pygame
 
 
@@ -142,7 +142,7 @@ _key_to_pygame = {
 }
 
 
-def load_keymap(map: Dict[str, str]) -> Dict[FrozenSet[int], str]:
+def load_keymap(map: dict[str, str]) -> dict[FrozenSet[int], str]:
     """
     Assumes a JSON configuration has been parsed into a key-value
     dictionary and the `keymap` section has been passed here.
@@ -152,14 +152,14 @@ def load_keymap(map: Dict[str, str]) -> Dict[FrozenSet[int], str]:
     resorting to a normal dictionary.
 
     Arguments:
-        map: Dict[str, str] - the loaded key-value dictionary
+        map: dict[str, str] - the loaded key-value dictionary
 
     Returns:
-        Dict[Set[int], str] - the dictionary with pygame input values as keys
+        dict[Set[int], str] - the dictionary with pygame input values as keys
         and normalized action names as values
     """
 
-    result: Dict[FrozenSet[int], str] = {}
+    result: dict[FrozenSet[int], str] = {}
 
     for key, action in map.items():
         keys = frozenset(filter(

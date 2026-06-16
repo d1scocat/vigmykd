@@ -5,13 +5,12 @@ from registry import registries
 from view.renderer import Renderer
 from view.renderable import Renderable
 
-from typing import Dict
 from uuid import UUID
 
 
 class ViewSystem:
     ctx: GameContext
-    renderables: Dict[UUID, Renderable]
+    renderables: dict[UUID, Renderable]
 
     def __init__(self, ctx: GameContext):
         self.ctx = ctx

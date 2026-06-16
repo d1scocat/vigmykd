@@ -1,4 +1,3 @@
-from typing import Dict
 from uuid import UUID
 from random import Random
 from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY, \
@@ -11,10 +10,10 @@ from player import Player
 
 class GameState:
     _tick: int
-    _input_buffer: Dict[int, Dict[UUID | None, PlayerInput]]
+    _input_buffer: dict[int, dict[UUID | None, PlayerInput]]
     rng: Random  # later will request per-game fetching from server
 
-    players: Dict[UUID, Player]
+    players: dict[UUID, Player]
 
     def __init__(self, server_client: GameServerClient):
         self.server_client = server_client
@@ -23,7 +22,7 @@ class GameState:
         self._input_buffer = {}
         self.rng = Random("this will not be static later")
 
-        self.players: Dict[UUID, Player] = {}
+        self.players: dict[UUID, Player] = {}
 
     def get_player(self, id: UUID) -> Player | None:
         """
@@ -57,7 +56,7 @@ class GameState:
         tick_buffer[player_id] = input
         self._input_buffer[tick] = tick_buffer
 
-    def consume_inputs(self) -> Dict[UUID | None, PlayerInput]:
+    def consume_inputs(self) -> dict[UUID | None, PlayerInput]:
         return self._input_buffer.pop(self._tick, {})
 
     def clear_redundant(self):
