@@ -47,6 +47,21 @@ class Packets:
         return packet
 
     @staticmethod
+    def request_match_info(
+        msg_id: int | None = None
+    ):
+        """`envelope()` a packet before sending!"""
+        if msg_id is None:
+            msg_id = Packets.get_next_id()
+
+        packet = packet_pb2.Packet()
+        packet.msg_id = msg_id
+
+        packet.client_to_server.request_match_info.SetInParent()
+
+        return packet
+
+    @staticmethod
     def ack(
         msg_id: int,
         ok: bool

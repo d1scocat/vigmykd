@@ -22,10 +22,10 @@ class ViewSystem:
             raise ValueError("No view adapter found for type Player")
 
         for player in model.players.values():
-            if player.id not in self.renderables:
-                self.renderables[player.id] = adapter.create(player)
+            if player.player_id not in self.renderables:
+                self.renderables[player.player_id] = adapter.create(player)
 
-            renderable = self.renderables[player.id]
+            renderable = self.renderables[player.player_id]
             adapter.update(player, renderable)
 
     def submit(self, renderer: Renderer):

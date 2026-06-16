@@ -19,6 +19,7 @@ from view.system import ViewSystem
 
 class Scene(ABC):
     model: GameState
+    _loaded: bool = False  # problems may arise
 
     @abstractmethod
     def tick(self):
@@ -31,6 +32,11 @@ class Scene(ABC):
     @abstractmethod
     def on_exit(self):
         pass
+
+    def load(self):
+        if not self._loaded:
+            self.on_load()
+            self._loaded = True
 
     @abstractmethod
     def on_load(self):

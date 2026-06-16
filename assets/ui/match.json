@@ -1,0 +1,24 @@
+{
+    "id": "match",
+    "meta": {
+        "resolution": [1920, 1080],
+        "anchor-mode": "relative"
+    },
+
+    "elements": [
+        {
+            "type": "text",
+            "id": "match",
+            "z-index": 110,
+            "position": { "x": 0.5, "y": 0.5, "anchor": "center" },
+            "size": { "width": 600, "height": 100 },
+
+            "text": {
+                "i18n": "match-placeholder-text",
+                "font": "LuckiestGuy-Regular",
+                "size": 40,
+                "color": [255, 0, 0]
+            }
+        }
+    ]
+}

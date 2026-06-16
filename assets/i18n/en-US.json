@@ -4,6 +4,8 @@
     "please-wait": "Please wait",
     "matchmaking": "Matchmaking",
     "waiting-to-matchmake": "Waiting to matchmake",
+
+    "match-placeholder-text": "Match placeholder text",
     
     "main-menu": {
         "login-button-label": "Login",

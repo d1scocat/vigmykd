@@ -1,13 +1,15 @@
+import uuid
+
 from typing import Any, Callable
 
 from pygame.event import Event
 
 from context import GameContext
-from event.events import UDPReceivedEvent, SceneSwitchRequestEvent
+from event.events import UDPReceivedEvent
 from game.model import GameState
 from network.udp.factory import Packets
-from scene.objects.match import MatchScene
-from scene.objects.matchmaking import matchmaking_actions
+from player import Facing, Player
+from scene.objects.match import actions
 from scene.scene import Scene
 from ui.components.page import UIPage
 from ui.components.text import UITextElement
@@ -18,42 +20,24 @@ from view.system import ViewSystem
 from generated.proto.v1 import packet_pb2 as packet_pb2
 
 
-class MatchmakingScene(Scene):
+class MatchScene(Scene):
     def __init__(
         self,
         model: GameState,
         ctx: GameContext,
-        match_id: str
     ):
         from registry import registries
-        self.input_router = registries.consumers.router_by_tag("matchmaking")
+        self.input_router = registries.consumers.router_by_tag("match")
 
         self.model = model
         self.ctx = ctx
 
         self._ui_interaction = UIInteractionSystem()
 
-        self._ui_page = self.get_ui(ctx.ui_path / "matchmaking.json")
+        self._ui_page = self.get_ui(ctx.ui_path / "match.json")
 
         self.action_mapping: dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
-            "quit": matchmaking_actions.quit_matchmaking
         }
-
-        self._match_id = match_id
-
-    @property
-    def match_id(self):
-        return self._match_id
-
-    @match_id.setter
-    def match_id(self, value: str):
-        self._match_id = value
-
-        id_box = self.page.by_id("match-id-textbox")
-        if id_box is None or not isinstance(id_box, UITextElement):
-            self.ctx.logger.warning("No 'match-id-textbox' available for MatchmakingScene")
-            return
-        id_box.set_raw(value)
 
     @property
     def page(self) -> UIPage:
@@ -77,28 +61,41 @@ class MatchmakingScene(Scene):
         view_system.submit(view)
 
     def on_load(self):
-        self.lid = self.ctx.event_manager.register_listener(
-            UDPReceivedEvent,
-            self.match_start_listener
-        )
+        actions.request_match_info(self.model)
 
     def on_enter(self):
-        pass
+        self.lid = self.ctx.event_manager.register_listener(
+            UDPReceivedEvent,
+            self.player_data_receiver
+        )
 
     def on_exit(self):
-        if hasattr(self, "lid"):
-            self.ctx.event_manager.unregister_listener(self.lid)
+        self.ctx.event_manager.unregister_listener(self.lid)
 
-    def match_start_listener(self, event: UDPReceivedEvent):
-        if event.message_type != packet_pb2.InformMatchStart:
+    def player_data_receiver(self, event: UDPReceivedEvent):
+        if event.message_type != packet_pb2.RequestMatchInfoResponse:
             return
         
-        ack_packet = Packets.ack(event.envelope.packet.msg_id, True)
-        self.model.server_client.enqueue(Packets.envelope(ack_packet), ack_packet.msg_id)
+        self.model.sync_rng(event.message.rng_seed)
 
-        self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(MatchScene(
-            self.model, self.ctx
-        )))
+        player1, player2 = list(event.message.players)
+        try:
+            client_id = uuid.UUID(event.message.your_id)
+
+            player1_id = uuid.UUID(player1.id)
+            player2_id = uuid.UUID(player2.id)
+
+            player1 = Player.from_packet(player1, client_id == player1_id)
+            player2 = Player.from_packet(player2, client_id == player2_id)
+        except Exception:
+            self.ctx.logger.exception("Could not create players when starting match")
+            raise
+
+        self.model.set_client_player(player1 if player1.is_client else player2)
+        self.model.set_opponent_player(player2 if player1.is_client else player1)
+
+        self.ctx.logger.info("Player1: %s, %s, %s, %d, %d, %s", str(player1.player_id), player1.name, str(player1.is_client), player1.x, player1.y, player1.facing.name)
+        self.ctx.logger.info("Player2: %s, %s, %s, %d, %d, %s", str(player2.player_id), player2.name, str(player2.is_client), player2.x, player2.y, player2.facing.name)
         
     def find_action(self, action_name: str):
         return self.action_mapping.get(action_name, None)

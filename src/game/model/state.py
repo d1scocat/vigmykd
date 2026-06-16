@@ -22,19 +22,30 @@ class GameState:
         self._input_buffer = {}
         self.rng = Random("this will not be static later")
 
-        self.players: dict[UUID, Player] = {}
+        self.client_player: Player | None = None
+        self.opponent_player: Player | None = None
 
-    def get_player(self, id: UUID) -> Player | None:
+    @property
+    def players(self) -> dict[UUID, Player]:
+        return {
+            player.player_id: player
+            for player in [self.client_player, self.opponent_player]
+            if player
+        }
+
+    def get_player(self, pid: UUID) -> Player | None:
         """
         Right now this simply does a dictionary lookup and this function
         exists for the purpose of future compatibility in case there will
         be a need for extra validity checks.
         """
-        return self.players.get(id)
+        return self.players.get(pid)
 
-    def start_match(self, player_id: UUID, opponent_id: UUID):
-        self.players[player_id] = Player(player_id)
-        self.players[opponent_id] = Player(opponent_id)
+    def set_client_player(self, player: Player):
+        self.client_player = player
+
+    def set_opponent_player(self, player: Player):
+        self.opponent_player = player
 
     def sync_rng(self, seed: int | float | str | bytes | bytearray | Random):
         """

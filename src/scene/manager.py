@@ -3,6 +3,8 @@ from event.events import ScenePreExitEvent, \
     ScenePostEnterEvent, \
     ScenePostExitEvent, \
     ScenePreEnterEvent, \
+    ScenePreLoadEvent, \
+    ScenePostLoadEvent, \
     SceneSwitchRequestEvent, \
     PrepareSceneRequestEvent
 from scene.scene import Scene
@@ -33,7 +35,7 @@ class SceneManager:
         self.switch(event.target)
 
     def prep_scene_handler(self, event: PrepareSceneRequestEvent):
-        event.scene.on_load()
+        event.scene.load()
 
     def tick(self):
         self.current.do_tick()
@@ -47,18 +49,23 @@ class SceneManager:
         self.current.render(view, view_system)
 
     def _enter_scene(self, scene: Scene):
-        self.event_manager.invoke_event(ScenePreEnterEvent(scene))
-        self.current = scene
+        self.event_manager.invoke_event(ScenePreLoadEvent(scene))
 
-        if hasattr(self.current, "on_enter"):
-            self.current.on_enter()
+        scene.load()
+
+        self.event_manager.invoke_event(ScenePostLoadEvent(scene))
+
+        self.event_manager.invoke_event(ScenePreEnterEvent(scene))
+
+        self.current = scene
+        self.current.on_enter()
+
         self.event_manager.invoke_event(ScenePostEnterEvent(scene))
 
     def _exit_scene(self, renderer: Renderer):
         self.event_manager.invoke_event(ScenePreExitEvent(self.current))
 
         renderer.clear_texture_scale_cache()
+        self.current.on_exit()
 
-        if hasattr(self.current, "on_exit"):
-            self.current.on_exit()
         self.event_manager.invoke_event(ScenePostExitEvent(self.current))

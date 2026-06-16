@@ -40,9 +40,6 @@ class WaitingToMatchmakeScene(Scene):
         self.match_id: str
         self.lids = []
 
-        self._prepare_matchmaking_scene()
-        self._init_matchmaking_flow()
-
     def _prepare_matchmaking_scene(self):
         from scene.objects.matchmaking import MatchmakingScene
 
@@ -77,6 +74,9 @@ class WaitingToMatchmakeScene(Scene):
         view_system.submit(view)
 
     def on_enter(self):
+        self._prepare_matchmaking_scene()
+        self._init_matchmaking_flow()
+
         self.lids.append(self.ctx.event_manager.register_listener(
             event_type=HTTPResponseEvent,
             func=self.match_register_listener
