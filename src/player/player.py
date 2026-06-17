@@ -1,6 +1,6 @@
 import uuid
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import IntEnum
 
 from geometry import BoundingBox2D
@@ -30,7 +30,7 @@ class Position:
     is_ducking: bool = False
     is_dashing: bool = False
     is_grounded: bool = False
-    physics: PlayerPhysics = PlayerPhysics()
+    physics: PlayerPhysics = field(default_factory=PlayerPhysics)
 
     @classmethod
     def from_packet(cls, packet: packet_pb2.PositionData):
