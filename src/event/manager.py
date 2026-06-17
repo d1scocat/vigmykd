@@ -45,13 +45,10 @@ class EventManager:
                 event = self._queue.get_nowait()
                 with self._lock:
                     callbacks = [func for _, func in self.listeners.get(type(event), [])]
-                    for callback in callbacks:
-                        self.logger.info("[DEBUG] Event Bus prepares callback '%s'; event name: '%s'", getattr(callback, "__name__", type(callback).__name__), event.get_name())
                 for callback in callbacks:
                     name = getattr(callback, "__name__", type(callback).__name__)
                     try:
                         callback(event)
-                        self.logger.info("[DEBUG] Event Bus calls callback %s", name)
                     except Exception as ex:
                         self.logger.warning("Unhandled exception at event callback:\n"
                                             "- Event type %s encountered an exception"
