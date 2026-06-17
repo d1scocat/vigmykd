@@ -99,6 +99,8 @@ class GameState:
         self._sync_offset(server_tick, last_client_tick)
 
         try:
+            self.logger.info(f"[NET] Server sent UUIDs: {[data.uuid for data in player_data]}")
+            self.logger.info(f"[NET] Local UUIDs: Client={self.client_player.player_id}, Opp={self.opponent_player.player_id}")
             player_pos = {
                 UUID(data.uuid): Position.from_packet(data)
                 for data in player_data
@@ -112,12 +114,15 @@ class GameState:
 
             if not client_pos or not opponent_pos:
                 raise ValueError("Could not map reconciliation UUIDs to active players")
+
+            self.logger.info(f"[NET] Successfully parsed positions. Opponent new pos: {opponent_pos}")
         except Exception:
             self.logger.exception("Could not decode player position packets")
             return
 
         # opponent position is not being predicted
         self.opponent_player.apply_position(opponent_pos)
+        self.logger.info(f"[NET] Applied opponent position. New Opponent Pos: {self.opponent_player.position}")
 
         if not self.client_player.matches_position(client_pos):
             self.logger.info(

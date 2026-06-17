@@ -119,16 +119,19 @@ class MatchScene(Scene):
         )
 
     def piggyback_receiver(self, event: UDPReceivedEvent):
-        self.ctx.logger.info(f"[NET] {event.message_type=!r}")
+        self.ctx.logger.info(f"[NET] RECEIVED UDP EVENT | Type: {event.message_type!r}")
         if event.message_type != packet_pb2.Reconcile:
+            self.ctx.logger.warning(f"[NET] Ignoring packet type: {event.message_type} (Expected Reconcile)")
             return
+
+        self.ctx.logger.info(f"[NET] Processing Reconcile packet")
 
         server_tick: int = event.message.server_tick
         last_client_tick: int = event.message.last_client_tick
         players = list(event.message.players)
 
         self.ctx.logger.info(
-            "[NET] Recv Reconcile | SrvTick: %d | LastCliTick: %d | LocalTick: %d",
+            f"[NET] Recv Reconcile | SrvTick: %d | LastCliTick: %d | LocalTick: %d | Players in packet: {len(players)}",
             server_tick, last_client_tick, self.model.tick_idx
         )
 
