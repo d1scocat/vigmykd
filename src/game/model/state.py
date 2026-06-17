@@ -57,13 +57,17 @@ class GameState:
     def set_opponent_player(self, player: Player):
         self.opponent_player = player
 
-    def prepare_match(self, rng_seed: int | float | str | bytes | bytearray | Random):
+    def prepare_match(
+        self,
+        rng_seed: int | float | str | bytes | bytearray | Random,
+        initial_server_tick: int = 0
+    ):
         if isinstance(rng_seed, Random):
             self.rng = rng_seed
         else:
             self.rng = Random(rng_seed)
 
-        self.tick_idx = 0
+        self.tick_idx = initial_server_tick
         self._input_buffer.clear()
 
     def start_match(self):
@@ -86,6 +90,8 @@ class GameState:
         player_data: list[packet_pb2.PositionData],
         ctx: GameContext,
     ):
+        self.logger.info(f"[NET] RECONCILE CALLED | Srv: {server_tick} | Players in packet: {len(player_data)}")
+
         if self.client_player is None or self.opponent_player is None:
             self.logger.warning("Cannot reconcile position if any player is None")
             return

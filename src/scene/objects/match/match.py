@@ -86,7 +86,7 @@ class MatchScene(Scene):
 
         self.ctx.logger.info("[NET] RequestMatchInfoResponse received. Seed: %s", event.message.rng_seed)
         
-        self.model.prepare_match(event.message.rng_seed)
+        self.model.prepare_match(event.message.rng_seed, event.message.initial_server_tick)
 
         player1, player2 = list(event.message.players)
         try:
