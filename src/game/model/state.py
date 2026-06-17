@@ -6,7 +6,6 @@ from context import GameContext
 from controller.input_model import PlayerInput
 from network import GameServerClient
 from player import Player, Position
-from registry import registries
 from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY, \
     SIMUL_DELAY_TICKS as DELAY
 
@@ -132,6 +131,8 @@ class GameState:
         self.clear_redundant(last_client_tick)
 
     def simulate_input(self, ctx: GameContext, player: Player, player_input: PlayerInput):
+        from registry import registries
+
         consumers = registries.consumers
         for consumer in consumers:
             consumer.consume(player, self, ctx, player_input)
