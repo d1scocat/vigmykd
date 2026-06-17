@@ -12,5 +12,5 @@ class Renderable:
     z_index: int
     states: dict[str, RenderState]
     current_state: str
-    location: tuple[int, int]
+    location: tuple[float, float]
     size: tuple[int, int]

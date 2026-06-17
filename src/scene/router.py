@@ -18,10 +18,10 @@ class SceneInputRouter:
         model: GameState,
         ctx: GameContext
     ):
-        for pid, input in inputs.items():
+        for pid, player_input in inputs.items():
             player: Optional[Player] = None
             if pid:
                 player = model.get_player(pid)
 
             for consumer in self.consumers:
-                consumer.consume(player=player, state=model, ctx=ctx, input=input)
+                consumer.consume(player=player, state=model, ctx=ctx, player_input=player_input)

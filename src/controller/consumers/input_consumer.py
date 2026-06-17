@@ -21,7 +21,7 @@ class InputConsumer(ABC):
         player: Player | None,
         state: GameState,
         ctx: GameContext,
-        input: PlayerInput
+        player_input: PlayerInput
     ):
         """
         Consumes the provided player input and executes specific actions

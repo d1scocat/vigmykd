@@ -1,6 +1,8 @@
 from generated.proto.v1 import packet_pb2 as packet_pb2
 
-from typing import overload
+from controller.input_model import PlayerInput
+
+from typing import Any, overload
 
 
 class Packets:
@@ -58,6 +60,31 @@ class Packets:
         packet.msg_id = msg_id
 
         packet.client_to_server.request_match_info.SetInParent()
+
+        return packet
+
+    @staticmethod
+    def player_move_state(
+        player_input: dict[str, Any],
+        client_tick: int,
+        msg_id: int | None = None
+    ):
+        """`envelope()` a packet before sending!"""
+        if msg_id is None:
+            msg_id = Packets.get_next_id()
+
+        packet = packet_pb2.Packet()
+        packet.msg_id = msg_id
+
+        move_state = packet_pb2.PlayerMoveState()
+        move_state.move_dir = player_input.get("move_dir", 0)
+        move_state.duck = player_input.get("duck", False)
+        move_state.jump = player_input.get("jump", False)
+        move_state.dash = player_input.get("dash", False)
+
+        move_state.client_tick = client_tick
+
+        packet.client_to_server.player_move_state.CopyFrom(move_state)
 
         return packet
 

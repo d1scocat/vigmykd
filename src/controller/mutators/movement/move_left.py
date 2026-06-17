@@ -4,4 +4,4 @@ from controller.input_model import PlayerInput
 
 @register_mutator("move_left")
 def move_left(input: PlayerInput):
-    input.move_dx -= 1
+    input.move_dir -= 1

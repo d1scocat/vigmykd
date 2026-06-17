@@ -7,10 +7,12 @@ from controller.input_model import PlayerInput
 from event.manager import EventManager
 from game.model import GameState
 from network import GameServerClient
+from network.udp.factory import Packets
 from player import Player
 from registry import registries
 from view import Renderer, Renderable
 
+from dataclasses import asdict
 from uuid import UUID
 
 from scene.manager import SceneManager
@@ -45,7 +47,10 @@ class Game:
             self.controller.bind(mapping, action)
 
         self.server_client = server_client
-        self.model = GameState(server_client=server_client)
+        self.model = GameState(
+            logger=ctx.logger,
+            server_client=server_client
+        )
 
         self.view = Renderer(self.screen, self.ctx.texture_manager, self.ctx)
         self.view_system = ViewSystem(self.ctx)
@@ -74,29 +79,25 @@ class Game:
         if not self.scene_manager.handle_pygame_event(event):
             self.controller.handle_event(event)
 
-    def simulate(self, inputs: dict[UUID | None, PlayerInput]):
-        consumers = registries.consumers
-
-        for player_id, input in inputs.items():
-            player: Player | None = None
-
-            if player_id:
-                player = self.model.get_player(player_id)
-
-            for consumer in consumers:
-                consumer.consume(player, self.model, self.ctx, input)
-
     def tick(self):
-        input = PlayerInput()
+        player_input = PlayerInput()
         mutations = self.controller.handle_input(self.ctx.logger)
 
         if mutations:
             for mutation in mutations:
-                mutation(input)  # edits in-place
+                mutation(player_input)  # edits in-place
 
         self.event_manager.push()
 
-        self.model.buffer_input(self.ctx.local_player_id, input)
+        self.model.buffer_input(self.ctx.local_player_id, player_input)
+        current_tick = self.model.tick_idx
+        input_payload = asdict(player_input)
+
+        if self.model.is_in_match:
+            packet = Packets.player_move_state(input_payload, current_tick)
+            msg_id = packet.msg_id
+            self.model.server_client.enqueue(Packets.envelope(packet), msg_id)
+
         self.scene_manager.tick()
 
         self.model.advance()

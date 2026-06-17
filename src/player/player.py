@@ -1,5 +1,6 @@
 import uuid
 
+from dataclasses import dataclass
 from enum import IntEnum
 
 from geometry import BoundingBox2D
@@ -13,6 +14,43 @@ class Facing(IntEnum):
     POS_X = 1
 
 
+@dataclass
+class PlayerPhysics:
+    dash_timer: int = 0
+    has_cut_jump: bool = True
+
+
+@dataclass
+class Position:
+    x: float
+    y: float
+    facing: Facing
+    vel_x: float = 0
+    vel_y: float = 0
+    is_ducking: bool = False
+    is_dashing: bool = False
+    is_grounded: bool = False
+    physics: PlayerPhysics = PlayerPhysics()
+
+    @classmethod
+    def from_packet(cls, packet: packet_pb2.PositionData):
+        return cls(
+            x=packet.x,
+            y=packet.y,
+            vel_x=packet.vel_x,
+            vel_y=packet.vel_y,
+            is_ducking=packet.is_ducking,
+            is_dashing=packet.is_dashing,
+            is_grounded=packet.is_grounded,
+
+            facing=(
+                Facing.NEG_X
+                if packet.facing == packet_pb2.Facing.Facing_NEG_X
+                else Facing.POS_X
+            )
+        )
+
+
 class Player:
     player_id: uuid.UUID
 
@@ -22,16 +60,15 @@ class Player:
         name: str,
         is_client: bool,
 
-        x: float = 0.0,
-        y: float = 0.0,
-        facing: Facing | None = None
+        x: float,
+        y: float,
+        facing: Facing,
     ):
         self.player_id = player_id
         self.name = name
         self.is_client = is_client
 
-        self.x = x
-        self.y = y
+        self.position = Position(x, y, facing)
 
         self.velocity_x = 0.0
         self.velocity_y = 0.0
@@ -39,10 +76,16 @@ class Player:
         self.width = PLAYER_WIDTH
         self.height = PLAYER_HEIGHT
 
-        self.facing = facing
-
         self.is_on_ground = True
         self.is_ducking = False
+
+    def apply_position(self, position: Position):
+        self.position = position
+
+    def matches_position(self, position: Position, epsilon: float = 0.01):
+        return self.position.facing == position.facing and \
+            abs(self.position.x - position.x) <= epsilon and \
+            abs(self.position.y - position.y) <= epsilon
 
     @classmethod
     def from_packet(cls, player_data: packet_pb2.PlayerData, is_client: bool):
@@ -67,14 +110,14 @@ class Player:
     @property
     def get_bounding_box(self) -> BoundingBox2D:
         return BoundingBox2D(
-            self.x,
-            self.y,
-            self.x + self.width,
-            self.y + self.height
+            self.position.x,
+            self.position.y,
+            self.position.x + self.width,
+            self.position.y + self.height
         )
 
     def toggle_duck_height(self, duck: bool):
-        self.is_ducking = duck
+        self.position.is_ducking = duck
         self.height = PLAYER_DUCK_HEIGHT if duck else PLAYER_HEIGHT
 
     @property

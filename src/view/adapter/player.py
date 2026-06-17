@@ -1,14 +1,23 @@
+import collections
+import uuid
+
+from game.model.state import GameState
+from player.player import Player
+from registry import register_adapter
 from view.adapter.base import ViewAdapter
 from view.renderable import Renderable, RenderState
-from registry import register_adapter
-from player.player import Player
 
-import settings
+from settings import PLAYER_WIDTH, SIMUL_DELAY_TICKS
 
 
 @register_adapter(Player)
 class PlayerAdapter(ViewAdapter[Player]):
+    def __init__(self):
+        self.position_hist: dict[uuid.UUID, collections.deque] = {}
+
     def create(self, object: Player) -> Renderable:
+        self.position_hist[object.player_id] = collections.deque(maxlen=16)
+
         return Renderable(
             z_index=0,
             states={
@@ -18,11 +27,54 @@ class PlayerAdapter(ViewAdapter[Player]):
                 )
             },
             current_state="0",
-            # there will be an unnoticeable difference between the
-            # real position and the rendered position (within 1 unit)
-            location=(int(object.x), int(object.y)),
-            size=(object.height, settings.PLAYER_WIDTH)
+            location=(object.x, object.y),
+            size=(object.height, PLAYER_WIDTH)
         )
 
-    def update(self, object: Player, renderable: Renderable):
-        renderable.location = (int(object.x), int(object.y))
+    def update(
+        self,
+        object: Player,
+        renderable: Renderable,
+        model: GameState,
+        current_render_tick: float
+    ):
+        hist = self.position_hist.get(object.player_id)
+        if hist is None:
+            return
+
+        if object.is_client:
+            renderable.location = (int(object.x), int(object.y))
+            return
+
+        hist.append((model.last_server_tick, object.x, object.y))
+        if len(hist) < 2:
+            renderable.location = (int(object.x), int(object.y))
+            return
+
+        delay = max(SIMUL_DELAY_TICKS, model.network_offset)
+        target_tick = current_render_tick - delay
+
+        state1 = state2 = None
+        for i in range(len(hist) - 1):
+            t1, x1, y1 = hist[i]
+            t2, x2, y2 = hist[i+1]
+
+            if t1 <= target_tick <= t2:
+                state1 = (t1, x1, y1)
+                state2 = (t2, x2, y2)
+                break
+
+        if not state1 or not state2:
+            # not enough history
+            renderable.location = (int(object.x), int(object.y))
+            return
+
+        # larp- no, lerp
+        t1, x1, y1 = state1
+        t2, x2, y2 = state2
+        alpha = (target_tick - t1) / (t2 - t1)
+
+        final_x = x1 + alpha * (x2 - x1)
+        final_y = y1 + alpha * (y2 - y1)
+
+        renderable.location = (final_x, final_y)

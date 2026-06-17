@@ -64,19 +64,27 @@ class MatchScene(Scene):
         actions.request_match_info(self.model)
 
     def on_enter(self):
-        self.lid = self.ctx.event_manager.register_listener(
-            UDPReceivedEvent,
-            self.player_data_receiver
-        )
+        self.lids = [
+            self.ctx.event_manager.register_listener(
+                UDPReceivedEvent,
+                self.match_start_info_receiver
+            ),
+
+            self.ctx.event_manager.register_listener(
+                UDPReceivedEvent,
+                self.piggyback_receiver
+            )
+        ]
 
     def on_exit(self):
-        self.ctx.event_manager.unregister_listener(self.lid)
+        for lid in self.lids:
+            self.ctx.event_manager.unregister_listener(lid)
 
-    def player_data_receiver(self, event: UDPReceivedEvent):
+    def match_start_info_receiver(self, event: UDPReceivedEvent):
         if event.message_type != packet_pb2.RequestMatchInfoResponse:
             return
         
-        self.model.sync_rng(event.message.rng_seed)
+        self.model.prepare_match(event.message.rng_seed)
 
         player1, player2 = list(event.message.players)
         try:
@@ -93,9 +101,17 @@ class MatchScene(Scene):
 
         self.model.set_client_player(player1 if player1.is_client else player2)
         self.model.set_opponent_player(player2 if player1.is_client else player1)
+        self.model.is_in_match = True
 
-        self.ctx.logger.info("Player1: %s, %s, %s, %d, %d, %s", str(player1.player_id), player1.name, str(player1.is_client), player1.x, player1.y, player1.facing.name)
-        self.ctx.logger.info("Player2: %s, %s, %s, %d, %d, %s", str(player2.player_id), player2.name, str(player2.is_client), player2.x, player2.y, player2.facing.name)
+    def piggyback_receiver(self, event: UDPReceivedEvent):
+        if event.message_type != packet_pb2.Reconcile:
+            return
+
+        server_tick: int = event.message.server_tick
+        last_client_tick: int = event.message.last_client_tick
+        players = list(event.message.players)
+
+        self.model.reconcile(server_tick, last_client_tick, players, self.ctx)
         
     def find_action(self, action_name: str):
         return self.action_mapping.get(action_name, None)
