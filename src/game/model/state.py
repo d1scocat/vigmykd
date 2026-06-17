@@ -90,8 +90,6 @@ class GameState:
         player_data: list[packet_pb2.PositionData],
         ctx: GameContext,
     ):
-        self.logger.info(f"[NET] RECONCILE CALLED | Srv: {server_tick} | Players in packet: {len(player_data)}")
-
         if self.client_player is None or self.opponent_player is None:
             self.logger.warning("Cannot reconcile position if any player is None")
             return
@@ -99,8 +97,6 @@ class GameState:
         self._sync_offset(server_tick, last_client_tick)
 
         try:
-            self.logger.info(f"[NET] Server sent UUIDs: {[data.uuid for data in player_data]}")
-            self.logger.info(f"[NET] Local UUIDs: Client={self.client_player.player_id}, Opp={self.opponent_player.player_id}")
             player_pos = {
                 UUID(data.uuid): Position.from_packet(data)
                 for data in player_data
@@ -114,21 +110,14 @@ class GameState:
 
             if not client_pos or not opponent_pos:
                 raise ValueError("Could not map reconciliation UUIDs to active players")
-
-            self.logger.info(f"[NET] Successfully parsed positions. Opponent new pos: {opponent_pos}")
         except Exception:
             self.logger.exception("Could not decode player position packets")
             return
 
         # opponent position is not being predicted
         self.opponent_player.apply_position(opponent_pos)
-        self.logger.info(f"[NET] Applied opponent position. New Opponent Pos: {self.opponent_player.position}")
 
         if not self.client_player.matches_position(client_pos):
-            self.logger.info(
-                "Local player position diverged, reconcilling | Server: %r (current: %r)",
-                client_pos, self.client_player.position
-            )
             self.client_player.apply_position(client_pos)
 
             self.is_reconciling = True
@@ -158,7 +147,6 @@ class GameState:
         # ...actually it might not be needed
         # delay = max(DELAY, (self.network_offset // 2) + DELAY)
         tick = self.tick_idx # + delay
-        self.logger.info(f"[CLIENT] BUFFER | Tick: {tick} | Dir: {player_input.move_dir}")
 
         tick_buffer = self._input_buffer.setdefault(tick, {})
         tick_buffer[player_id] = player_input

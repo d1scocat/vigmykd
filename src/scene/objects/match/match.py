@@ -83,8 +83,6 @@ class MatchScene(Scene):
     def match_start_info_receiver(self, event: UDPReceivedEvent):
         if event.message_type != packet_pb2.RequestMatchInfoResponse:
             return
-
-        self.ctx.logger.info("[NET] RequestMatchInfoResponse received. Seed: %s", event.message.rng_seed)
         
         self.model.prepare_match(event.message.rng_seed, event.message.initial_server_tick)
 
@@ -98,12 +96,6 @@ class MatchScene(Scene):
             player1 = Player.from_packet(player1, client_id == player1_id)
             player2 = Player.from_packet(player2, client_id == player2_id)
 
-            self.ctx.logger.info(
-                "[NET] Players parsed. P1: %s (is_client: %s), P2: %s (is_client: %s). Local ID: %s",
-                str(player1_id)[:8], client_id == player1_id, 
-                str(player2_id)[:8], client_id == player2_id, 
-                str(client_id)[:8]
-            )
         except Exception:
             self.ctx.logger.exception("Could not create players when starting match")
             raise
@@ -112,42 +104,15 @@ class MatchScene(Scene):
         self.model.set_opponent_player(player2 if player1.is_client else player1)
         self.model.is_in_match = True
 
-        self.ctx.logger.info(
-            "[NET] Match ready. LocalPos: (%.2f, %.2f) | OppPos: (%.2f, %.2f)",
-            self.model.client_player.position.x, self.model.client_player.position.y,
-            self.model.opponent_player.position.x, self.model.opponent_player.position.y
-        )
-
     def piggyback_receiver(self, event: UDPReceivedEvent):
-        self.ctx.logger.info(f"[NET] RECEIVED UDP EVENT | Type: {event.message_type!r}")
         if event.message_type != packet_pb2.Reconcile:
-            self.ctx.logger.warning(f"[NET] Ignoring packet type: {event.message_type} (Expected Reconcile)")
             return
-
-        self.ctx.logger.info(f"[NET] Processing Reconcile packet")
 
         server_tick: int = event.message.server_tick
         last_client_tick: int = event.message.last_client_tick
         players = list(event.message.players)
 
-        self.ctx.logger.info(
-            f"[NET] Recv Reconcile | SrvTick: %d | LastCliTick: %d | LocalTick: %d | Players in packet: {len(players)}",
-            server_tick, last_client_tick, self.model.tick_idx
-        )
-
-        for p_data in players:
-            # Log the raw authoritative state received from the server
-            self.ctx.logger.info(
-                "[NET] Srv State for %s | Pos: (%.2f, %.2f)",
-                p_data.uuid[:8], p_data.position.x, p_data.position.y
-            )
-
         self.model.reconcile(server_tick, last_client_tick, players, self.ctx)
-
-        self.ctx.logger.info(
-            "[NET] Post-Reconcile | Offset: %d | EstSrvTick: %d",
-            self.model.network_offset, self.model.estimated_server_tick
-        )
         
     def find_action(self, action_name: str):
         return self.action_mapping.get(action_name, None)

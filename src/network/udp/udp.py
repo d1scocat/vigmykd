@@ -114,6 +114,7 @@ class GameServerClient:
         while time.perf_counter() < deadline:
             try:
                 packet, _ = self.sock.recvfrom(2048)
+                self.logger.info(f"[NET] RECV RAW | Size: {len(packet)} bytes")
                 self.logger.debug("Got packet of size %d", len(packet))
             except BlockingIOError:
                 return
@@ -121,7 +122,7 @@ class GameServerClient:
                 self.logger.exception("Socket recv failed")
                 continue
             except Exception:
-                self.logger.exception(f"[NET] FATAL: recv_worker crashed while processing packet")
+                self.logger.exception(f"recv_worker crashed while processing packet")
 
             try:
                 envelope = packet_pb2.Envelope()
@@ -214,6 +215,7 @@ class GameServerClient:
     def _invoke_event(self, envelope: packet_pb2.Envelope):
         inner = self._innermost_message(envelope)
         msg_type = type(inner)
+        self.logger.info(f"[NET] RECV MSG_TYPE: {msg_type}")
 
         self.event_manager.invoke_event(UDPReceivedEvent(msg_type, inner, envelope))
 

@@ -30,7 +30,6 @@ class MovementConsumer(InputConsumer):
     ):
         if not player:
             return  # Not the appropriate system for movement handling
-        ctx.logger.info(f"[CLIENT] PREDICT | Pos: ({player.position.x:.1f}, {player.position.y:.1f}) | Dir: {player_input.move_dir}")
 
         # === === === dashing === === === #
         if player_input.dash and not player.position.is_dashing:
