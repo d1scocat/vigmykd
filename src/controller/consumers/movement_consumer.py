@@ -110,8 +110,8 @@ class MovementConsumer(InputConsumer):
         player.position.y += player.position.vel_y
 
         # === === === collision, ground === === ===
-        floor_y = 0.0  # (stub!)
-        if player.position.y <= floor_y:
+        floor_y = 1000.0  # (stub!)
+        if player.position.y >= floor_y:
             player.position.y = floor_y
             player.position.vel_y = 0.0
             player.position.is_grounded = True

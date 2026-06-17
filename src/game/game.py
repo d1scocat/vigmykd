@@ -89,15 +89,16 @@ class Game:
 
         self.event_manager.push()
 
-        self.model.buffer_input(self.ctx.local_player_id, player_input)
-        current_tick = self.model.tick_idx
-        input_payload = asdict(player_input)
+        if self.model.client_player:
+            self.model.buffer_input(self.model.client_player.player_id, player_input)
+            current_tick = self.model.tick_idx
+            input_payload = asdict(player_input)
 
-        if self.model.is_in_match:
-            self.ctx.logger.info(f"[CLIENT] SENDING UDP | Tick: {self.model.tick_idx} | Dir: {player_input.move_dir}")
-            packet = Packets.player_move_state(input_payload, current_tick)
-            msg_id = packet.msg_id
-            self.model.server_client.enqueue(Packets.envelope(packet), msg_id)
+            if self.model.is_in_match:
+                self.ctx.logger.info(f"[CLIENT] SENDING UDP | Tick: {self.model.tick_idx} | Dir: {player_input.move_dir} | Positions: {self.model.client_player.position=!r}, {self.model.opponent_player=!r}")
+                packet = Packets.player_move_state(input_payload, current_tick)
+                msg_id = packet.msg_id
+                self.model.server_client.enqueue(Packets.envelope(packet), msg_id)
 
         self.scene_manager.tick()
 
