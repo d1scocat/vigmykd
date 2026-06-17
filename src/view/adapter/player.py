@@ -27,7 +27,7 @@ class PlayerAdapter(ViewAdapter[Player]):
                 )
             },
             current_state="0",
-            location=(object.x, object.y),
+            location=(object.position.x, object.position.y),
             size=(object.height, PLAYER_WIDTH)
         )
 
