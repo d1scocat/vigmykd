@@ -28,9 +28,9 @@ class MovementConsumer(InputConsumer):
         ctx: GameContext,
         player_input: PlayerInput
     ):
-        # ctx.logger.info("Received input %s for player %s", player_input, player.player_id if player else None)
         if not player:
             return  # Not the appropriate system for movement handling
+        ctx.logger.debug(f"[CLIENT] PREDICT | Pos: ({player.position.x:.1f}, {player.position.y:.1f}) | Dir: {player_input.move_dir}")
 
         # === === === dashing === === === #
         if player_input.dash and not player.position.is_dashing:

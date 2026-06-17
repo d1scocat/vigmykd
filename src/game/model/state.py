@@ -147,6 +147,7 @@ class GameState:
         # ...actually it might not be needed
         # delay = max(DELAY, (self.network_offset // 2) + DELAY)
         tick = self.tick_idx # + delay
+        self.logger.debug(f"[CLIENT] BUFFER | Tick: {tick} | Dir: {player_input.move_dir}")
 
         tick_buffer = self._input_buffer.setdefault(tick, {})
         tick_buffer[player_id] = player_input
