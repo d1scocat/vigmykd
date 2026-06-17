@@ -119,6 +119,7 @@ class MatchScene(Scene):
         )
 
     def piggyback_receiver(self, event: UDPReceivedEvent):
+        self.ctx.logger.info(f"[NET] {event.message_type=!r}")
         if event.message_type != packet_pb2.Reconcile:
             return
 
@@ -126,21 +127,21 @@ class MatchScene(Scene):
         last_client_tick: int = event.message.last_client_tick
         players = list(event.message.players)
 
-        self.ctx.logger.debug(
+        self.ctx.logger.info(
             "[NET] Recv Reconcile | SrvTick: %d | LastCliTick: %d | LocalTick: %d",
             server_tick, last_client_tick, self.model.tick_idx
         )
 
         for p_data in players:
             # Log the raw authoritative state received from the server
-            self.ctx.logger.debug(
+            self.ctx.logger.info(
                 "[NET] Srv State for %s | Pos: (%.2f, %.2f)",
                 p_data.uuid[:8], p_data.position.x, p_data.position.y
             )
 
         self.model.reconcile(server_tick, last_client_tick, players, self.ctx)
 
-        self.ctx.logger.debug(
+        self.ctx.logger.info(
             "[NET] Post-Reconcile | Offset: %d | EstSrvTick: %d",
             self.model.network_offset, self.model.estimated_server_tick
         )

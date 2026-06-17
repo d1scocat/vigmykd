@@ -30,7 +30,7 @@ class MovementConsumer(InputConsumer):
     ):
         if not player:
             return  # Not the appropriate system for movement handling
-        ctx.logger.debug(f"[CLIENT] PREDICT | Pos: ({player.position.x:.1f}, {player.position.y:.1f}) | Dir: {player_input.move_dir}")
+        ctx.logger.info(f"[CLIENT] PREDICT | Pos: ({player.position.x:.1f}, {player.position.y:.1f}) | Dir: {player_input.move_dir}")
 
         # === === === dashing === === === #
         if player_input.dash and not player.position.is_dashing:
@@ -110,7 +110,7 @@ class MovementConsumer(InputConsumer):
         player.position.y += player.position.vel_y
 
         # === === === collision, ground === === ===
-        floor_y = 1000.0  # (stub!)
+        floor_y = 400.0  # (stub!)
         if player.position.y >= floor_y:
             player.position.y = floor_y
             player.position.vel_y = 0.0

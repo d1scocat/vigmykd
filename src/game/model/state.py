@@ -114,7 +114,7 @@ class GameState:
         self.opponent_player.apply_position(opponent_pos)
 
         if not self.client_player.matches_position(client_pos):
-            self.logger.debug(
+            self.logger.info(
                 "Local player position diverged, reconcilling | Server: %r (current: %r)",
                 client_pos, self.client_player.position
             )
@@ -147,7 +147,7 @@ class GameState:
         # ...actually it might not be needed
         # delay = max(DELAY, (self.network_offset // 2) + DELAY)
         tick = self.tick_idx # + delay
-        self.logger.debug(f"[CLIENT] BUFFER | Tick: {tick} | Dir: {player_input.move_dir}")
+        self.logger.info(f"[CLIENT] BUFFER | Tick: {tick} | Dir: {player_input.move_dir}")
 
         tick_buffer = self._input_buffer.setdefault(tick, {})
         tick_buffer[player_id] = player_input
