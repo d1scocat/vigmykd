@@ -45,7 +45,7 @@ class Position:
 
             facing=(
                 Facing.NEG_X
-                if packet.facing == packet_pb2.Facing.Facing_NEG_X
+                if packet.facing == packet_pb2.Facing.FACING_NEG_X
                 else Facing.POS_X
             )
         )
