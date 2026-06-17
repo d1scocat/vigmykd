@@ -67,12 +67,12 @@ class MatchScene(Scene):
         self.lids = [
             self.ctx.event_manager.register_listener(
                 UDPReceivedEvent,
-                self.match_start_info_receiver
+                self.piggyback_receiver
             ),
 
             self.ctx.event_manager.register_listener(
                 UDPReceivedEvent,
-                self.piggyback_receiver
+                self.match_start_info_receiver
             )
         ]
 

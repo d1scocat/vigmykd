@@ -120,6 +120,8 @@ class GameServerClient:
             except OSError:
                 self.logger.exception("Socket recv failed")
                 continue
+            except Exception:
+                self.logger.exception(f"[NET] FATAL: recv_worker crashed while processing packet")
 
             try:
                 envelope = packet_pb2.Envelope()
