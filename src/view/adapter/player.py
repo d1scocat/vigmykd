@@ -45,8 +45,10 @@ class PlayerAdapter(ViewAdapter[Player]):
         if object.is_client:
             renderable.location = (int(object.position.x), int(object.position.y))
             return
+        
+        if not hist or model.last_server_tick > hist[-1][0]:
+            hist.append((model.last_server_tick, object.position.x, object.position.y))
 
-        hist.append((model.last_server_tick, object.position.x, object.position.y))
         if len(hist) < 2:
             renderable.location = (int(object.position.x), int(object.position.y))
             return
@@ -72,7 +74,11 @@ class PlayerAdapter(ViewAdapter[Player]):
         # larp- no, lerp
         t1, x1, y1 = state1
         t2, x2, y2 = state2
-        alpha = (target_tick - t1) / (t2 - t1)
+
+        if t2 == t1:
+            alpha = 0.0
+        else:
+            alpha = (target_tick - t1) / (t2 - t1)
 
         final_x = x1 + alpha * (x2 - x1)
         final_y = y1 + alpha * (y2 - y1)

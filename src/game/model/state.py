@@ -73,6 +73,9 @@ class GameState:
         self.is_in_match = True
 
     def _sync_offset(self, server_tick: int, last_client_tick: int):
+        if server_tick <= self.last_server_tick:
+            return
+
         self.network_offset = server_tick - last_client_tick
         self.last_server_tick = server_tick
 
