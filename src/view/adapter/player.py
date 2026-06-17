@@ -43,12 +43,12 @@ class PlayerAdapter(ViewAdapter[Player]):
             return
 
         if object.is_client:
-            renderable.location = (int(object.x), int(object.y))
+            renderable.location = (int(object.position.x), int(object.position.y))
             return
 
-        hist.append((model.last_server_tick, object.x, object.y))
+        hist.append((model.last_server_tick, object.position.x, object.position.y))
         if len(hist) < 2:
-            renderable.location = (int(object.x), int(object.y))
+            renderable.location = (int(object.position.x), int(object.position.y))
             return
 
         delay = max(SIMUL_DELAY_TICKS, model.network_offset)
@@ -66,7 +66,7 @@ class PlayerAdapter(ViewAdapter[Player]):
 
         if not state1 or not state2:
             # not enough history
-            renderable.location = (int(object.x), int(object.y))
+            renderable.location = (int(object.position.x), int(object.position.y))
             return
 
         # larp- no, lerp
