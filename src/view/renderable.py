@@ -15,4 +15,4 @@ class Renderable:
     location: tuple[float, float]
     size: tuple[int, int]
     flip_x: bool = False
-    flip_y: bool = True
+    flip_y: bool = False
