@@ -2,7 +2,7 @@ import collections
 import uuid
 
 from game.model.state import GameState
-from player.player import Player
+from player.player import Facing, Player
 from registry import register_adapter
 from view.adapter.base import ViewAdapter
 from view.renderable import Renderable, RenderState
@@ -38,19 +38,23 @@ class PlayerAdapter(ViewAdapter[Player]):
         model: GameState,
         current_render_tick: float
     ):
+        def simple_set():
+            renderable.location = (object.position.x, object.position.y)
+            renderable.flip_x = (object.position.facing == Facing.NEG_X)
+
         hist = self.position_hist.get(object.player_id)
         if hist is None:
             return
 
         if object.is_client:
-            renderable.location = (object.position.x, object.position.y)
+            simple_set()
             return
         
         if not hist or model.last_server_tick > hist[-1][0]:
             hist.append((model.last_server_tick, object.position.x, object.position.y))
 
         if len(hist) < 2:
-            renderable.location = (object.position.x, object.position.y)
+            simple_set()
             return
 
         delay = max(SIMUL_DELAY_TICKS, model.network_offset)
@@ -68,7 +72,7 @@ class PlayerAdapter(ViewAdapter[Player]):
 
         if not state1 or not state2:
             # not enough history
-            renderable.location = (object.position.x, object.position.y)
+            simple_set()
             return
 
         # larp- no, lerp
@@ -84,3 +88,4 @@ class PlayerAdapter(ViewAdapter[Player]):
         final_y = y1 + alpha * (y2 - y1)
 
         renderable.location = (final_x, final_y)
+        renderable.flip_x = (object.position.facing == Facing.NEG_X)

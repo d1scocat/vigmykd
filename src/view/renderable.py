@@ -14,3 +14,5 @@ class Renderable:
     current_state: str
     location: tuple[float, float]
     size: tuple[int, int]
+    flip_x: bool = False
+    flip_y: bool = True
