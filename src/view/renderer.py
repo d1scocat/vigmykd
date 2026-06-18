@@ -115,8 +115,13 @@ class Renderer:
                 return
 
             self.scale_cache[cache_key] = pygame.transform.smoothscale(surface, (w, h))
-        
-        if renderable.flip_x or renderable.flip_y:
-            surface = pygame.transform.flip(surface, renderable.flip_x, renderable.flip_y)
 
-        self.screen.blit(self.scale_cache[cache_key], loc)
+        final_surface = self.scale_cache[cache_key]
+        if renderable.flip_x or renderable.flip_y:
+            final_surface = pygame.transform.flip(
+                final_surface,
+                renderable.flip_x,
+                renderable.flip_y
+            )
+
+        self.screen.blit(final_surface, loc)
