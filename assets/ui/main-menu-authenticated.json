@@ -63,9 +63,9 @@
             "size": { "mode": "match-texture" },
 
             "states": {
-                "normal": { "texture": { "sheet": 6, "tile": [0, 2] } },
-                "hovered": { "texture": { "sheet": 6, "tile": [1, 2] } },
-                "pressed": { "texture": { "sheet": 6, "tile": [2, 2] } }
+                "normal": { "texture": { "sheet": 10, "tile": [0, 2] } },
+                "hovered": { "texture": { "sheet": 10, "tile": [1, 2] } },
+                "pressed": { "texture": { "sheet": 10, "tile": [2, 2] } }
             },
             
             "action": "exit"

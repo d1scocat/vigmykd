@@ -33,6 +33,7 @@ def load_spritesheet(
                 tile_w,
                 tile_h
             )
+
             sprite = sheet.subsurface(rect).copy()
             row.append(sprite)
 
