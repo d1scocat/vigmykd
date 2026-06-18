@@ -5,7 +5,7 @@ from controller.consumers.input_consumer import InputConsumer
 from controller.input_model import PlayerInput
 from context import GameContext
 from game.model import GameState
-from player import Player
+from player import Facing, Player
 
 from settings import MOVE_SPEED, \
     GRAVITY_RISE, \
@@ -100,6 +100,12 @@ class MovementConsumer(InputConsumer):
 
         if not player.position.is_grounded and not player.position.is_dashing:
             player.position.vel_x *= AIR_DRAG
+
+        # update facing
+        if player.position.vel_x > 0:
+            player.position.facing = Facing.POS_X
+        elif player.position.vel_x < 0:
+            player.position.facing = Facing.NEG_X
 
         # === === === y movement: jump === === ===
         if player_input.jump and player.position.is_grounded and not player_input.duck:
