@@ -1,3 +1,4 @@
+from .game_quit import GameQuitEvent
 from .http_response import HTTPResponseEvent
 from .scene_enter import ScenePostEnterEvent, ScenePreEnterEvent
 from .scene_exit import ScenePostExitEvent, ScenePreExitEvent

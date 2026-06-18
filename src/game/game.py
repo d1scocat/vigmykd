@@ -103,9 +103,9 @@ class Game:
 
         self.model.advance()
 
-    def render(self):
+    def render(self, render_alpha: float):
         self.view.drop_render_queue()
 
-        self.scene_manager.render(self.view, self.view_system)
+        self.scene_manager.render(self.view, self.view_system, render_alpha)
 
         self.view.draw_screen()

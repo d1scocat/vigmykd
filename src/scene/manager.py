@@ -38,15 +38,15 @@ class SceneManager:
         event.scene.load()
 
     def tick(self):
-        self.current.do_tick()
+        self.current.tick()
 
     def handle_pygame_event(self, event: pygame.event.Event) -> bool:
         if hasattr(self.current, "handle_pygame_event"):
             return self.current.handle_pygame_event(event)
         return False
 
-    def render(self, view: Renderer, view_system: ViewSystem):
-        self.current.render(view, view_system)
+    def render(self, view: Renderer, view_system: ViewSystem, render_alpha: float):
+        self.current.render(view, view_system, render_alpha, self.current.ctx)
 
     def _enter_scene(self, scene: Scene):
         self.event_manager.invoke_event(ScenePreLoadEvent(scene))

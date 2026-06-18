@@ -9,6 +9,7 @@ import registry
 from config import load_config
 from context import GameContext
 from event import EventManager
+from event.events import GameQuitEvent
 from game.game import Game
 from log import setup as log_setup
 from network import ApiClient, GameServerClient
@@ -20,6 +21,8 @@ from settings import TPS_DELTA, \
 
 # ===== INITIALIZING SCREEN AND PYGAME ===== #
 pygame.init()
+running = True
+
 
 info = pygame.display.Info()
 
@@ -80,6 +83,12 @@ load_sheets(ctx, ctx.texture_manager)
 # ===== Requesting key ===== #
 api_client.get("/key/public")
 
+
+# Auxiliary function, subscribes to GameQuitEvent for graceful shutdowns
+def _aux_stop_running(event: GameQuitEvent):
+    running = False
+
+
 # ===== LISTENERS ===== #
 # TODO: extract this somewhere
 from event.events import HTTPResponseEvent
@@ -93,8 +102,9 @@ listeners = [
 for (listener, type) in listeners:
     listener.sub(type, event_manager)
 
+event_manager.register_listener(GameQuitEvent, _aux_stop_running)
+
 # ===== GAME LOOP ===== #
-running = True
 clock = pygame.time.Clock()
 
 # fps/tps separation
@@ -106,7 +116,7 @@ while running:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            event_manager.invoke_event(GameQuitEvent())
         else:
             game.handle_input_prep(event)
 
@@ -116,11 +126,7 @@ while running:
         accumulator -= TPS_DELTA
         ticks_simulated += 1
 
-        # account for marginally small floating point drifting
-        # nvm might be buggy
-        # if accumulator < math.pow(10, -4):
-        #    accumulator = 0.0
-
-    game.render()
+    render_alpha = accumulator / TPS_DELTA  # interpolation alpha
+    game.render(render_alpha)
 
     pygame.display.flip()

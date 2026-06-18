@@ -19,11 +19,37 @@ from view.system import ViewSystem
 
 class Scene(ABC):
     model: GameState
-    _loaded: bool = False  # problems may arise
+    ctx: GameContext
+    input_router: SceneInputRouter
+    action_mapping: dict[str, Callable[['Scene', GameState, GameContext], Any] | None]
 
-    @abstractmethod
+    _loaded: bool = False  # problems may arise?
+
     def tick(self):
-        pass
+        self.model.server_client.pump()
+
+        keys = pygame.key.get_pressed()
+        if self.interaction.focused_component:
+            component = self.interaction.focused_component
+            if isinstance(component, UITextArea):
+                component.update(keys)
+
+        inputs = self.model.consume_inputs()
+        self.input_router.simulate_route(inputs, self.model, self.ctx)
+
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_down = pygame.mouse.get_pressed()[0]
+
+        perform = self.interaction.update(
+            self.page.elements,
+            mouse_pos,
+            mouse_down
+        )
+
+        if perform is not None:
+            action = self.find_action(perform)
+            if action is not None:
+                action(self, self.model, self.ctx)
 
     @abstractmethod
     def on_enter(self):
@@ -46,34 +72,6 @@ class Scene(ABC):
     def on_event(self, event: pygame.event.Event) -> bool:
         pass
 
-    def do_tick(self):
-        self.model.server_client.pump()
-        keys = pygame.key.get_pressed()
-        if self.interaction.focused_component:
-            component = self.interaction.focused_component
-            if isinstance(component, UITextArea):
-                component.update(keys)
-
-        self.tick()
-
-    def default_tick(self, ctx: GameContext, input_router: SceneInputRouter):
-        inputs = self.model.consume_inputs()
-        input_router.simulate_route(inputs, self.model, ctx)
-
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_down = pygame.mouse.get_pressed()[0]
-
-        perform = self.interaction.update(
-            self.page.elements,
-            mouse_pos,
-            mouse_down
-        )
-
-        if perform is not None:
-            action = self.find_action(perform)
-            if action is not None:
-                action(self, self.model, ctx)
-
     def handle_pygame_event(self, event: pygame.event.Event) -> bool:
         """
             Returns: True if the event is intercepted by the scene and should not
@@ -91,9 +89,21 @@ class Scene(ABC):
             return self.on_event(event)
         return False
 
-    @abstractmethod
-    def render(self, view: Renderer, view_system: ViewSystem):
-        pass
+    def render(
+        self,
+        view: Renderer,
+        view_system: ViewSystem,
+        render_alpha: float,
+        ctx: GameContext
+    ):
+        view.drop_render_queue()
+
+        self.page.process()
+        self.page.resolve_layout(ctx.screen_size, ctx)
+        self.page.submit_ui(view)
+
+        view_system.update(self.model, render_alpha)
+        view_system.submit(view)
 
     @abstractmethod
     def find_action(self, action_name: str) -> Callable[['Scene', GameState, GameContext], Any] | None:

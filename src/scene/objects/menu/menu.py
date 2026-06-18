@@ -37,7 +37,7 @@ class MenuScene(Scene):
             ctx.ui_path / f"main-menu-{'' if authenticated else 'un'}authenticated.json"
         )
 
-        self.action_mapping: dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
+        self.action_mapping = {
             "show_login_overlay": actions.show_login_overlay,
             # "open_settings": ...,
             # "exit": ...,
@@ -52,19 +52,6 @@ class MenuScene(Scene):
     @property
     def interaction(self) -> UIInteractionSystem:
         return self._ui_interaction
-
-    def tick(self):
-        super().default_tick(self.ctx, self.input_router)
-
-    def render(self, view: Renderer, view_system: ViewSystem):
-        view.drop_render_queue()
-
-        self.page.process()
-        self.page.resolve_layout(self.ctx.screen_size, self.ctx)
-        self.page.submit_ui(view)
-
-        view_system.update(self.model)
-        view_system.submit(view)
 
     def login_listener(self, event: HTTPResponseEvent):
         if not hasattr(self, "login_req_id"):
