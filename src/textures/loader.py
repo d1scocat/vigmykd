@@ -47,7 +47,7 @@ def load_sheets(ctx: GameContext, manager: TextureManager):
     sheets: list[dict[str, Any]] = json.loads(sheets_file.read_text())
 
     for sheet in sheets:
-        id = sheet["id"]
+        sheet_id = sheet["id"]
         path = sheets_path / sheet["path"]
         tile_size = tuple(sheet["tile-size"])
         grid_size = tuple(sheet["grid-size"])
@@ -56,7 +56,7 @@ def load_sheets(ctx: GameContext, manager: TextureManager):
         spacing = tuple(sheet.get("spacing", [0, 0]))
 
         manager.add_spritesheet(
-            id=id,
+            id=sheet_id,
             sheet=load_spritesheet(
                 path=path,
                 tile_size=tile_size,

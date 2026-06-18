@@ -92,9 +92,6 @@ class Game:
         if self.model.client_player:
             self.model.buffer_input(self.model.client_player.player_id, player_input)
 
-            # simulate immediately using the exact input sent to the server
-            self.model.simulate_input(self.ctx, self.model.client_player, player_input)
-
             current_tick = self.model.tick_idx
             input_payload = asdict(player_input)
 

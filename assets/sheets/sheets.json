@@ -15,29 +15,69 @@
 
     {
         "id": 3,
-        "path": "sheet3.btn.png",
-        "tile-size": [84, 24],
-        "grid-size": [3, 1]
-    },
-
-    {
-        "id": 4,
         "path": "sheet4.form.png",
         "tile-size": [960, 540],
         "grid-size": [1, 1]
     },
 
     {
-        "id": 5,
+        "id": 4,
         "path": "sheet5.textarea.png",
         "tile-size": [800, 100],
         "grid-size": [1, 1]
     },
 
     {
+        "id": 5,
+        "path": "sheet6.btn.png",
+        "tile-size": [135, 59],
+        "grid-size": [4, 1],
+        "offset": [0, 103],
+        "spacing": [5, 0]
+    },
+
+    {
         "id": 6,
         "path": "sheet6.btn.png",
-        "tile-size": [100, 100],
-        "grid-size": [3, 2]
+        "tile-size": [55, 55],
+        "grid-size": [4, 9],
+        "offset": [8, 272],
+        "spacing": [9, 12]
+    },
+
+    {
+        "id": 7,
+        "path": "sheet6.btn.png",
+        "tile-size": [55, 55],
+        "grid-size": [4, 9],
+        "offset": [8, 272],
+        "spacing": [9, 12]
+    },
+
+    {
+        "id": 8,
+        "path": "sheet6.btn.png",
+        "tile-size": [55, 55],
+        "grid-size": [4, 9],
+        "offset": [302, 272],
+        "spacing": [9, 12]
+    },
+
+    {
+        "id": 9,
+        "path": "sheet6.btn.png",
+        "tile-size": [55, 55],
+        "grid-size": [4, 13],
+        "offset": [612, 0],
+        "spacing": [9, 12]
+    },
+
+    {
+        "id": 10,
+        "path": "sheet6.btn.png",
+        "tile-size": [55, 55],
+        "grid-size": [4, 13],
+        "offset": [906, 0],
+        "spacing": [9, 12]
     }
 ]

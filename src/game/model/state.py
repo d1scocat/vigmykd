@@ -123,7 +123,7 @@ class GameState:
         self._state_hist[self.tick_idx] = self.client_player.position
         saved_state = self._state_hist.get(last_client_tick)
 
-        if saved_state and saved_state.matches_position(client_pos):
+        if saved_state and not saved_state.matches_position(client_pos):
             self.client_player.apply_position(client_pos)
 
             self.is_reconciling = True

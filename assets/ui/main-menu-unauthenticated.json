@@ -23,9 +23,9 @@
             "size": { "width": 400, "height": 100 },
 
             "states": {
-                "normal": { "texture": { "sheet": 3, "tile": [0, 0] } },
-                "hovered": { "texture": { "sheet": 3, "tile": [1, 0] } },
-                "pressed": { "texture": { "sheet": 3, "tile": [2, 0] } },
+                "normal": { "texture": { "sheet": 5, "tile": [0, 0] } },
+                "hovered": { "texture": { "sheet": 5, "tile": [1, 0] } },
+                "pressed": { "texture": { "sheet": 5, "tile": [2, 0] } },
                 "hidden": { "visible": false }
             },
 
@@ -45,7 +45,7 @@
             "z_index": 100,
             "position": { "x": 0.5, "y": 0.5, "anchor": "center" },
             "size": { "width": 960, "height": 540 },
-            "texture": { "sheet": 4, "tile": [0, 0] },
+            "texture": { "sheet": 3, "tile": [0, 0] },
 
             "default-state": "hidden",
             "states": {
@@ -60,7 +60,7 @@
                     "z_index": 110,
                     "position": { "x": 0.5, "y": 0.2, "anchor": "center" },
                     "size": { "width": 800, "height": 100 },
-                    "texture": { "sheet": 5, "tile": [0, 0] },
+                    "texture": { "sheet": 4, "tile": [0, 0] },
 
                     "label": {
                         "font": "LuckiestGuy-Regular",
@@ -82,7 +82,7 @@
                     "z_index": 110,
                     "position": { "x": 0.5, "y": 0.5, "anchor": "center" },
                     "size": { "width": 800, "height": 100 },
-                    "texture": { "sheet": 5, "tile": [0, 0] },
+                    "texture": { "sheet": 4, "tile": [0, 0] },
 
                     "label": {
                         "font": "LuckiestGuy-Regular",
@@ -108,9 +108,10 @@
                     "size": { "width": 300, "height": 50 },
 
                     "states": {
-                        "normal": { "texture": { "sheet": 3, "tile": [0, 0] } },
-                        "hovered": { "texture": { "sheet": 3, "tile": [1, 0] } },
-                        "pressed": { "texture": { "sheet": 3, "tile": [2, 0] } }
+                        "normal": { "texture": { "sheet": 5, "tile": [0, 0] } },
+                        "hovered": { "texture": { "sheet": 5, "tile": [1, 0] } },
+                        "pressed": { "texture": { "sheet": 5, "tile": [2, 0] } },
+                        "hidden": { "visible": false }
                     },
 
                     "text": {
@@ -151,9 +152,9 @@
             "size": { "mode": "match-texture" },
 
             "states": {
-                "normal": { "texture": { "sheet": 6, "tile": [0, 0] } },
-                "hovered": { "texture": { "sheet": 6, "tile": [1, 0] } },
-                "pressed": { "texture": { "sheet": 6, "tile": [2, 0] } }
+                "normal": { "texture": { "sheet": 10, "tile": [0, 1] } },
+                "hovered": { "texture": { "sheet": 10, "tile": [1, 1] } },
+                "pressed": { "texture": { "sheet": 10, "tile": [2, 1] } }
             },
             
             "action": "open_settings"
@@ -167,9 +168,9 @@
             "size": { "mode": "match-texture" },
 
             "states": {
-                "normal": { "texture": { "sheet": 6, "tile": [0, 1] } },
-                "hovered": { "texture": { "sheet": 6, "tile": [1, 1] } },
-                "pressed": { "texture": { "sheet": 6, "tile": [2, 1] } }
+                "normal": { "texture": { "sheet": 6, "tile": [0, 2] } },
+                "hovered": { "texture": { "sheet": 6, "tile": [1, 2] } },
+                "pressed": { "texture": { "sheet": 6, "tile": [2, 2] } }
             },
             
             "action": "exit"
