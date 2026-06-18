@@ -16,7 +16,12 @@ from settings import MOVE_SPEED, \
     DASH_SPEED, \
     DASH_DURATION_TICKS, \
     ACCEL_X, \
-    DECEL_X
+    DECEL_X, \
+    DASH_PLUNGE_SPEED, \
+    MAX_JUMP_FORCE, \
+    AIR_MOVE_SPEED, \
+    AIR_ACCEL_X, \
+    AIR_DECEL_X
 
 
 @register_consumer(tags=["match"])
@@ -29,15 +34,28 @@ class MovementConsumer(InputConsumer):
         player_input: PlayerInput
     ):
         if not player:
-            return  # Not the appropriate system for movement handling
+            return
 
-        # === === === dashing === === === #
+                # === === === dashing === === === #
         if player_input.dash and not player.position.is_dashing:
             player.position.is_dashing = True
             player.position.physics.dash_timer = DASH_DURATION_TICKS
 
-            dash_dir = player_input.move_dir if player_input.move_dir != 0 else 1
-            player.position.vel_x = dash_dir * DASH_SPEED
+            # plunge down
+            if not player.position.is_grounded and player_input.duck:
+                player.position.vel_x = 0.0
+                player.position.vel_y = min(DASH_PLUNGE_SPEED, TERMINAL_VELOCITY)
+
+            # dashing in place (jumping up high)
+            elif player.position.is_grounded and player_input.move_dir == 0 and not player_input.duck:
+                player.position.vel_y = MAX_JUMP_FORCE
+                player.position.is_grounded = False
+                player.position.physics.has_cut_jump = True
+
+            # just dashing
+            else:
+                dash_dir = player_input.move_dir if player_input.move_dir != 0 else 1
+                player.position.vel_x = dash_dir * DASH_SPEED
 
         if player.position.is_dashing:
             player.position.physics.dash_timer -= 1
@@ -46,53 +64,50 @@ class MovementConsumer(InputConsumer):
 
         # === === === x movement === === ===
         if player.position.is_dashing:
-            pass  # ignore normal movement and maintain momentum
-
-        elif player_input.move_dir != 0:
-            target_vel = player_input.move_dir * MOVE_SPEED
-            if (player_input.move_dir > 0 and player.position.vel_x < 0) or \
-               (player_input.move_dir < 0 and player.position.vel_x > 0):
-
-                if player.position.vel_x > 0:
-                    player.position.vel_x -= DECEL_X
-                    if player.position.vel_x < 0: player.position.vel_x = 0.0
-                else:
-                    player.position.vel_x += ACCEL_X
-                    if player.position.vel_x > 0: player.position.vel_x = 0.0
+            if not player.position.is_grounded and player_input.duck:
+                player.position.vel_x = 0.0  # no x-axis movement during plunge
             else:
-                player.position.vel_x += player_input.move_dir * ACCEL_X
-
-            # clamp
-            if player_input.move_dir > 0 and player.position.vel_x > target_vel:
-                player.position.vel_x = target_vel
-            elif player_input.move_dir < 0 and player.position.vel_x < target_vel:
-                player.position.vel_x = target_vel
+                pass  # ignore normal movement and maintain momentum
 
         else:
-            if player.position.vel_x > 0:
-                player.position.vel_x -= DECEL_X
-                if player.position.vel_x < 0:
-                    player.position.vel_x = 0.0
-            elif player.position.vel_x < 0:
-                player.position.vel_x += DECEL_X
-                if player.position.vel_x > 0:
-                    player.position.vel_x = 0.0
+            is_airborne = not player.position.is_grounded
+
+            current_move_speed = AIR_MOVE_SPEED if is_airborne else MOVE_SPEED
+            current_accel_x = AIR_ACCEL_X if is_airborne else ACCEL_X
+            current_decel_x = AIR_DECEL_X if is_airborne else DECEL_X
+
+            if player_input.move_dir != 0:
+                target_vel = player_input.move_dir * current_move_speed
+
+                #if (player_input.move_dir > 0 and player.position.vel_x < 0) or \
+                #    (player_input.move_dir < 0 and player.position.vel_x > 0):
+                # decelerating?
+                if (player_input.move_dir * player.position.vel_x) < 0:
+                    self._decelerate(player, current_decel_x)
+
+                # accelerating then
+                else:
+                    player.position.vel_x += player_input.move_dir * current_accel_x
+
+                # clamp
+                if (player_input.move_dir > 0 and player.position.vel_x > target_vel) or \
+                    (player_input.move_dir < 0 and player.position.vel_x < target_vel):
+                    player.position.vel_x = target_vel
+
+            # slowing down due to no input
+            else:
+                self._decelerate(player, current_decel_x)
 
         # === === === y movement: jump === === ===
         if player_input.jump and player.position.is_grounded and not player_input.duck:
             player.position.vel_y = JUMP_FORCE
             player.position.is_grounded = False
             player.position.physics.has_cut_jump = False
-            
-            #if not state.is_reconciling:
-            #    ctx.audio.play('jump_sound')
-            #    ctx.particles.spawn('jump_dust', player.position.x, player.position.y)
 
         # === === === y movement: gravity === === ===
         if not player.position.is_grounded:
-            if not player_input.jump and \
-                player.position.vel_y < 0 and \
-                    not player.position.physics.has_cut_jump:
+            # if let go while jumping, kill momentum! :)
+            if not player_input.jump and player.position.vel_y < 0 and not player.position.physics.has_cut_jump:
                 player.position.vel_y *= JUMP_CUT_SCALAR
                 player.position.physics.has_cut_jump = True
 
@@ -114,3 +129,16 @@ class MovementConsumer(InputConsumer):
             player.position.y = floor_y
             player.position.vel_y = 0.0
             player.position.is_grounded = True
+
+        # future: add collisions
+
+    def _decelerate(self, player: Player, current_decel_x: float):
+        if player.position.vel_x > 0:
+            player.position.vel_x -= current_decel_x
+            if player.position.vel_x < 0:
+                player.position.vel_x = 0.0
+
+        else:
+            player.position.vel_x += current_decel_x
+            if player.position.vel_x > 0:
+                player.position.vel_x = 0.0

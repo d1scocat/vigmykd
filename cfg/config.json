@@ -13,6 +13,8 @@
         "S": "duck",
         "DOWN": "duck",
 
+        "LSHIFT": "dash",
+
         "TAB": "menu_next",
         "LSHIFT TAB": "menu_prev",
         "ENTER": "menu_ok"

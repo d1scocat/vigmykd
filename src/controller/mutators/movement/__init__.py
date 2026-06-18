@@ -1,3 +1,4 @@
+from .dash import *
 from .duck import *
 from .jump import *
 from .move_left import *

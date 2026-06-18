@@ -53,7 +53,12 @@ class Position:
     def matches_position(self, other: 'Position', epsilon: float = 0.01):
         return self.facing == other.facing and \
             abs(self.x - other.x) <= epsilon and \
-            abs(self.y - other.y) <= epsilon
+            abs(self.y - other.y) <= epsilon and \
+            abs(self.vel_x - other.vel_x) <= epsilon and \
+            abs(self.vel_y - other.vel_y) <= epsilon and \
+            self.is_ducking == other.is_ducking and \
+            self.is_dashing == other.is_dashing and \
+            self.is_grounded == other.is_grounded
 
 
 class Player:
