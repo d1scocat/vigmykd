@@ -144,9 +144,8 @@ class GameState:
         # network_offset is RTT, so one way latency is RTT / 2
         # +DELAY is leeway for network jitter
 
-        # ...actually it might not be needed
-        # delay = max(DELAY, (self.network_offset // 2) + DELAY)
-        tick = self.tick_idx # + delay
+        delay = max(DELAY, (self.network_offset // 2) + DELAY)
+        tick = self.tick_idx + delay
 
         tick_buffer = self._input_buffer.setdefault(tick, {})
         tick_buffer[player_id] = player_input
