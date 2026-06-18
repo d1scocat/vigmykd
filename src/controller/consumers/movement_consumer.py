@@ -10,7 +10,6 @@ from player import Player
 from settings import MOVE_SPEED, \
     GRAVITY_RISE, \
     GRAVITY_FALL, \
-    JUMP_CUT_SCALAR, \
     TERMINAL_VELOCITY, \
     JUMP_FORCE, \
     DASH_SPEED, \
@@ -21,7 +20,9 @@ from settings import MOVE_SPEED, \
     MAX_JUMP_FORCE, \
     AIR_MOVE_SPEED, \
     AIR_ACCEL_X, \
-    AIR_DECEL_X
+    AIR_DECEL_X, \
+    FAST_FALL_MULTIPLIER, \
+    AIR_DRAG
 
 
 @register_consumer(tags=["match"])
@@ -50,7 +51,6 @@ class MovementConsumer(InputConsumer):
             elif player.position.is_grounded and player_input.move_dir == 0 and not player_input.duck:
                 player.position.vel_y = MAX_JUMP_FORCE
                 player.position.is_grounded = False
-                player.position.physics.has_cut_jump = True
 
             # just dashing
             else:
@@ -98,21 +98,21 @@ class MovementConsumer(InputConsumer):
             else:
                 self._decelerate(player, current_decel_x)
 
+        if not player.position.is_grounded and not player.position.is_dashing:
+            player.position.vel_x *= AIR_DRAG
+
         # === === === y movement: jump === === ===
         if player_input.jump and player.position.is_grounded and not player_input.duck:
             player.position.vel_y = JUMP_FORCE
             player.position.is_grounded = False
-            player.position.physics.has_cut_jump = False
 
         # === === === y movement: gravity === === ===
         if not player.position.is_grounded:
-            # if let go while jumping, kill momentum! :)
-            if not player_input.jump and player.position.vel_y < 0 and not player.position.physics.has_cut_jump:
-                player.position.vel_y *= JUMP_CUT_SCALAR
-                player.position.physics.has_cut_jump = True
-
             if player.position.vel_y < 0:
-                player.position.vel_y += GRAVITY_RISE
+                if not player_input.jump:
+                    player.position.vel_y += GRAVITY_RISE * FAST_FALL_MULTIPLIER
+                else:
+                    player.position.vel_y += GRAVITY_RISE
             else:
                 player.position.vel_y += GRAVITY_FALL
 

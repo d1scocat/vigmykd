@@ -17,7 +17,6 @@ class Facing(IntEnum):
 @dataclass
 class PlayerPhysics:
     dash_timer: int = 0
-    has_cut_jump: bool = True
 
 
 @dataclass
