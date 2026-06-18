@@ -100,6 +100,13 @@ class Renderer:
         loc_x, loc_y = renderable.location
         w, h = renderable.size
 
+        if renderable.flip_x or renderable.flip_y:
+            surface = pygame.transform.flip(
+                surface,
+                renderable.flip_x,
+                renderable.flip_y
+            )
+
         if surface.get_size() == (w, h):
             self.screen.blit(surface, (int(loc_x), int(loc_y)))
             return

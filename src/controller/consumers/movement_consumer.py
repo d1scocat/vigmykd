@@ -37,7 +37,7 @@ class MovementConsumer(InputConsumer):
         if not player:
             return
 
-                # === === === dashing === === === #
+        # === === === dashing === === === #
         if player_input.dash and not player.position.is_dashing:
             player.position.is_dashing = True
             player.position.physics.dash_timer = DASH_DURATION_TICKS
