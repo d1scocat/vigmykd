@@ -8,12 +8,6 @@ from scene.scene import Scene
 from ui.components.page import UIPage
 from ui.components.text import UITextElement
 from ui.interaction import UIInteractionSystem
-from view import Renderer
-from view.system import ViewSystem
-
-import pygame
-
-from typing import Any, Callable
 
 
 class MenuScene(Scene):
@@ -40,7 +34,7 @@ class MenuScene(Scene):
         self.action_mapping = {
             "show_login_overlay": actions.show_login_overlay,
             # "open_settings": ...,
-            # "exit": ...,
+            "exit": actions.exit,
             "submit_login_attempt": actions.submit_login_attempt,
             "play": actions.play,
         }
@@ -86,9 +80,6 @@ class MenuScene(Scene):
 
     def on_load(self):
         pass
-
-    def find_action(self, action_name: str) -> Callable[[Scene, GameState, GameContext], Any] | None:
-        return self.action_mapping.get(action_name)
 
     def on_event(self, event: Event) -> bool:
         return False

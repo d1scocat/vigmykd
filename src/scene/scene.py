@@ -105,9 +105,8 @@ class Scene(ABC):
         view_system.update(self.model, render_alpha)
         view_system.submit(view)
 
-    @abstractmethod
     def find_action(self, action_name: str) -> Callable[['Scene', GameState, GameContext], Any] | None:
-        pass
+        return self.action_mapping.get(action_name)
 
     @property
     @abstractmethod

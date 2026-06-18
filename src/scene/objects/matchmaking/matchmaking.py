@@ -63,19 +63,6 @@ class MatchmakingScene(Scene):
     def interaction(self) -> UIInteractionSystem:
         return self._ui_interaction
 
-    def tick(self):
-        super().default_tick(self.ctx, self.input_router)
-
-    def render(self, view: Renderer, view_system: ViewSystem):
-        view.drop_render_queue()
-
-        self.page.process()
-        self.page.resolve_layout(self.ctx.screen_size, self.ctx)
-        self.page.submit_ui(view)
-
-        view_system.update(self.model)
-        view_system.submit(view)
-
     def on_load(self):
         self.lid = self.ctx.event_manager.register_listener(
             UDPReceivedEvent,
@@ -99,9 +86,6 @@ class MatchmakingScene(Scene):
         self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(MatchScene(
             self.model, self.ctx
         )))
-        
-    def find_action(self, action_name: str):
-        return self.action_mapping.get(action_name, None)
 
     def on_event(self, event: Event) -> bool:
         return False

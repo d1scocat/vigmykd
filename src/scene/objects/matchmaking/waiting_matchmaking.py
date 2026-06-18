@@ -11,8 +11,6 @@ from scene.objects.menu import MenuScene
 from scene.scene import Scene
 from ui.components.page import UIPage
 from ui.interaction import UIInteractionSystem
-from view import Renderer
-from view.system import ViewSystem
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
 
@@ -59,19 +57,6 @@ class WaitingToMatchmakeScene(Scene):
     @property
     def interaction(self) -> UIInteractionSystem:
         return self._ui_interaction
-
-    def tick(self):
-        pass
-
-    def render(self, view: Renderer, view_system: ViewSystem):
-        view.drop_render_queue()
-
-        self.page.process()
-        self.page.resolve_layout(self.ctx.screen_size, self.ctx)
-        self.page.submit_ui(view)
-
-        view_system.update(self.model)
-        view_system.submit(view)
 
     def on_enter(self):
         self._prepare_matchmaking_scene()
@@ -142,9 +127,6 @@ class WaitingToMatchmakeScene(Scene):
         self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(MenuScene(
             self.model, self.ctx
         )))
-
-    def find_action(self, action_name: str):
-        return None
 
     def on_event(self, event: Event) -> bool:
         return False

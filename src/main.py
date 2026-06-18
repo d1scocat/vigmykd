@@ -85,7 +85,8 @@ api_client.get("/key/public")
 
 
 # Auxiliary function, subscribes to GameQuitEvent for graceful shutdowns
-def _aux_stop_running(event: GameQuitEvent):
+def _aux_stop_running(_: GameQuitEvent):
+    global running
     running = False
 
 

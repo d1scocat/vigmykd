@@ -7,15 +7,11 @@ from pygame.event import Event
 from context import GameContext
 from event.events import UDPReceivedEvent
 from game.model import GameState
-from network.udp.factory import Packets
-from player import Facing, Player
+from player import Player
 from scene.objects.match import actions
 from scene.scene import Scene
 from ui.components.page import UIPage
-from ui.components.text import UITextElement
 from ui.interaction import UIInteractionSystem
-from view import Renderer
-from view.system import ViewSystem
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
 
@@ -46,19 +42,6 @@ class MatchScene(Scene):
     @property
     def interaction(self) -> UIInteractionSystem:
         return self._ui_interaction
-
-    def tick(self):
-        super().default_tick(self.ctx, self.input_router)
-
-    def render(self, view: Renderer, view_system: ViewSystem):
-        view.drop_render_queue()
-
-        self.page.process()
-        self.page.resolve_layout(self.ctx.screen_size, self.ctx)
-        self.page.submit_ui(view)
-
-        view_system.update(self.model)
-        view_system.submit(view)
 
     def on_load(self):
         actions.request_match_info(self.model)
@@ -113,9 +96,6 @@ class MatchScene(Scene):
         players = list(event.message.players)
 
         self.model.reconcile(server_tick, last_client_tick, players, self.ctx)
-        
-    def find_action(self, action_name: str):
-        return self.action_mapping.get(action_name, None)
 
     def on_event(self, event: Event) -> bool:
         return False

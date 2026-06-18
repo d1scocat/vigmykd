@@ -1,5 +1,5 @@
 from context import GameContext
-from event.events import SceneSwitchRequestEvent
+from event.events import GameQuitEvent, SceneSwitchRequestEvent
 from game.model import GameState
 from scene.scene import Scene
 from ui.components.text import UITextElement
@@ -47,9 +47,13 @@ def submit_login_attempt(scene: Scene, _: GameState, ctx: GameContext):
     setattr(scene, "login_req_id", req_id)
 
 
-def play(scene: Scene, model: GameState, ctx: GameContext):
+def play(_: Scene, model: GameState, ctx: GameContext):
     from scene.objects.matchmaking import WaitingToMatchmakeScene
 
     ctx.event_manager.invoke_event(SceneSwitchRequestEvent(WaitingToMatchmakeScene(
         model, ctx
     )))
+
+
+def exit(_: Scene, __: GameState, ctx: GameContext):
+    ctx.event_manager.invoke_event(GameQuitEvent())
