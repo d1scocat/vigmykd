@@ -50,6 +50,11 @@ class Position:
             )
         )
 
+    def matches_position(self, other: 'Position', epsilon: float = 0.01):
+        return self.facing == other.facing and \
+            abs(self.x - other.x) <= epsilon and \
+            abs(self.y - other.y) <= epsilon
+
 
 class Player:
     player_id: uuid.UUID
@@ -83,9 +88,7 @@ class Player:
         self.position = position
 
     def matches_position(self, position: Position, epsilon: float = 0.01):
-        return self.position.facing == position.facing and \
-            abs(self.position.x - position.x) <= epsilon and \
-            abs(self.position.y - position.y) <= epsilon
+        return self.position.matches_position(position, epsilon)
 
     @classmethod
     def from_packet(cls, player_data: packet_pb2.PlayerData, is_client: bool):

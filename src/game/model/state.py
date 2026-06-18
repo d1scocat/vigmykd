@@ -14,6 +14,7 @@ from generated.proto.v1 import packet_pb2 as packet_pb2
 
 class GameState:
     _input_buffer: dict[int, dict[UUID | None, PlayerInput]]
+    _state_hist: dict[int, Position]
 
     def __init__(self, logger: Logger, server_client: GameServerClient):
         self.server_client = server_client
@@ -24,6 +25,8 @@ class GameState:
         self.last_server_tick = 0
 
         self._input_buffer = {}
+        self._state_hist = {}
+
         self.rng = Random()
         self.is_in_match = False
         self.is_reconciling = False
@@ -117,7 +120,10 @@ class GameState:
         # opponent position is not being predicted
         self.opponent_player.apply_position(opponent_pos)
 
-        if not self.client_player.matches_position(client_pos):
+        self._state_hist[self.tick_idx] = self.client_player.position
+        saved_state = self._state_hist.get(last_client_tick)
+
+        if saved_state and saved_state.matches_position(client_pos):
             self.client_player.apply_position(client_pos)
 
             self.is_reconciling = True
@@ -144,12 +150,13 @@ class GameState:
         # network_offset is RTT, so one way latency is RTT / 2
         # +DELAY is leeway for network jitter
 
-        delay = max(DELAY, (self.network_offset // 2) + DELAY)
-        tick = self.tick_idx + delay
+        #delay = max(DELAY, (self.network_offset // 2) + DELAY)
+        #tick = self.tick_idx + delay
 
-        tick_buffer = self._input_buffer.setdefault(tick, {})
+        #tick_buffer = self._input_buffer.setdefault(tick, {})
+        tick_buffer = self._input_buffer.setdefault(self.tick_idx, {})
         tick_buffer[player_id] = player_input
-        self._input_buffer[tick] = tick_buffer
+        self._input_buffer[self.tick_idx] = tick_buffer
 
     def consume_inputs(self) -> dict[UUID | None, PlayerInput]:
         return self._input_buffer.pop(self.tick_idx, {})
