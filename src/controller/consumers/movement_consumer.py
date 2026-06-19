@@ -153,7 +153,7 @@ class MovementConsumer(InputConsumer):
         coll_rect = world.headless.get_collision(player.rect)
         if coll_rect:
             overlap_top = (player.position.y + PLAYER_HEIGHT) - coll_rect.top
-            overlap_bottom = coll_rect.top - player.position.y
+            overlap_bottom = coll_rect.bottom - player.position.y
 
             if abs(overlap_top) < abs(overlap_bottom):
                 player.position.y = coll_rect.top - PLAYER_HEIGHT

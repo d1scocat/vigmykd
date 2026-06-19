@@ -130,10 +130,12 @@ class GameState:
         if saved_state and not saved_state.matches_position(client_pos):
             d_x = client_pos.x - saved_state.x
             d_y = client_pos.y - saved_state.y
+            d_vx = client_pos.vel_x - saved_state.vel_x
+            d_vy = client_pos.vel_y - saved_state.vel_y
             self.logger.info(f"\n[CLIENT SNAP] Client Tick: {self.tick_idx} | Server Ack: {last_client_tick}")
-            self.logger.info(f"  Predicted --> X: {saved_state.x:.2f}, Y: {saved_state.y:.2f}, VelY: {saved_state.vel_y:.2f}")
-            self.logger.info(f"  Server    --> X: {client_pos.x:.2f}, Y: {client_pos.y:.2f}, VelY: {client_pos.vel_y:.2f}")
-            self.logger.info(f"  Error     --> dX: {d_x:.2f}, dY: {d_y:.2f}")
+            self.logger.info(f"  Predicted --> X: {saved_state.x:.4f}, Y: {saved_state.y:.4f}, VelX: {saved_state.vel_x:.4f}, VelY: {saved_state.vel_y:.4f}, dashing: {saved_state.is_dashing}, ducking: {saved_state.is_ducking}, grounded: {saved_state.is_grounded}")
+            self.logger.info(f"  Server    --> X: {client_pos.x:.4f}, Y: {client_pos.y:.4f}, VelX: {client_pos.vel_x:.4f}, VelY: {client_pos.vel_y:.4f}, dashing: {client_pos.is_dashing}, ducking: {client_pos.is_ducking}, grounded: {client_pos.is_grounded}")
+            self.logger.info(f"  Error     --> dX: {d_x:.4f}, dY: {d_y:.4f}, dVX: {d_vx:.4f}, dVY: {d_vy:.4f}")
 
             self.client_player.apply_position(client_pos)
 
@@ -144,10 +146,15 @@ class GameState:
             for tick_to_sim in range(start_tick, self.tick_idx):
                 buffered = self._input_buffer.get(tick_to_sim, {})
                 local_input = buffered.get(self.client_player.player_id)
-                if local_input:
-                    self.simulate_input(ctx, self.client_player, local_input)
+                #if local_input:
+                self.simulate_input(ctx, self.client_player, local_input or PlayerInput())
 
             self.is_reconciling = False
+        elif self.tick_idx - last_client_tick > MAX_RESIM_TICKS:
+            # too far ahead or history is lost, snap
+            self.client_player.apply_position(client_pos)
+            self._input_buffer.clear()
+            self._state_hist.clear()
 
         self.clear_redundant(last_client_tick)
 
