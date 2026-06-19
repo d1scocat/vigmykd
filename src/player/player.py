@@ -1,9 +1,9 @@
+import pygame
 import uuid
 
 from dataclasses import dataclass, field
 from enum import IntEnum
 
-from geometry import BoundingBox2D
 from settings import PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_DUCK_HEIGHT
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
@@ -94,6 +94,17 @@ class Player:
     def matches_position(self, position: Position, epsilon: float = 0.01):
         return self.position.matches_position(position, epsilon)
 
+    @property
+    def rect(self) -> pygame.Rect:
+        height = PLAYER_DUCK_HEIGHT if self.position.is_ducking else PLAYER_HEIGHT
+
+        return pygame.Rect(
+            self.position.x,
+            self.position.y,
+            PLAYER_WIDTH,
+            height
+        )
+
     @classmethod
     def from_packet(cls, player_data: packet_pb2.PlayerData, is_client: bool):
         """Can raise!"""
@@ -113,19 +124,6 @@ class Player:
                 )
 
         return cls(player_id, name, is_client, x, y, facing)
-
-    @property
-    def get_bounding_box(self) -> BoundingBox2D:
-        return BoundingBox2D(
-            self.position.x,
-            self.position.y,
-            self.position.x + self.width,
-            self.position.y + self.height
-        )
-
-    def toggle_duck_height(self, duck: bool):
-        self.position.is_ducking = duck
-        self.height = PLAYER_DUCK_HEIGHT if duck else PLAYER_HEIGHT
 
     @property
     def can_jump(self) -> bool:

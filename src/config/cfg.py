@@ -12,6 +12,7 @@ class Config:
 
     locale: str
     server: str
+    max_scale_cache_size: int
 
 
 def load_config(path: Path) -> Config:
@@ -24,5 +25,6 @@ def load_config(path: Path) -> Config:
         keymap=keymap,
 
         locale=data["locale"],
-        server=data["server"]
+        server=data["server"],
+        max_scale_cache_size=data["max_scale_cache_size"],
     )

@@ -7,8 +7,8 @@ from context import GameContext
 from controller.input_model import PlayerInput
 from network import GameServerClient
 from player import Player, Position
-from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY, \
-    SIMUL_DELAY_TICKS as DELAY
+from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY
+from world import World
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
 
@@ -34,6 +34,8 @@ class GameState:
 
         self.client_player: Player | None = None
         self.opponent_player: Player | None = None
+
+        self.current_world: World | None = None
 
     @property
     def players(self) -> dict[UUID, Player]:
@@ -64,7 +66,8 @@ class GameState:
     def prepare_match(
         self,
         rng_seed: int | float | str | bytes | bytearray | Random,
-        initial_server_tick: int = 0
+        initial_server_tick: int,
+        world: World
     ):
         if isinstance(rng_seed, Random):
             self.rng = rng_seed
@@ -72,6 +75,8 @@ class GameState:
             self.rng = Random(rng_seed)
 
         self.tick_idx = initial_server_tick
+        self.world = world
+
         self._input_buffer.clear()
 
     def start_match(self):

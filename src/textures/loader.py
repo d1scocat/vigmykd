@@ -42,27 +42,67 @@ def load_spritesheet(
     return sprites
 
 
-def load_sheets(ctx: GameContext, manager: TextureManager):
-    sheets_path = ctx.sheets_path
-    sheets_file = sheets_path / "sheets.json"
+def load_sheets(
+    ctx: GameContext,
+    manager: TextureManager,
+    path_to_sheets: Path | None = None,
+    sheets_file_name: str = "sheets.json"
+):
+    sheets_path = path_to_sheets or ctx.sheets_path
+    sheets_file = sheets_path / sheets_file_name
     sheets: list[dict[str, Any]] = json.loads(sheets_file.read_text())
 
     for sheet in sheets:
-        sheet_id = sheet["id"]
-        path = sheets_path / sheet["path"]
-        tile_size = tuple(sheet["tile-size"])
-        grid_size = tuple(sheet["grid-size"])
+        load_sheet(sheet, sheets_path, manager)
 
-        offset = tuple(sheet.get("offset", [0, 0]))
-        spacing = tuple(sheet.get("spacing", [0, 0]))
 
-        manager.add_spritesheet(
-            id=sheet_id,
-            sheet=load_spritesheet(
-                path=path,
-                tile_size=tile_size,
-                grid_size=grid_size,
-                offset=offset,
-                spacing=spacing
-            )
+def load_sheet(
+    sheet: dict[str, Any],
+    parent_path: Path,
+    manager: TextureManager
+):
+    sheet_id = sheet["id"]
+    path = parent_path / sheet["path"]
+    tile_size = tuple(sheet["tile-size"])
+    grid_size = tuple(sheet["grid-size"])
+
+    offset = tuple(sheet.get("offset", [0, 0]))
+    spacing = tuple(sheet.get("spacing", [0, 0]))
+
+    manager.add_spritesheet(
+        id=sheet_id,
+        sheet=load_spritesheet(
+            path=path,
+            tile_size=tile_size,
+            grid_size=grid_size,
+            offset=offset,
+            spacing=spacing
         )
+    )
+
+
+def texture_packer_to_spritesheet(sheet_id: int, file: Path, spritesheet: Path) -> dict[str, Any]:
+    """
+    Assumes uniform size of assets, with no padding, and no extra nesting
+    of spritesheet directory
+    """
+
+    data = json.loads(file.read_text())
+
+    size = data["meta"]["size"]
+    w, h = size["w"], size["h"]
+
+    frames = data["frames"]
+
+    first_frame = frames[0]["frame"]
+    tile_w, tile_h = first_frame["w"], first_frame["h"]
+
+    last_frame = frames[-1]["frame"]
+    grid_w, grid_h = last_frame["x"] / tile_w, last_frame["y"] / tile_h
+
+    return {
+        "id": sheet_id,
+        "path": spritesheet.name,
+        "tile-size": (tile_w, tile_h),
+        "grid-size": (grid_w, grid_h)
+    }

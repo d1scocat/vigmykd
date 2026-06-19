@@ -15,6 +15,7 @@ from ui.deserializer import deserialize_into_ui
 from ui.interaction import UIInteractionSystem
 from view import Renderer
 from view.system import ViewSystem
+from world import World
 
 
 class Scene(ABC):
@@ -89,6 +90,18 @@ class Scene(ABC):
             return self.on_event(event)
         return False
 
+    def set_world(self, world: World | None):
+        """Use only this function if you need to set the world of the current scene"""
+        setattr(self, "__map", world)
+
+    @property
+    def world(self) -> World | None:
+        if hasattr(self, "__map"):
+            it = getattr(self, "__map")
+            if isinstance(it, World):
+                return it
+        return None
+
     def render(
         self,
         view: Renderer,
@@ -104,6 +117,11 @@ class Scene(ABC):
 
         view_system.update(self.model, render_alpha)
         view_system.submit(view)
+
+        own_world = self.world
+        offset = own_world.camera.offset if own_world else (0, 0)
+
+        view.draw_screen(offset)
 
     def find_action(self, action_name: str) -> Callable[['Scene', GameState, GameContext], Any] | None:
         return self.action_mapping.get(action_name)

@@ -22,7 +22,9 @@ from settings import MOVE_SPEED, \
     AIR_ACCEL_X, \
     AIR_DECEL_X, \
     FAST_FALL_MULTIPLIER, \
-    AIR_DRAG
+    AIR_DRAG, \
+    PLAYER_HEIGHT, \
+    PLAYER_WIDTH
 
 
 @register_consumer(tags=["match"])
@@ -35,6 +37,10 @@ class MovementConsumer(InputConsumer):
         player_input: PlayerInput
     ):
         if not player:
+            return
+
+        world = state.world
+        if not world:
             return
 
         # === === === dashing === === === #
@@ -129,14 +135,28 @@ class MovementConsumer(InputConsumer):
         player.position.x += player.position.vel_x
         player.position.y += player.position.vel_y
 
-        # === === === collision, ground === === ===
-        floor_y = 400.0  # (stub!)
-        if player.position.y >= floor_y:
-            player.position.y = floor_y
-            player.position.vel_y = 0.0
-            player.position.is_grounded = True
+        rect = player.rect
 
-        # future: add collisions
+        # === === === x axis === === ==
+        coll_rect = world.headless.get_collision(rect)
+
+        if coll_rect:
+            if player.position.vel_x > 0:
+                player.position.x = coll_rect.left - PLAYER_WIDTH
+            elif player.position.vel_x < 0:
+                player.position.x = coll_rect.right
+
+            player.position.vel_x = 0
+
+        # === === === y axis === === ==
+        if coll_rect:
+            if player.position.vel_y > 0:
+                player.position.y = coll_rect.top - PLAYER_HEIGHT
+                player.position.is_grounded = True
+            elif player.position.vel_y < 0:
+                player.position.y = coll_rect.bottom
+
+            player.position.vel_y = 0
 
     def _decelerate(self, player: Player, current_decel_x: float):
         if player.position.vel_x > 0:

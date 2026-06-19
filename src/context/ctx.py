@@ -1,15 +1,18 @@
-from pathlib import Path
+import pygame
 
+import json
 import logging
 
-import pygame
+from pathlib import Path
+from typing import Any
 
 from auth.server import ServerAuthenticator
 from config import Config
 from event import EventManager
 from i18n import Localization
 from network import ApiClient
-from textures import TextureManager
+from textures import loader, TextureManager
+from world import HeadlessWorld, World
 
 
 class GameContext:
@@ -30,6 +33,7 @@ class GameContext:
         self.assets_path = assets_path
         self.cfg_path = cfg_path
 
+        self.maps_path = assets_path / "maps"
         self.sheets_path = assets_path / "sheets"
         self.ui_path = assets_path / "ui"
         self.font_path = assets_path / "fonts"
@@ -40,6 +44,9 @@ class GameContext:
 
         self.font_sources = self._preload_fonts()
         self.font_cache: dict[tuple[str, int], pygame.font.Font] = {}
+
+        self._map_data = self._prefetch_maps()
+        self.world_prefetch = self._preload_worlds()
 
         self.api_client = client
 
@@ -109,6 +116,68 @@ class GameContext:
             result[name] = file
         return result
 
+    def _prefetch_maps(self) -> dict[str, dict[str, Any]]:
+        result = {}
+
+        datas: list[Path] = []
+        for file in self.maps_path.iterdir():
+            if file.is_dir():
+                mapdata = file / f"{file.name}.mapdata"
+                if mapdata.is_file():
+                    datas.append(mapdata)
+
+        for data in datas:
+            mapdata_json = json.loads(data.read_text())
+
+            name = mapdata_json["name"]
+
+            assets_dir = data.parent / mapdata_json["assets_directory"]
+
+            result[name] = {
+                "map_path": mapdata_json["map_json"],
+                "tileset_path": mapdata_json["tileset_json"],
+                "assets_dir": assets_dir,
+                "spritesheet_image": assets_dir / mapdata_json["spritesheet_image"],
+                "spritesheet_details": assets_dir / mapdata_json["spritesheet_details"],
+            }
+
+        return result
+
+    def _preload_worlds(self) -> dict[str, World]:
+        result = {}
+
+        # setup a big enough starting point to not overlap
+        # with any previous spritesheet definitions
+        start = 10000
+
+        for idx, (world_name, world_data) in enumerate(self._map_data.items()):
+            sheet_id = start + idx
+            sheet_data = loader.texture_packer_to_spritesheet(
+                sheet_id=sheet_id,
+                file=world_data["spritesheet_details"],
+                spritesheet=world_data["spritesheet_image"]
+            )
+
+            loader.load_sheet(
+                sheet=sheet_data,
+                parent_path=sheet_data["assets_dir"],
+                manager=self.texture_manager
+            )
+
+            _headless = HeadlessWorld(
+                tmj_path=sheet_data["map_path"],
+                tsj_path=sheet_data["tileset_path"]
+            )
+
+            result[world_name] = World(
+                headless=_headless,
+                texture_manager=self.texture_manager,
+                sheet_id=sheet_id
+            )
+
+        return result
+
+
     def fetch_font(self, name: str, size: int) -> pygame.font.Font:
         key = (name, size)
 
@@ -123,3 +192,6 @@ class GameContext:
 
         self.font_cache[key] = font
         return font
+
+    def fetch_map(self, name: str) -> dict[str, Any] | None:
+        return self._map_data.get(name, None)

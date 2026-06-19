@@ -1,0 +1,8 @@
+{
+    "name": "testmap",
+    "map_json": "testmap.tmj",
+    "tileset_json": "testmap.tsj",
+    "assets_directory": "assets",
+    "spritesheet_image": "testmap.png",
+    "spritesheet_details": "testmap.json"
+}

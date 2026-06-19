@@ -45,7 +45,12 @@ class SceneManager:
             return self.current.handle_pygame_event(event)
         return False
 
-    def render(self, view: Renderer, view_system: ViewSystem, render_alpha: float):
+    def render(
+        self,
+        view: Renderer,
+        view_system: ViewSystem,
+        render_alpha: float
+    ):
         self.current.render(view, view_system, render_alpha, self.current.ctx)
 
     def _enter_scene(self, scene: Scene):

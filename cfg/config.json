@@ -22,5 +22,7 @@
 
     "locale": "en-US",
 
-    "server": "https://vigmykd.runderscore.com/api/v1"
+    "server": "https://vigmykd.runderscore.com/api/v1",
+
+    "max_scale_cache_size": 16383
 }

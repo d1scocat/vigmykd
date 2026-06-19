@@ -12,6 +12,7 @@ from scene.objects.match import actions
 from scene.scene import Scene
 from ui.components.page import UIPage
 from ui.interaction import UIInteractionSystem
+from world import HeadlessWorld, World
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
 
@@ -66,8 +67,18 @@ class MatchScene(Scene):
     def match_start_info_receiver(self, event: UDPReceivedEvent):
         if event.message_type != packet_pb2.RequestMatchInfoResponse:
             return
+
+        map_name = event.message.map_name
+        self.set_world(self.ctx.world_prefetch.get(map_name))
+
+        if not self.world:
+            raise ValueError(f"Could not find and load map {map_name}")
         
-        self.model.prepare_match(event.message.rng_seed, event.message.initial_server_tick)
+        self.model.prepare_match(
+            event.message.rng_seed,
+            event.message.initial_server_tick,
+            self.world
+        )
 
         player1, player2 = list(event.message.players)
         try:
