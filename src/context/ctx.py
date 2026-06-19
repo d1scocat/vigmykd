@@ -160,13 +160,13 @@ class GameContext:
 
             loader.load_sheet(
                 sheet=sheet_data,
-                parent_path=sheet_data["assets_directory"],
+                parent_path=world_data["assets_directory"],
                 manager=self.texture_manager
             )
 
             _headless = HeadlessWorld(
-                tmj_path=sheet_data["map_path"],
-                tsj_path=sheet_data["tileset_path"]
+                tmj_path=world_data["map_path"],
+                tsj_path=world_data["tileset_path"]
             )
 
             result[world_name] = World(
