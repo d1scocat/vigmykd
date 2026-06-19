@@ -77,13 +77,13 @@ class Renderer:
     def draw_screen(self, camera_offset: tuple[float, float] = (0, 0)):
         self.screen.fill((0, 0, 0))
 
-        for z in sorted(self.render_queue.keys()):
-            for renderable, surface in self.render_queue[z]:
-                self._draw_surface(renderable, surface, camera_offset)
-
         for z in sorted(self.static_render_queue.keys()):
             for surface, location in self.static_render_queue[z]:
                 self._draw_static(surface, location, camera_offset)
+
+        for z in sorted(self.render_queue.keys()):
+            for renderable, surface in self.render_queue[z]:
+                self._draw_surface(renderable, surface, camera_offset)
 
         for z, surface, pos in sorted(self.text_queue, key=lambda x: x[0]):
             pos = list(pos)

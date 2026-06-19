@@ -128,13 +128,6 @@ class GameState:
 
         saved_state = self._state_hist.get(last_client_tick)
         if saved_state and not saved_state.matches_position(client_pos):
-            #d_x = client_pos.x - saved_state.x
-            #d_y = client_pos.y - saved_state.y
-            #self.logger.info(f"\n[CLIENT SNAP] Client Tick: {self.tick_idx} | Server Ack: {last_client_tick}")
-            #self.logger.info(f"  Predicted --> X: {saved_state.x:.2f}, Y: {saved_state.y:.2f}, VelY: {saved_state.vel_y:.2f}")
-            #self.logger.info(f"  Server    --> X: {client_pos.x:.2f}, Y: {client_pos.y:.2f}, VelY: {client_pos.vel_y:.2f}")
-            #self.logger.info(f"  Error     --> dX: {d_x:.2f}, dY: {d_y:.2f}")
-
             self.client_player.apply_position(client_pos)
 
             self.is_reconciling = True

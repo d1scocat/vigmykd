@@ -3,6 +3,20 @@
  "infinite":false,
  "layers":[
         {
+         "id":2,
+         "image":"..\/..\/..\/..\/vigmykd-tiles\/dungeon-tileset-785611\/PNG\/Background\/Bright\/Background.png",
+         "imageheight":540,
+         "imagewidth":960,
+         "name":"Image Layer 1",
+         "opacity":0.2,
+         "repeatx":true,
+         "repeaty":true,
+         "type":"imagelayer",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 0, 0,
@@ -33,7 +47,7 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":2,
+ "nextlayerid":3,
  "nextobjectid":1,
  "orientation":"orthogonal",
  "renderorder":"right-down",
@@ -42,7 +56,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"testmap.tsx"
+         "source":"..\/..\/..\/..\/vigmykd-tiles\/testmap.tsx"
         }],
  "tilewidth":64,
  "type":"map",

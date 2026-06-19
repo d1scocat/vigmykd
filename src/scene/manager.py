@@ -51,7 +51,7 @@ class SceneManager:
         view_system: ViewSystem,
         render_alpha: float
     ):
-        self.current.render(view, view_system, render_alpha, self.current.ctx)
+        self.current.render(view, view_system, render_alpha)
 
     def _enter_scene(self, scene: Scene):
         self.event_manager.invoke_event(ScenePreLoadEvent(scene))

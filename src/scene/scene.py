@@ -107,19 +107,24 @@ class Scene(ABC):
         view: Renderer,
         view_system: ViewSystem,
         render_alpha: float,
-        ctx: GameContext
     ):
         view.drop_render_queue()
 
         self.page.process()
-        self.page.resolve_layout(ctx.screen_size, ctx)
+        self.page.resolve_layout(self.ctx.screen_size, self.ctx)
         self.page.submit_ui(view)
 
         view_system.update(self.model, render_alpha)
         view_system.submit(view)
 
-        own_world = self.world
-        offset = own_world.camera.offset if own_world else (0, 0)
+        player = self.model.client_player
+        offset = (0, 0)
+        if player:
+            own_world = self.world
+            if own_world:
+                own_world.prep_render(player.rect)
+                offset = own_world.camera.offset if own_world else (0, 0)
+                view.queue_static(own_world.render_surface, (0, 0))
 
         view.draw_screen(offset)
 

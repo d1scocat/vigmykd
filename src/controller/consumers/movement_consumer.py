@@ -131,14 +131,11 @@ class MovementConsumer(InputConsumer):
             if player.position.vel_y > TERMINAL_VELOCITY:
                 player.position.vel_y = TERMINAL_VELOCITY
 
-        # === === === pos update === === ===
-        player.position.x += player.position.vel_x
-        player.position.y += player.position.vel_y
-
-        rect = player.rect
+        # === === === collisions and pos update === === ===
 
         # === === === x axis === === ==
-        coll_rect = world.headless.get_collision(rect)
+        player.position.x += player.position.vel_x
+        coll_rect = world.headless.get_collision(player.rect)
 
         if coll_rect:
             if player.position.vel_x > 0:
@@ -149,6 +146,8 @@ class MovementConsumer(InputConsumer):
             player.position.vel_x = 0
 
         # === === === y axis === === ==
+        player.position.y += player.position.vel_y
+        coll_rect = world.headless.get_collision(player.rect)
         if coll_rect:
             if player.position.vel_y > 0:
                 player.position.y = coll_rect.top - PLAYER_HEIGHT
@@ -157,6 +156,8 @@ class MovementConsumer(InputConsumer):
                 player.position.y = coll_rect.bottom
 
             player.position.vel_y = 0
+        else:
+            player.position.is_grounded = False
 
     def _decelerate(self, player: Player, current_decel_x: float):
         if player.position.vel_x > 0:

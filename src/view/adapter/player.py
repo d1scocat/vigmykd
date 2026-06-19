@@ -19,7 +19,7 @@ class PlayerAdapter(ViewAdapter[Player]):
         self.position_hist[object.player_id] = collections.deque(maxlen=16)
 
         return Renderable(
-            z_index=0,
+            z_index=1000,
             states={
                 "0": RenderState(
                     sheet_id=1,
