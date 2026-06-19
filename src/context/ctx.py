@@ -45,15 +45,15 @@ class GameContext:
         self.font_sources = self._preload_fonts()
         self.font_cache: dict[tuple[str, int], pygame.font.Font] = {}
 
-        self._map_data = self._prefetch_maps()
-        self.world_prefetch = self._preload_worlds()
-
         self.api_client = client
 
         self.auth_path = cfg_path / "auth.dat"
         self.auth = ServerAuthenticator(client, self.auth_path)
 
         self.texture_manager = TextureManager()
+
+        self._map_data = self._prefetch_maps()
+        self.world_prefetch = self._preload_worlds()
 
     @property
     def local_player_id(self):
@@ -134,8 +134,8 @@ class GameContext:
             assets_dir = data.parent / mapdata_json["assets_directory"]
 
             result[name] = {
-                "map_path": mapdata_json["map_json"],
-                "tileset_path": mapdata_json["tileset_json"],
+                "map_path": data.parent / mapdata_json["map_json"],
+                "tileset_path": data.parent / mapdata_json["tileset_json"],
                 "assets_dir": assets_dir,
                 "spritesheet_image": assets_dir / mapdata_json["spritesheet_image"],
                 "spritesheet_details": assets_dir / mapdata_json["spritesheet_details"],

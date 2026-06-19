@@ -97,7 +97,7 @@ def texture_packer_to_spritesheet(sheet_id: int, file: Path, spritesheet: Path) 
     tile_w, tile_h = first_frame["w"], first_frame["h"]
 
     last_frame = frames[-1]["frame"]
-    grid_w, grid_h = last_frame["x"] / tile_w, last_frame["y"] / tile_h
+    grid_w, grid_h = last_frame["x"] // tile_w, last_frame["y"] // tile_h
 
     return {
         "id": sheet_id,
