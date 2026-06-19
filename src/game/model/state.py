@@ -7,7 +7,7 @@ from context import GameContext
 from controller.input_model import PlayerInput
 from network import GameServerClient
 from player import Player, Position
-from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY
+from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY, MAX_RESIM_TICKS
 from world import World
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
@@ -128,12 +128,20 @@ class GameState:
 
         saved_state = self._state_hist.get(last_client_tick)
         if saved_state and not saved_state.matches_position(client_pos):
+            d_x = client_pos.x - saved_state.x
+            d_y = client_pos.y - saved_state.y
+            self.logger.info(f"\n[CLIENT SNAP] Client Tick: {self.tick_idx} | Server Ack: {last_client_tick}")
+            self.logger.info(f"  Predicted --> X: {saved_state.x:.2f}, Y: {saved_state.y:.2f}, VelY: {saved_state.vel_y:.2f}")
+            self.logger.info(f"  Server    --> X: {client_pos.x:.2f}, Y: {client_pos.y:.2f}, VelY: {client_pos.vel_y:.2f}")
+            self.logger.info(f"  Error     --> dX: {d_x:.2f}, dY: {d_y:.2f}")
+
             self.client_player.apply_position(client_pos)
 
             self.is_reconciling = True
 
             # resimulate for cleaner rendeing
-            for tick_to_sim in range(last_client_tick + 1, self.tick_idx):
+            start_tick = max(last_client_tick + 1, self.tick_idx - MAX_RESIM_TICKS)
+            for tick_to_sim in range(start_tick, self.tick_idx):
                 buffered = self._input_buffer.get(tick_to_sim, {})
                 local_input = buffered.get(self.client_player.player_id)
                 if local_input:

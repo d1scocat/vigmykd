@@ -138,9 +138,12 @@ class MovementConsumer(InputConsumer):
         coll_rect = world.headless.get_collision(player.rect)
 
         if coll_rect:
-            if player.position.vel_x > 0:
+            overlap_left = (player.position.x + PLAYER_WIDTH) - coll_rect.left
+            overlap_right = coll_rect.right - player.position.x
+
+            if abs(overlap_left) < abs(overlap_right):
                 player.position.x = coll_rect.left - PLAYER_WIDTH
-            elif player.position.vel_x < 0:
+            else:
                 player.position.x = coll_rect.right
 
             player.position.vel_x = 0
@@ -149,11 +152,15 @@ class MovementConsumer(InputConsumer):
         player.position.y += player.position.vel_y
         coll_rect = world.headless.get_collision(player.rect)
         if coll_rect:
-            if player.position.vel_y > 0:
+            overlap_top = (player.position.y + PLAYER_HEIGHT) - coll_rect.top
+            overlap_bottom = coll_rect.top - player.position.y
+
+            if abs(overlap_top) < abs(overlap_bottom):
                 player.position.y = coll_rect.top - PLAYER_HEIGHT
                 player.position.is_grounded = True
-            elif player.position.vel_y < 0:
+            else:
                 player.position.y = coll_rect.bottom
+                player.position.is_grounded = False
 
             player.position.vel_y = 0
         else:
