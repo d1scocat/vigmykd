@@ -160,7 +160,7 @@ class GameContext:
 
             loader.load_sheet(
                 sheet=sheet_data,
-                parent_path=world_data["assets_directory"],
+                parent_path=world_data["assets_dir"],
                 manager=self.texture_manager
             )
 
