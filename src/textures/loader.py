@@ -2,7 +2,6 @@ import json
 import pygame
 
 from textures import TextureManager
-from context import GameContext
 
 from pathlib import Path
 from typing import Any
@@ -43,7 +42,7 @@ def load_spritesheet(
 
 
 def load_sheets(
-    ctx: GameContext,
+    ctx: 'context.GameContext',
     manager: TextureManager,
     path_to_sheets: Path | None = None,
     sheets_file_name: str = "sheets.json"
