@@ -128,6 +128,7 @@ class GameState:
             self.client_player.apply_position(client_pos)
         elif not saved_state.matches_position(client_pos):
             self.is_reconciling = True
+            self.client_player.apply_position(client_pos)
 
             start_tick = max(last_client_tick + 1, self.tick_idx - MAX_RESIM_TICKS)
 
