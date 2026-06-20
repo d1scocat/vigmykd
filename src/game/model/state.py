@@ -1,3 +1,5 @@
+import math
+
 from copy import deepcopy
 from logging import Logger
 from uuid import UUID
@@ -122,9 +124,24 @@ class GameState:
 
         # opponent position is not being predicted
         self.opponent_player.apply_position(opponent_pos)
+        
+        saved_state = self._state_hist.get(last_client_tick)
+        if saved_state is None:
+            # no history for this tick, so we snap to server
+            self.client_player.apply_position(client_pos)
+        elif not saved_state.matches_position(client_pos):
+            # server disagrees so we resimulate ticks
+            self.client_player.apply_position(client_pos)
 
-        # Testing this:
-        self.client_player.apply_position(client_pos)
+            start_tick = last_client_tick + 1
+            for tick in range(start_tick, self.tick_idx):
+                buffered = self._input_buffer.get(tick, {})
+                local_input = buffered.get(self.client_player.player_id, PlayerInput())
+                self.simulate_input(ctx, self.client_player, local_input)
+        else:
+            # server agrees
+            pass
+
         self.clear_redundant(last_client_tick)
 
         target_tick = server_tick - TARGET_LATENCY
