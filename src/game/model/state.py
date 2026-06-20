@@ -123,6 +123,11 @@ class GameState:
         # opponent position is not being predicted
         self.opponent_player.apply_position(opponent_pos)
 
+        # Testing this:
+        self.client_player.apply_position(client_pos)
+        self.clear_redundant(last_client_tick)
+
+        """
         saved_state = self._state_hist.get(last_client_tick)
         if saved_state is None:
             self.client_player.apply_position(client_pos)
@@ -141,6 +146,7 @@ class GameState:
             self.is_reconciling = False
 
         self.clear_redundant(last_client_tick)
+        """
 
     def simulate_input(self, ctx: GameContext, player: Player, player_input: PlayerInput):
         from registry import registries

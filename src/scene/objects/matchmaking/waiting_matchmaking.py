@@ -59,13 +59,13 @@ class WaitingToMatchmakeScene(Scene):
         return self._ui_interaction
 
     def on_enter(self):
-        self._prepare_matchmaking_scene()
-        self._init_matchmaking_flow()
-
         self.lids.append(self.ctx.event_manager.register_listener(
             event_type=HTTPResponseEvent,
             func=self.match_register_listener
         ))
+
+        self._prepare_matchmaking_scene()
+        self._init_matchmaking_flow()
 
     def on_exit(self):
         for lid in self.lids:
@@ -89,7 +89,7 @@ class WaitingToMatchmakeScene(Scene):
             self.ctx.event_manager.register_listener(
                 event_type=UDPAckEvent,
                 func=self.queue_enter_listener
-            ),
+            ),  # register here to ensure existence of attr 'msg_id'
 
             self.ctx.event_manager.register_listener(
                 event_type=UDPReceivedEvent,
@@ -99,7 +99,7 @@ class WaitingToMatchmakeScene(Scene):
 
         self.msg_id = packet.msg_id
 
-        self.model.server_client.enqueue(Packets.envelope(packet), self.msg_id)
+        self.model.server_client.enqueue(Packets.envelope(packet), self.msg_id, True)
 
     def queue_enter_listener(self, event: UDPAckEvent):
         if event.msg_id != self.msg_id:

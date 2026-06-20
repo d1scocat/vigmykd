@@ -88,8 +88,9 @@ class GameServerClient:
             return
         
         self.outgoing.append(data)
-        if needs_ack and callback is not None:
-            self._perform_on_ack[msg_id] = callback
+        if needs_ack:
+            if callback is not None:
+                self._perform_on_ack[msg_id] = callback
             self._waiting_ack[msg_id] = _WaitingAck(
                 message=data,
                 addr=(self.config.server_addr, self.config.server_port)

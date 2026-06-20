@@ -9,27 +9,7 @@ from settings import PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_DUCK_HEIGHT
 from generated.proto.v1 import packet_pb2 as packet_pb2
 
 
-class Facing(IntEnum):
-    NEG_X = 0
-    POS_X = 1
-
-
-@dataclass
-class PlayerPhysics:
-    dash_timer: int = 0
-
-
-@dataclass
-class Position:
-    x: float
-    y: float
-    facing: Facing
-    vel_x: float = 0
-    vel_y: float = 0
-    is_ducking: bool = False
-    is_dashing: bool = False
-    is_grounded: bool = False
-    physics: PlayerPhysics = field(default_factory=PlayerPhysics)
+g
 
     @classmethod
     def from_packet(cls, packet: packet_pb2.PositionData):
