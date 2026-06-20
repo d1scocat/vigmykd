@@ -94,7 +94,7 @@ class WaitingToMatchmakeScene(Scene):
 
             self.ctx.event_manager.register_listener(
                 event_type=UDPReceivedEvent,
-                func=self.match_id_received_listener
+                func=self.udp_receiver
             )
         ])
 
