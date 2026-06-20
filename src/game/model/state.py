@@ -175,6 +175,10 @@ class GameState:
             for k in expired_ack:
                 del self._input_buffer[k]
 
+        expired_hist = [k for k in self._state_hist if k <= cutoff_tick]
+        for k in expired_hist:
+            del self._state_hist[k]
+
     def advance(self):
         if self.client_player:
             self._state_hist[self.tick_idx] = deepcopy(self.client_player.position)
