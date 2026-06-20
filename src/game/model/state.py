@@ -128,6 +128,7 @@ class GameState:
         self.clear_redundant(last_client_tick)
 
         target_tick = server_tick - TARGET_LATENCY
+        self.logger.info("Target tick %d | Current tick %d | Target latency in ticks %d", target_tick, server_tick, TARGET_LATENCY)
         if self.tick_idx < target_tick:
             self._catch_up(target_tick, ctx)
 
