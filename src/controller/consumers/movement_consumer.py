@@ -1,3 +1,5 @@
+import pygame
+
 from registry import register_consumer
 
 from controller.consumers.input_consumer import InputConsumer
@@ -24,7 +26,9 @@ from settings import MOVE_SPEED, \
     FAST_FALL_MULTIPLIER, \
     AIR_DRAG, \
     PLAYER_HEIGHT, \
-    PLAYER_WIDTH
+    PLAYER_WIDTH, \
+    GROUND_TOLERANCE_PX, \
+    COYOTE_TICKS
 
 
 @register_consumer(tags=["match"])
@@ -113,10 +117,19 @@ class MovementConsumer(InputConsumer):
         elif player.position.vel_x < 0:
             player.position.facing = Facing.NEG_X
 
+        # === === === y movement: coyote === === ===
+        if player.position.is_grounded:
+            player.position.physics.coyote_timer = COYOTE_TICKS
+        else:
+            if player.position.physics.coyote_timer > 0:
+                player.position.physics.coyote_timer -= 1
+
         # === === === y movement: jump === === ===
-        if player_input.jump and player.position.is_grounded and not player_input.duck:
+        can_jump = player.position.is_grounded or player.position.physics.coyote_timer > 0
+        if player_input.jump and not player_input.duck and can_jump:
             player.position.vel_y = JUMP_FORCE
             player.position.is_grounded = False
+            player.position.physics.coyote_timer = 0
 
         # === === === y movement: gravity === === ===
         if not player.position.is_grounded:
@@ -164,7 +177,26 @@ class MovementConsumer(InputConsumer):
 
             player.position.vel_y = 0
         else:
-            player.position.is_grounded = False
+            # if falling or stationary, check if close enough to the ground
+            # to snap to it
+            if player.position.vel_y >= 0:
+                ground_rect = pygame.Rect(
+                    player.position.x,
+                    player.position.y + PLAYER_HEIGHT,
+                    PLAYER_WIDTH,
+                    GROUND_TOLERANCE_PX
+                )
+                ground_coll = world.headless.get_collision(ground_rect)
+
+                if ground_coll:
+                    player.position.is_grounded = True
+                    player.position.y = ground_coll.top - PLAYER_HEIGHT  # snap to gronud
+                    player.position.vel_y = 0
+                else:
+                    player.position.is_grounded = False
+            else:
+                # if jumping, then not grounded
+                player.position.is_grounded = False
 
     def _decelerate(self, player: Player, current_decel_x: float):
         if player.position.vel_x > 0:

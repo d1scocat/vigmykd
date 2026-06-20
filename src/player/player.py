@@ -17,6 +17,7 @@ class Facing(IntEnum):
 @dataclass
 class PlayerPhysics:
     dash_timer: int = 0
+    coyote_timer: int = 0
 
 
 @dataclass
