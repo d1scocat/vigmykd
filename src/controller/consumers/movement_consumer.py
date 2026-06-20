@@ -29,7 +29,8 @@ from settings import MOVE_SPEED, \
     PLAYER_WIDTH, \
     GROUND_TOLERANCE_PX, \
     COYOTE_TICKS, \
-    JUMP_BUFFER_TICKS
+    JUMP_BUFFER_TICKS, \
+    STEP_HEIGHT
 
 
 @register_consumer(tags=["match"])
@@ -162,12 +163,17 @@ class MovementConsumer(InputConsumer):
             overlap_left = (player.position.x + PLAYER_WIDTH) - coll_rect.left
             overlap_right = coll_rect.right - player.position.x
 
-            if abs(overlap_left) < abs(overlap_right):
-                player.position.x = coll_rect.left - PLAYER_WIDTH
-            else:
-                player.position.x = coll_rect.right
+            # step-up
+            overlap_top = (player.position.y + PLAYER_HEIGHT) - coll_rect.top
 
-            player.position.vel_x = 0
+            if player.position.is_grounded and 0 < overlap_top < STEP_HEIGHT:
+                player.position.y -= (overlap_top + 0.02)
+            else:
+                if abs(overlap_left) < abs(overlap_right):
+                    player.position.x = coll_rect.left - PLAYER_WIDTH
+                else:
+                    player.position.x = coll_rect.right
+                player.position.vel_x = 0
 
         # === === === y axis === === ==
         player.position.y += player.position.vel_y
@@ -177,10 +183,10 @@ class MovementConsumer(InputConsumer):
             overlap_bottom = coll_rect.bottom - player.position.y
 
             if abs(overlap_top) < abs(overlap_bottom):
-                player.position.y = coll_rect.top - PLAYER_HEIGHT
+                player.position.y = coll_rect.top - PLAYER_HEIGHT - 0.009 # prevent sticking
                 player.position.is_grounded = True
             else:
-                player.position.y = coll_rect.bottom
+                player.position.y = coll_rect.bottom + 0.009 # prevent sticking
                 player.position.is_grounded = False
 
             player.position.vel_y = 0
