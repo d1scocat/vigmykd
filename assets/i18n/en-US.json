@@ -10,7 +10,8 @@
     "kicked-from-match": "You have been removed from the match",
     "kick-reason": "Reason:",
     "kick": {
-        "no-keepalive": "No players joined the queue, or you timed out."
+        "no-keepalive": "No players joined the queue, or you timed out.",
+        "victory-by-resignation": "You won (your opponent resigned)."
     },
     
     "main-menu": {
