@@ -6,14 +6,13 @@ from context import GameContext
 from event.events import UDPReceivedEvent, SceneSwitchRequestEvent
 from game.model import GameState
 from network.udp.factory import Packets
+from scene.objects.kicked import KickedScene
 from scene.objects.match import MatchScene
 from scene.objects.matchmaking import matchmaking_actions
 from scene.scene import Scene
 from ui.components.page import UIPage
 from ui.components.text import UITextElement
 from ui.interaction import UIInteractionSystem
-from view import Renderer
-from view.system import ViewSystem
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
 
@@ -66,7 +65,7 @@ class MatchmakingScene(Scene):
     def on_load(self):
         self.lid = self.ctx.event_manager.register_listener(
             UDPReceivedEvent,
-            self.match_start_listener
+            self.udp_receiver
         )
 
     def on_enter(self):
@@ -76,7 +75,15 @@ class MatchmakingScene(Scene):
         if hasattr(self, "lid"):
             self.ctx.event_manager.unregister_listener(self.lid)
 
-    def match_start_listener(self, event: UDPReceivedEvent):
+    def udp_receiver(self, event: UDPReceivedEvent):
+        if event.message_type == packet_pb2.KickedFromMatch:
+            key = event.message.reason_i18n
+            scene = KickedScene(self.model, self.ctx, key)
+
+            self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(scene))
+
+            return
+
         if event.message_type != packet_pb2.InformMatchStart:
             return
         

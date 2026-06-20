@@ -1,0 +1,1 @@
+from .kicked import KickedScene

@@ -6,6 +6,9 @@
     "waiting-to-matchmake": "Waiting to matchmake",
 
     "match-placeholder-text": "Match placeholder text",
+
+    "kicked-from-match": "You have been removed from the match",
+    "kick-reason": "Reason:",
     
     "main-menu": {
         "login-button-label": "Login",

@@ -7,6 +7,7 @@ from event.events import HTTPResponseEvent, UDPReceivedEvent, UDPAckEvent, \
     SceneSwitchRequestEvent, PrepareSceneRequestEvent
 from game.model import GameState
 from network.udp.factory import Packets
+from scene.objects.kicked import KickedScene
 from scene.objects.menu import MenuScene
 from scene.scene import Scene
 from ui.components.page import UIPage
@@ -109,11 +110,17 @@ class WaitingToMatchmakeScene(Scene):
             return
         self.check_and_start_matchmaking()
 
-    def match_id_received_listener(self, event: UDPReceivedEvent):
-        if event.message_type != packet_pb2.MatchmakingEnterResponse:
+    def udp_receiver(self, event: UDPReceivedEvent):
+        if event.message_type == packet_pb2.MatchmakingEnterResponse:
+            self.matchmaking_scene.match_id = event.message.match_id
+            self.check_and_start_matchmaking()
             return
-        self.matchmaking_scene.match_id = event.message.match_id
-        self.check_and_start_matchmaking()
+
+        if event.message_type == packet_pb2.KickedFromMatch:
+            key = event.message.reason_i18n
+            scene = KickedScene(self.model, self.ctx, key)
+
+            self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(scene))
 
     def check_and_start_matchmaking(self):
         self.ready_state += 1

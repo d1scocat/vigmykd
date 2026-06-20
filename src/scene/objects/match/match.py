@@ -5,14 +5,14 @@ from typing import Any, Callable
 from pygame.event import Event
 
 from context import GameContext
-from event.events import UDPReceivedEvent
+from event.events import SceneSwitchRequestEvent, UDPReceivedEvent
 from game.model import GameState
 from player import Player
+from scene.objects.kicked import KickedScene
 from scene.objects.match import actions
 from scene.scene import Scene
 from ui.components.page import UIPage
 from ui.interaction import UIInteractionSystem
-from world import HeadlessWorld, World
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
 
@@ -56,7 +56,7 @@ class MatchScene(Scene):
 
             self.ctx.event_manager.register_listener(
                 UDPReceivedEvent,
-                self.match_start_info_receiver
+                self.udp_receiver
             )
         ]
 
@@ -64,7 +64,15 @@ class MatchScene(Scene):
         for lid in self.lids:
             self.ctx.event_manager.unregister_listener(lid)
 
-    def match_start_info_receiver(self, event: UDPReceivedEvent):
+    def udp_receiver(self, event: UDPReceivedEvent):
+        if event.message_type == packet_pb2.KickedFromMatch:
+            key = event.message.reason_i18n
+            scene = KickedScene(self.model, self.ctx, key)
+
+            self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(scene))
+
+            return
+
         if event.message_type != packet_pb2.RequestMatchInfoResponse:
             return
 

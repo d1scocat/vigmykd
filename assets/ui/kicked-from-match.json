@@ -1,0 +1,70 @@
+{
+    "id": "kicked-from-match",
+    "meta": {
+        "resolution": [1920, 1080],
+        "anchor-mode": "relative"
+    },
+
+    "elements": [
+        {
+            "type": "text",
+            "id": "kicked-from-match",
+            "z-index": 110,
+            "position": { "x": 0.5, "y": 0.3, "anchor": "center" },
+            "size": { "width": 600, "height": 100 },
+
+            "text": {
+                "i18n": "kicked-from-match",
+                "font": "LuckiestGuy-Regular",
+                "size": 60,
+                "color": [255, 0, 0]
+            }
+        },
+
+        {
+            "type": "text",
+            "id": "the-word-reason",
+            "z-index": 110,
+            "position": { "x": 0.5, "y": 0.65, "anchor": "center" },
+            "size": { "width": 600, "height": 100 },
+
+            "text": {
+                "i18n": "kick-reason",
+                "font": "LuckiestGuy-Regular",
+                "size": 40,
+                "color": [255, 255, 255]
+            }
+        },
+
+        {
+            "type": "text",
+            "id": "kick-reason",
+            "z-index": 110,
+            "position": { "x": 0.5, "y": 0.85, "anchor": "center" },
+            "size": { "width": 600, "height": 100 },
+
+            "text": {
+                "raw": "---",
+                "font": "LuckiestGuy-Regular",
+                "size": 60,
+                "color": [255, 0, 0]
+            }
+        },
+
+        {
+            "type": "button",
+            "id": "quit",
+            "z_index": 100,
+            "position": { "x": 0.01, "y": 0.01, "anchor": "top-left" },
+            "size": { "mode": "match-texture" },
+
+            "states": {
+                "normal": { "texture": { "sheet": 10, "tile": [0, 2] } },
+                "hovered": { "texture": { "sheet": 10, "tile": [1, 2] } },
+                "pressed": { "texture": { "sheet": 10, "tile": [2, 2] } }
+            },
+            
+            "action": "quit"
+        }
+    ]
+}
