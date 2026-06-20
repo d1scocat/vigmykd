@@ -139,6 +139,7 @@ class GameContext:
                 "assets_dir": assets_dir,
                 "spritesheet_image": assets_dir / mapdata_json["spritesheet_image"],
                 "spritesheet_details": assets_dir / mapdata_json["spritesheet_details"],
+                "spawns": mapdata_json["spawns"]
             }
 
         return result
