@@ -7,7 +7,7 @@ from context import GameContext
 from controller.input_model import PlayerInput
 from network import GameServerClient
 from player import Player, Position
-from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY, MAX_RESIM_TICKS
+from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY, TARGET_LATENCY
 from world import World
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
@@ -127,26 +127,25 @@ class GameState:
         self.client_player.apply_position(client_pos)
         self.clear_redundant(last_client_tick)
 
-        """
-        saved_state = self._state_hist.get(last_client_tick)
-        if saved_state is None:
-            self.client_player.apply_position(client_pos)
-        elif not saved_state.matches_position(client_pos):
-            self.is_reconciling = True
-            self.client_player.apply_position(client_pos)
+        target_tick = server_tick - TARGET_LATENCY
+        if self.tick_idx < target_tick:
+            self._catch_up(target_tick, ctx)
 
-            start_tick = max(last_client_tick + 1, self.tick_idx - MAX_RESIM_TICKS)
+    def _catch_up(self, target_tick: int, ctx: GameContext):
+        if not self.client_player:
+            self.logger.warning("Can't catch up with no client player specified")
+            return
 
-            for tick_to_sim in range(start_tick, self.tick_idx):
-                buffered = self._input_buffer.get(tick_to_sim, {})
-                local_input = buffered.get(self.client_player.player_id)
-                self.simulate_input(ctx, self.client_player, local_input or PlayerInput())
-                self.logger.info(f"[RECONCILE] {self.tick_idx=} | Finished reconciling tick {tick_to_sim} in [{start_tick};{self.tick_idx}) | Position: {self.client_player.position!r}")
+        simulate = target_tick - self.tick_idx
+        self.logger.info(f"Catching up {simulate} ticks to reach server tick {target_tick}")
 
-            self.is_reconciling = False
+        for _ in range(simulate):
+            buffered = self._input_buffer.get(self.tick_idx)
+            if buffered:
+                inp = buffered.get(self.client_player.player_id, PlayerInput())
+                self.simulate_input(ctx, self.client_player, inp)
 
-        self.clear_redundant(last_client_tick)
-        """
+            self.advance()
 
     def simulate_input(self, ctx: GameContext, player: Player, player_input: PlayerInput):
         from registry import registries
