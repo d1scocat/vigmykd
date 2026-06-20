@@ -166,7 +166,9 @@ class GameContext:
 
             _headless = HeadlessWorld(
                 tmj_path=world_data["map_path"],
-                tsj_path=world_data["tileset_path"]
+                tsj_path=world_data["tileset_path"],
+                first_spawn=tuple(map(float, world_data["spawns"]["1"].split(" "))),
+                second_spawn=tuple(map(float, world_data["spawns"]["2"].split(" "))),
             )
 
             result[world_name] = World(

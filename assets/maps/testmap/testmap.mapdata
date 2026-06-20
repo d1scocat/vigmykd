@@ -4,5 +4,10 @@
     "tileset_json": "testmap.tsj",
     "assets_directory": "assets",
     "spritesheet_image": "testmap.png",
-    "spritesheet_details": "testmap.json"
+    "spritesheet_details": "testmap.json",
+
+    "spawns": {
+        "1": "64 500",
+        "2": "1856 500"
+    },
 }
