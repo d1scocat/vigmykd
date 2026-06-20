@@ -18,6 +18,7 @@ class Facing(IntEnum):
 class PlayerPhysics:
     dash_timer: int = 0
     coyote_timer: int = 0
+    jump_buffer_timer: int = 0
 
 
 @dataclass

@@ -28,7 +28,8 @@ from settings import MOVE_SPEED, \
     PLAYER_HEIGHT, \
     PLAYER_WIDTH, \
     GROUND_TOLERANCE_PX, \
-    COYOTE_TICKS
+    COYOTE_TICKS, \
+    JUMP_BUFFER_TICKS
 
 
 @register_consumer(tags=["match"])
@@ -46,6 +47,11 @@ class MovementConsumer(InputConsumer):
         world = state.world
         if not world:
             return
+        
+        if player_input.jump:
+            player.position.physics.jump_buffer_timer = JUMP_BUFFER_TICKS
+        elif player.position.physics.jump_buffer_timer > 0:
+            player.position.physics.jump_buffer_timer -= 1
 
         # === === === dashing === === === #
         if player_input.dash and not player.position.is_dashing:
@@ -59,6 +65,7 @@ class MovementConsumer(InputConsumer):
 
             # dashing in place (jumping up high)
             elif player.position.is_grounded and player_input.move_dir == 0 and not player_input.duck:
+                player.position.vel_x = 0.0
                 player.position.vel_y = MAX_JUMP_FORCE
                 player.position.is_grounded = False
 
@@ -66,6 +73,7 @@ class MovementConsumer(InputConsumer):
             else:
                 dash_dir = player_input.move_dir if player_input.move_dir != 0 else 1
                 player.position.vel_x = dash_dir * DASH_SPEED
+                player.position.vel_y = 0.0
 
         if player.position.is_dashing:
             player.position.physics.dash_timer -= 1
@@ -89,8 +97,6 @@ class MovementConsumer(InputConsumer):
             if player_input.move_dir != 0:
                 target_vel = player_input.move_dir * current_move_speed
 
-                #if (player_input.move_dir > 0 and player.position.vel_x < 0) or \
-                #    (player_input.move_dir < 0 and player.position.vel_x > 0):
                 # decelerating?
                 if (player_input.move_dir * player.position.vel_x) < 0:
                     self._decelerate(player, current_decel_x)
@@ -126,10 +132,12 @@ class MovementConsumer(InputConsumer):
 
         # === === === y movement: jump === === ===
         can_jump = player.position.is_grounded or player.position.physics.coyote_timer > 0
-        if player_input.jump and not player_input.duck and can_jump:
+        has_jump_buffer = player.position.physics.jump_buffer_timer > 0
+        if player_input.duck and can_jump and has_jump_buffer:
             player.position.vel_y = JUMP_FORCE
             player.position.is_grounded = False
             player.position.physics.coyote_timer = 0
+            player.position.physics.jump_buffer_timer = 0
 
         # === === === y movement: gravity === === ===
         if not player.position.is_grounded:
