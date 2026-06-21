@@ -8,7 +8,7 @@ from random import Random
 from context import GameContext
 from controller.input_model import PlayerInput
 from network import GameServerClient
-from player import Player, Position
+from player import Player, Position, Snapshot
 from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY, \
     DEADZONE, \
     MAJOR_DESYNC, \
@@ -20,7 +20,7 @@ from generated.proto.v1 import packet_pb2 as packet_pb2
 
 class GameState:
     _input_buffer: dict[int, dict[UUID | None, PlayerInput]]
-    _state_hist: dict[int, Position]
+    _state_hist: dict[int, Snapshot]
 
     def __init__(self, logger: Logger, server_client: GameServerClient):
         self.server_client = server_client
@@ -102,7 +102,7 @@ class GameState:
         self,
         server_tick: int,
         last_client_tick: int,
-        player_data: list[packet_pb2.PositionData],
+        player_data: list[packet_pb2.ReconcileData],
         ctx: GameContext,
     ):
         if self.client_player is None or self.opponent_player is None:
@@ -112,58 +112,58 @@ class GameState:
         self._sync_offset(server_tick, last_client_tick)
 
         try:
-            player_pos = {
-                UUID(data.uuid): Position.from_packet(data)
+            rec_data = {
+                UUID(data.uuid): Snapshot(Position.from_packet(data), int(data.mana))
                 for data in player_data
             }
 
-            client_pos = player_pos.get(self.client_player.player_id)
-            opponent_pos = player_pos.get(self.opponent_player.player_id)
+            client_data = rec_data.get(self.client_player.player_id)
+            opponent_data = rec_data.get(self.opponent_player.player_id, ())
 
-            if not client_pos or not opponent_pos:
+            if not client_data or not opponent_data:
                 raise ValueError("Could not map reconciliation UUIDs to active players")
         except Exception:
             self.logger.exception("Could not decode player position packets")
             return
 
         # opponent position is not being predicted
-        self.opponent_player.apply_position(opponent_pos)
+        self.opponent_player.apply_snapshot(opponent_data)
 
         saved_state = self._state_hist.get(last_client_tick)
         if saved_state is None:
             # no history for this tick, so we snap to server
-            self.client_player.apply_position(client_pos)
-            self._state_hist[last_client_tick] = deepcopy(client_pos)
+            self.client_player.apply_snapshot(client_data)
+            self._state_hist[last_client_tick] = deepcopy(client_data)
             self.last_reconcile_tick = self.tick_idx
         else:
-            dx = abs(client_pos.x - saved_state.x)
-            dy = abs(client_pos.y - saved_state.y)
+            dx = abs(client_data.position.x - saved_state.position.x)
+            dy = abs(client_data.position.y - saved_state.position.y)
             dist = math.sqrt(dx ** 2 + dy ** 2)
 
             ticks_since_reconcile = self.tick_idx - self.last_reconcile_tick
 
             if dist < DEADZONE:
                 # type 1 - tiny difference
-                self._state_hist[last_client_tick] = deepcopy(client_pos)
+                self._state_hist[last_client_tick] = deepcopy(client_data)
 
             elif dist > MAJOR_DESYNC or ticks_since_reconcile > RECONCILE_COOLDOWN:
 
                 # type 3 - huge difference or cooldown
-                self.client_player.apply_position(client_pos)
-                self._state_hist[last_client_tick] = deepcopy(client_pos)
+                self.client_player.apply_snapshot(client_data)
+                self._state_hist[last_client_tick] = deepcopy(client_data)
 
                 start_tick = last_client_tick + 1
                 for tick in range(start_tick, self.tick_idx):
                     buffered = self._input_buffer.get(tick, {})
                     local_input = buffered.get(self.client_player.player_id, PlayerInput())
                     self.simulate_input(ctx, self.client_player, local_input)
-                    self._state_hist[tick] = deepcopy(self.client_player.position)
+                    self._state_hist[tick] = deepcopy(self.client_player.snap())
 
                 self.last_reconcile_tick = self.tick_idx
 
             else:
                 # type 2 - slightly off but we keep smooth visuals
-                self._state_hist[last_client_tick] = deepcopy(client_pos)
+                self._state_hist[last_client_tick] = deepcopy(client_data)
 
         self.clear_redundant(last_client_tick)
 
@@ -203,7 +203,7 @@ class GameState:
 
     def advance(self):
         if self.client_player:
-            self._state_hist[self.tick_idx] = deepcopy(self.client_player.position)
+            self._state_hist[self.tick_idx] = deepcopy(self.client_player.snap())
 
         self.clear_redundant()
 

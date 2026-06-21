@@ -29,7 +29,8 @@ from settings import MOVE_SPEED, \
     GROUND_TOLERANCE_PX, \
     COYOTE_TICKS, \
     JUMP_BUFFER_TICKS, \
-    STEP_HEIGHT
+    STEP_HEIGHT, \
+    DASH_MANA_COST
 
 
 @register_consumer(tags=["match"])
@@ -50,10 +51,13 @@ class MovementConsumer(InputConsumer):
 
         # === === === dashing === === === #
         dash_just_pressed = player_input.dash and not player.position.physics.last_dash_pressed
+        can_dash = player.mana >= DASH_MANA_COST
+
         if dash_just_pressed and not player.position.is_dashing:
             player.position.is_dashing = True
             player.position.physics.dash_timer = DASH_DURATION_TICKS + 1
             player.position.physics.coyote_timer = 0
+            player.mana -= DASH_MANA_COST
 
             # plunge down
             if not player.position.is_grounded and player_input.duck:

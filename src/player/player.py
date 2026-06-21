@@ -4,7 +4,10 @@ from dataclasses import dataclass, field
 from enum import IntEnum
 
 from geometry import Rect
-from settings import PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_DUCK_HEIGHT
+from settings import PLAYER_WIDTH, \
+    PLAYER_HEIGHT, \
+    PLAYER_DUCK_HEIGHT, \
+    MAX_MANA
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
 
@@ -36,7 +39,7 @@ class Position:
     physics: PlayerPhysics = field(default_factory=PlayerPhysics)
 
     @classmethod
-    def from_packet(cls, packet: packet_pb2.PositionData):
+    def from_packet(cls, packet: packet_pb2.ReconcileData):
         return cls(
             x=packet.x,
             y=packet.y,
@@ -72,6 +75,12 @@ class Position:
             self.is_grounded == other.is_grounded
 
 
+@dataclass
+class Snapshot:
+    position: Position
+    mana: int
+
+
 class Player:
     player_id: uuid.UUID
 
@@ -100,8 +109,14 @@ class Player:
         self.is_on_ground = True
         self.is_ducking = False
 
-    def apply_position(self, position: Position):
-        self.position = position
+        self.mana = MAX_MANA
+
+    def snap(self) -> Snapshot:
+        return Snapshot(self.position, self.mana)
+
+    def apply_snapshot(self, snapshot: Snapshot):
+        self.position = snapshot.position
+        self.mana = snapshot.mana
 
     def matches_position(self, position: Position, epsilon: float = 0.01):
         return self.position.matches_position(position, epsilon)

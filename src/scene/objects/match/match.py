@@ -12,9 +12,12 @@ from scene.objects.kicked import KickedScene
 from scene.objects.match import actions
 from scene.scene import Scene
 from ui.components.page import UIPage
+from ui.components.text import UITextElement
 from ui.interaction import UIInteractionSystem
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
+
+from settings import MAX_MANA
 
 
 class MatchScene(Scene):
@@ -46,6 +49,19 @@ class MatchScene(Scene):
 
     def on_load(self):
         actions.request_match_info(self.model)
+
+    def tick(self):
+        super().tick()
+
+        client = self.model.client_player
+        if client:
+            client.mana = min(MAX_MANA, client.mana + 1)
+
+            textbox = self.page.by_id("mana-rectangle")
+            if textbox is None or not isinstance(textbox, UITextElement):
+                self.ctx.logger.warning("No mana-rectangle found for MatchScene")
+                return
+            textbox.set_raw(f"{client.mana} / {MAX_MANA}")
 
     def on_enter(self):
         self.lids = [
