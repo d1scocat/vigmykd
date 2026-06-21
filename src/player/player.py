@@ -19,6 +19,8 @@ class PlayerPhysics:
     dash_timer: int = 0
     coyote_timer: int = 0
     jump_buffer_timer: int = 0
+    last_jump_pressed: bool = False
+    last_dash_pressed: bool = False
 
 
 @dataclass

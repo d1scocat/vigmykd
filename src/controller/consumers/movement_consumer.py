@@ -48,14 +48,10 @@ class MovementConsumer(InputConsumer):
         world = state.world
         if not world:
             return
-        
-        if player_input.jump:
-            player.position.physics.jump_buffer_timer = JUMP_BUFFER_TICKS
-        elif player.position.physics.jump_buffer_timer > 0:
-            player.position.physics.jump_buffer_timer -= 1
 
         # === === === dashing === === === #
-        if player_input.dash and not player.position.is_dashing:
+        dash_just_pressed = player_input.dash and not player.position.physics.last_dash_pressed
+        if dash_just_pressed and not player.position.is_dashing:
             player.position.is_dashing = True
             player.position.physics.dash_timer = DASH_DURATION_TICKS
 
@@ -80,6 +76,8 @@ class MovementConsumer(InputConsumer):
             player.position.physics.dash_timer -= 1
             if player.position.physics.dash_timer <= 0:
                 player.position.is_dashing = False
+
+        player.position.physics.last_dash_pressed = player_input.dash 
 
         # === === === x movement === === ===
         if player.position.is_dashing:
@@ -132,13 +130,23 @@ class MovementConsumer(InputConsumer):
                 player.position.physics.coyote_timer -= 1
 
         # === === === y movement: jump === === ===
+        jump_just_pressed = player_input.jump and not player.position.physics.last_jump_pressed
+
+        if jump_just_pressed:
+            player.position.physics.jump_buffer_timer = JUMP_BUFFER_TICKS
+        elif player.position.physics.jump_buffer_timer > 0:
+            player.position.physics.jump_buffer_timer -= 1
+
         can_jump = player.position.is_grounded or player.position.physics.coyote_timer > 0
         has_jump_buffer = player.position.physics.jump_buffer_timer > 0
-        if player_input.duck and can_jump and has_jump_buffer:
+
+        if (jump_just_pressed or has_jump_buffer) and not player_input.duck and can_jump:
             player.position.vel_y = JUMP_FORCE
             player.position.is_grounded = False
             player.position.physics.coyote_timer = 0
             player.position.physics.jump_buffer_timer = 0
+
+        player.position.physics.last_jump_pressed = player_input.jump
 
         # === === === y movement: gravity === === ===
         if not player.position.is_grounded:

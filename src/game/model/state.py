@@ -130,6 +130,17 @@ class GameState:
             # no history for this tick, so we snap to server
             self.client_player.apply_position(client_pos)
         elif not saved_state.matches_position(client_pos):
+            dx = client_pos.x - saved_state.x
+            dy = client_pos.y - saved_state.y
+            dvx = client_pos.vel_x - saved_state.vel_x
+            dvy = client_pos.vel_y - saved_state.vel_y
+            print(f"\nMismatch in saved state and predicted position at tick {self.tick_idx}.")
+            print(f"--> dx:{dx}")
+            print(f"--> dy:{dy}")
+            print(f"--> dvx:{dvx}")
+            print(f"--> dvy: {dvy}\n")
+            print(f"Client pos: {client_pos!r}")
+            print(f"Saved pos: {saved_state!r}")
             # server disagrees so we resimulate ticks
             self.client_player.apply_position(client_pos)
 
