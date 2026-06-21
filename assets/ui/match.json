@@ -19,7 +19,7 @@
                 "font": "LuckiestGuy-Regular",
                 "size": 50,
                 "color": [255, 255, 255]
-            }
+            },
 
             "hud": true
         }
