@@ -132,6 +132,7 @@ class GameState:
         saved_state = self._state_hist.get(last_client_tick)
         if saved_state is None:
             # no history for this tick, so we snap to server
+            print(f"TYPE 0 | Snap to server | server_x={client_pos.x}; server_y={client_pos.y}; server_velx={client_pos.vel_x}; server_vely={client_pos.vel_y}")
             self.client_player.apply_position(client_pos)
             self._state_hist[last_client_tick] = deepcopy(client_pos)
             self.last_reconcile_tick = self.tick_idx
