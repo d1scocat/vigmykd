@@ -50,6 +50,14 @@ class Position:
                 Facing.NEG_X
                 if packet.facing == packet_pb2.Facing.FACING_NEG_X
                 else Facing.POS_X
+            ),
+
+            physics=PlayerPhysics(
+                dash_timer=packet.dash_timer,
+                coyote_timer=packet.coyote_timer,
+                jump_buffer_timer=packet.jump_buffer_timer,
+                last_dash_pressed=packet.last_dash_pressed,
+                last_jump_pressed=packet.last_jump_pressed
             )
         )
 

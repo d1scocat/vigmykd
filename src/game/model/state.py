@@ -9,7 +9,10 @@ from context import GameContext
 from controller.input_model import PlayerInput
 from network import GameServerClient
 from player import Player, Position
-from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY, TARGET_LATENCY
+from settings import MAX_REDUNDANCY_TICKS as REDUNDANCY, \
+    DEADZONE, \
+    MAJOR_DESYNC, \
+    RECONCILE_COOLDOWN
 from world import World
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
@@ -26,6 +29,7 @@ class GameState:
         self.tick_idx = 0
         self.network_offset = 0
         self.last_server_tick = 0
+        self.last_reconcile_tick = 0
 
         self._input_buffer = {}
         self._state_hist = {}
@@ -130,31 +134,38 @@ class GameState:
             # no history for this tick, so we snap to server
             self.client_player.apply_position(client_pos)
             self._state_hist[last_client_tick] = deepcopy(client_pos)
-        elif not saved_state.matches_position(client_pos):
-            dx = client_pos.x - saved_state.x
-            dy = client_pos.y - saved_state.y
-            dvx = client_pos.vel_x - saved_state.vel_x
-            dvy = client_pos.vel_y - saved_state.vel_y
-            print(f"\nMismatch in saved state and predicted position at tick {self.tick_idx}.")
-            print(f"--> dx:{dx}")
-            print(f"--> dy:{dy}")
-            print(f"--> dvx:{dvx}")
-            print(f"--> dvy: {dvy}\n")
-            print(f"Client pos: {client_pos!r}")
-            print(f"Saved pos: {saved_state!r}")
-            # server disagrees so we resimulate ticks
-            self.client_player.apply_position(client_pos)
-            self._state_hist[last_client_tick] = deepcopy(client_pos)
-
-            start_tick = last_client_tick + 1
-            for tick in range(start_tick, self.tick_idx):
-                buffered = self._input_buffer.get(tick, {})
-                local_input = buffered.get(self.client_player.player_id, PlayerInput())
-                self.simulate_input(ctx, self.client_player, local_input)
-                self._state_hist[tick] = deepcopy(self.client_player.position)
+            self.last_reconcile_tick = self.tick_idx
         else:
-            # server agrees
-            pass
+            dx = abs(client_pos.x - saved_state.x)
+            dy = abs(client_pos.y - saved_state.y)
+            dist = math.sqrt(dx ** 2 + dy ** 2)
+
+            ticks_since_reconcile = self.tick_idx - self.last_reconcile_tick
+
+            if dist < DEADZONE:
+                print(f"TYPE 1 | {dx=:.3f}; {dy=:.3f} | {dist=:.4f}")
+                # type 1 - tiny difference
+                self._state_hist[last_client_tick] = deepcopy(client_pos)
+
+            elif dist > MAJOR_DESYNC or ticks_since_reconcile > RECONCILE_COOLDOWN:
+                print(f"TYPE 3 | {dx=:.3f}; {dy=:.3f} | {dist=:.4f} | {ticks_since_reconcile=}")
+                # type 3 - huge difference or cooldown
+                self.client_player.apply_position(client_pos)
+                self._state_hist[last_client_tick] = deepcopy(client_pos)
+
+                start_tick = last_client_tick + 1
+                for tick in range(start_tick, self.tick_idx):
+                    buffered = self._input_buffer.get(tick, {})
+                    local_input = buffered.get(self.client_player.player_id, PlayerInput())
+                    self.simulate_input(ctx, self.client_player, local_input)
+                    self._state_hist[tick] = deepcopy(self.client_player.position)
+
+                self.last_reconcile_tick = self.tick_idx
+
+            else:
+                # type 2 - slightly off but we keep smooth visuals
+                print(f"TYPE 2 | {dx=:.3f}; {dy=:.3f} | {dist=:.4f}")
+                self._state_hist[last_client_tick] = deepcopy(client_pos)
 
         self.clear_redundant(last_client_tick)
 
@@ -166,13 +177,6 @@ class GameState:
             consumer.consume(player, self, ctx, player_input)
 
     def buffer_input(self, player_id: UUID | None, player_input: PlayerInput):
-        # network_offset is RTT, so one way latency is RTT / 2
-        # +DELAY is leeway for network jitter
-
-        #delay = max(DELAY, (self.network_offset // 2) + DELAY)
-        #tick = self.tick_idx + delay
-
-        #tick_buffer = self._input_buffer.setdefault(tick, {})
         tick_buffer = self._input_buffer.setdefault(self.tick_idx, {})
         tick_buffer[player_id] = player_input
         self._input_buffer[self.tick_idx] = tick_buffer
@@ -181,17 +185,20 @@ class GameState:
         return self._input_buffer.pop(self.tick_idx, {})
 
     def clear_redundant(self, last_client_tick: int | None = None):
+        if last_client_tick is not None:
+            if not hasattr(self, "_highest_ack_tick"):
+                self._highest_ack_tick = -1
+            if last_client_tick > self._highest_ack_tick:
+                self._highest_ack_tick = last_client_tick
+
         cutoff_tick = self.tick_idx - REDUNDANCY
-        expired_time = [k for k in self._input_buffer if k <= cutoff_tick]
-        for k in expired_time:
+        safe_ack = getattr(self, "_highest_ack_tick", -1)
+
+        expired_inputs = [k for k in self._input_buffer if k <= safe_ack or k <= cutoff_tick]
+        for k in expired_inputs:
             del self._input_buffer[k]
 
-        if last_client_tick is not None:
-            expired_ack = [k for k in self._input_buffer if k <= last_client_tick]
-            for k in expired_ack:
-                del self._input_buffer[k]
-
-        expired_hist = [k for k in self._state_hist if k <= cutoff_tick]
+        expired_hist = [k for k in self._state_hist if k <= safe_ack or k <= cutoff_tick]
         for k in expired_hist:
             del self._state_hist[k]
 
