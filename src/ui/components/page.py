@@ -79,6 +79,7 @@ class UIPage:
         states, current_state = component.build_render_states()
 
         if states:
+            is_hud = list(states.values())[0].is_hud
             renderable = Renderable(
                 z_index=component.z_index,
                 states=states,
@@ -87,7 +88,8 @@ class UIPage:
                     int(component.absolute_position[0]),
                     int(component.absolute_position[1])
                 ),
-                size=component.absolute_size
+                size=component.absolute_size,
+                is_hud=is_hud
             )
 
             renderer.queue_renderable(renderable)

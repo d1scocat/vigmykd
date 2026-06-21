@@ -14,6 +14,7 @@ class UIContainer(UIComponent):
         children: list[UIComponent],
         states: dict[str, dict[str, Any]] | None = None,
         default_state: str | None = None,
+        is_hud: bool = False,
     ):
         super().__init__(
             id=id,
@@ -22,7 +23,8 @@ class UIContainer(UIComponent):
             position=position,
             size=size,
             states=states,
-            default_state=default_state
+            default_state=default_state,
+            is_hud=is_hud
         )
 
         self.texture = texture

@@ -194,12 +194,13 @@ class GameState:
 
         cutoff_tick = self.tick_idx - REDUNDANCY
         safe_ack = getattr(self, "_highest_ack_tick", -1)
+        prune_before = min(safe_ack, cutoff_tick)
 
-        expired_inputs = [k for k in self._input_buffer if k <= safe_ack or k <= cutoff_tick]
+        expired_inputs = [k for k in self._input_buffer if k < prune_before]
         for k in expired_inputs:
             del self._input_buffer[k]
 
-        expired_hist = [k for k in self._state_hist if k <= safe_ack or k <= cutoff_tick]
+        expired_hist = [k for k in self._state_hist if k < prune_before]
         for k in expired_hist:
             del self._state_hist[k]
 

@@ -31,7 +31,8 @@ def build_component(obj: dict[str, Any]) -> component.UIComponent:
                 states=states,
                 action=obj["action"],
                 text=obj.get("text"),
-                default_state=default_state
+                default_state=default_state,
+                is_hud=obj.get("hud", False),
             )
 
         case "image":
@@ -41,7 +42,8 @@ def build_component(obj: dict[str, Any]) -> component.UIComponent:
                 position=position,
                 size=size,
                 texture=texture,
-                default_state=default_state
+                default_state=default_state,
+                is_hud=obj.get("hud", False),
             )
 
         case "form" | "container":
@@ -54,7 +56,8 @@ def build_component(obj: dict[str, Any]) -> component.UIComponent:
                 texture=texture,
                 children=children,
                 states=states,
-                default_state=default_state
+                default_state=default_state,
+                is_hud=obj.get("hud", False),
             )
 
         case "textarea":
@@ -68,7 +71,8 @@ def build_component(obj: dict[str, Any]) -> component.UIComponent:
                 hint=obj["hint"],
                 states=states,
                 password_mode=obj.get("password_mode", False),
-                default_state=default_state
+                default_state=default_state,
+                is_hud=obj.get("hud", False),
             )
 
         case "text":
@@ -79,7 +83,8 @@ def build_component(obj: dict[str, Any]) -> component.UIComponent:
                 size=size,
                 text=obj.get("text", {}),
                 states=states,
-                default_state=default_state
+                default_state=default_state,
+                is_hud=obj.get("hud", False),
             )
 
         case _:

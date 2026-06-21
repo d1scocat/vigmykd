@@ -50,9 +50,7 @@ class Renderer:
         if surface is None:
             return
 
-        self.render_queue.setdefault(renderable.z_index, []).append(
-            (renderable, surface)
-        )
+        self.render_queue.setdefault(renderable.z_index, []).append((renderable, surface))
 
     def queue_static(self, surface: Surface, location: tuple[float, float], z_index: int = 0):
         self.static_render_queue.setdefault(z_index, []).append((surface, location))
@@ -112,8 +110,9 @@ class Renderer:
     def _draw_surface(self, renderable: Renderable, surface: Surface, offset: tuple[float, float]):
         loc_x, loc_y = renderable.location
 
-        loc_x += offset[0]
-        loc_y += offset[1]
+        if not renderable.is_hud:
+            loc_x += offset[0]
+            loc_y += offset[1]
 
         w, h = renderable.size
 

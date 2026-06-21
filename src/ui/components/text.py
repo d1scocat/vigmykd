@@ -45,6 +45,7 @@ class UITextElement(UIComponent, UITextHolder):
         text: dict[str, Any],
         states: dict[str, dict[str, Any]] | None = None,
         default_state: str | None = None,
+        is_hud: bool = False,
     ):
         super().__init__(
             id=id,
@@ -53,7 +54,8 @@ class UITextElement(UIComponent, UITextHolder):
             position=position,
             size=size,
             states=states,
-            default_state=default_state
+            default_state=default_state,
+            is_hud=is_hud
         )
 
         self.text_obj = UIText(

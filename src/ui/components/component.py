@@ -9,6 +9,7 @@ class UIComponent:
     states: dict[str, dict[str, Any]]
     default_state: str
     visible_by_default: bool
+    is_hud: bool
 
     # produced by interaction system
     hovered: bool
@@ -29,10 +30,12 @@ class UIComponent:
         size: dict[str, int],
         states: dict[str, dict[str, Any]] | None = None,
         default_state: str | None = None,
+        is_hud: bool = False
     ):
         self.id = id
         self.type = type
         self.z_index = z_index
+        self.is_hud = is_hud
 
         self.position = position
         self.size = size
@@ -113,6 +116,7 @@ class UIComponent:
             states[state_name] = RenderState(
                 sheet_id=texture["sheet"],
                 grid_pos=tuple(texture["tile"]),
+                is_hud=self.is_hud
             )
 
         active_state = self.resolve_state()

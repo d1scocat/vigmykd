@@ -5,6 +5,7 @@ from dataclasses import dataclass
 class RenderState:
     sheet_id: int
     grid_pos: tuple[int, int]
+    is_hud: bool
 
 
 @dataclass
@@ -16,3 +17,4 @@ class Renderable:
     size: tuple[int, int]
     flip_x: bool = False
     flip_y: bool = False
+    is_hud: bool = False

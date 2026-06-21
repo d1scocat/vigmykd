@@ -12,6 +12,7 @@ class UIImage(UIComponent):
         size: dict[str, int],
         texture: dict[str, Any] | None,
         default_state: str | None = None,
+        is_hud: bool = False,
     ):
         super().__init__(
             id=id,
@@ -19,7 +20,8 @@ class UIImage(UIComponent):
             z_index=z_index,
             position=position,
             size=size,
-            default_state=default_state
+            default_state=default_state,
+            is_hud=is_hud
         )
 
         self.texture = texture

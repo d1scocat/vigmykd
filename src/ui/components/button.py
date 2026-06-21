@@ -15,6 +15,7 @@ class UIButton(UIComponent, UITextHolder):
         action: str,
         text: dict[str, Any] | None = None,
         default_state: str | None = None,
+        is_hud: bool = False,
     ):
         super().__init__(
             id=id,
@@ -23,7 +24,8 @@ class UIButton(UIComponent, UITextHolder):
             position=position,
             size=size,
             states=states,
-            default_state=default_state
+            default_state=default_state,
+            is_hud=is_hud
         )
 
         self.action = action

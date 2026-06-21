@@ -8,13 +8,13 @@
          "imageheight":540,
          "imagewidth":960,
          "name":"Image Layer 1",
-         "opacity":1,
+         "opacity":0.25,
          "repeatx":true,
          "repeaty":true,
          "type":"imagelayer",
          "visible":true,
          "x":0,
-         "y":320
+         "y":0
         }, 
         {
          "data":[16, 17, 0, 49, 0, 0, 0, 0, 0, 0, 0, 49, 49, 0, 0, 0, 0, 49, 49, 0, 0, 0, 0, 0, 0, 0, 49, 0, 15, 16,

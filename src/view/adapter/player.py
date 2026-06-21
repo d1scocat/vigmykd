@@ -24,6 +24,7 @@ class PlayerAdapter(ViewAdapter[Player]):
                 "0": RenderState(
                     sheet_id=1,
                     grid_pos=(0, 0),
+                    is_hud=False
                 )
             },
             current_state="0",

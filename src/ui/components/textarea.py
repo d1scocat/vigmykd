@@ -21,7 +21,8 @@ class UITextArea(UIComponent, UITextHolder):
         hint: dict[str, Any],
         default_state: str | None = None,
         states: dict[str, dict[str, Any]] | None = None,
-        password_mode: bool = False
+        password_mode: bool = False,
+        is_hud: bool = False,
     ):
         super().__init__(
             id=id,
@@ -30,7 +31,8 @@ class UITextArea(UIComponent, UITextHolder):
             position=position,
             size=size,
             states=states,
-            default_state=default_state
+            default_state=default_state,
+            is_hud=is_hud
         )
 
         self.texture = texture
