@@ -54,12 +54,13 @@ class MatchScene(Scene):
         if client:
             client.mana = min(MAX_MANA, client.mana + 1)
 
-            textbox = self.page.by_id("mana-rectangle")
-            if textbox is None or not isinstance(textbox, UITextHolder):
+            mana_textbox = self.page.by_id("mana-rectangle")
+            if mana_textbox is None or not isinstance(mana_textbox, UITextHolder):
                 self.ctx.logger.warning("No mana-rectangle found for MatchScene")
                 return
 
-            textbox.text.raw = f"{client.mana} / {MAX_MANA}"
+            mana_word = self.ctx.i18n("match.mana")
+            mana_textbox.text.raw = f"{mana_word}\n{client.mana} / {MAX_MANA}"
 
     def on_enter(self):
         self.lids = [

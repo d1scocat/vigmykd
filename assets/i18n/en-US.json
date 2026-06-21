@@ -26,5 +26,9 @@
         "password-textarea-hint": "",
         "login-button-label": "Login",
         "not-everything-filled-error": "Fill in all fields before proceeding to login."
+    },
+
+    "match": {
+        "mana": "Mana"
     }
 }

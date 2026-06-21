@@ -87,6 +87,8 @@ class Game:
             for mutation in mutations:
                 mutation(player_input)  # edits in-place
 
+        print(player_input)
+
         self.event_manager.push()
 
         if self.model.client_player:
