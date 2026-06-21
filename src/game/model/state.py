@@ -129,6 +129,7 @@ class GameState:
         if saved_state is None:
             # no history for this tick, so we snap to server
             self.client_player.apply_position(client_pos)
+            self._state_hist[last_client_tick] = deepcopy(client_pos)
         elif not saved_state.matches_position(client_pos):
             dx = client_pos.x - saved_state.x
             dy = client_pos.y - saved_state.y
@@ -143,38 +144,19 @@ class GameState:
             print(f"Saved pos: {saved_state!r}")
             # server disagrees so we resimulate ticks
             self.client_player.apply_position(client_pos)
+            self._state_hist[last_client_tick] = deepcopy(client_pos)
 
             start_tick = last_client_tick + 1
             for tick in range(start_tick, self.tick_idx):
                 buffered = self._input_buffer.get(tick, {})
                 local_input = buffered.get(self.client_player.player_id, PlayerInput())
                 self.simulate_input(ctx, self.client_player, local_input)
+                self._state_hist[tick] = deepcopy(self.client_player.position)
         else:
             # server agrees
             pass
 
         self.clear_redundant(last_client_tick)
-
-        target_tick = server_tick - TARGET_LATENCY
-        self.logger.info("Target tick %d | Current tick %d | Target latency in ticks %d", target_tick, server_tick, TARGET_LATENCY)
-        if self.tick_idx < target_tick:
-            self._catch_up(target_tick, ctx)
-
-    def _catch_up(self, target_tick: int, ctx: GameContext):
-        if not self.client_player:
-            self.logger.warning("Can't catch up with no client player specified")
-            return
-
-        simulate = target_tick - self.tick_idx
-        self.logger.info(f"Catching up {simulate} ticks to reach server tick {target_tick}")
-
-        for _ in range(simulate):
-            buffered = self._input_buffer.get(self.tick_idx)
-            if buffered:
-                inp = buffered.get(self.client_player.player_id, PlayerInput())
-                self.simulate_input(ctx, self.client_player, inp)
-
-            self.advance()
 
     def simulate_input(self, ctx: GameContext, player: Player, player_input: PlayerInput):
         from registry import registries
