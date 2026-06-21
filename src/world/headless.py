@@ -1,8 +1,9 @@
 import json
-import pygame
 
 from dataclasses import dataclass, field
 from pathlib import Path
+
+from geometry import Rect
 
 
 @dataclass
@@ -11,7 +12,7 @@ class Tileset:
     tile_width: int
     tile_height: int
     first_gid: int
-    collisions: dict[int, list[pygame.Rect]] = field(default_factory=dict)
+    collisions: dict[int, list[Rect]] = field(default_factory=dict)
 
     @classmethod
     def load(cls, tsj_path: Path, first_gid: int) -> 'Tileset':
@@ -29,7 +30,7 @@ class Tileset:
             if "objectgroup" in tile_data:
                 tile_collisions = []
                 for obj in tile_data["objectgroup"]["objects"]:
-                    tile_collisions.append(pygame.Rect(
+                    tile_collisions.append(Rect(
                         obj["x"], obj["y"], obj["width"], obj["height"]
                     ))
 
@@ -142,7 +143,7 @@ class MapData:
 
 
 class HeadlessWorld:
-    collision_grid: list[list[list[pygame.Rect]]]
+    collision_grid: list[list[list[Rect]]]
 
     def __init__(
         self,
@@ -157,15 +158,15 @@ class HeadlessWorld:
 
         self._build_collision_grid()
 
-    def get_collision(self, rect: pygame.Rect) -> pygame.Rect | None:
+    def get_collision(self, rect: Rect) -> Rect | None:
         tw, th = self.map_data.tile_width, self.map_data.tile_height
         w, h = self.map_data.width, self.map_data.height
 
-        start_x = max(0, rect.left // tw)
-        end_x= min(w - 1, rect.right // tw)
+        start_x = int(max(0, rect.left // tw))
+        end_x= int(min(w - 1, rect.right // tw))
         
-        start_y = max(0, rect.top // th)
-        end_y = min(h - 1, rect.bottom // th)
+        start_y = int(max(0, rect.top // th))
+        end_y = int(min(h - 1, rect.bottom // th))
 
         for y in range(start_y, end_y + 1):
             for x in range(start_x, end_x + 1):
@@ -193,7 +194,7 @@ class HeadlessWorld:
                 local_collisions = self.tileset.collisions.get(tile_id, [])
 
                 for coll in local_collisions:
-                    self.collision_grid[y][x].append(pygame.Rect(
+                    self.collision_grid[y][x].append(Rect(
                         x * tw + coll.x,
                         y * th + coll.y,
                         coll.width,

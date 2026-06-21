@@ -122,7 +122,7 @@ class Scene(ABC):
         if player:
             own_world = self.world
             if own_world:
-                own_world.prep_render(player.rect)
+                own_world.prep_render(player.rect.to_pygame())
                 offset = own_world.camera.offset if own_world else (0, 0)
                 view.queue_static(own_world.render_surface, (0, 0))
 

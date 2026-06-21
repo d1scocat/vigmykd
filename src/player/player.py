@@ -1,9 +1,9 @@
-import pygame
 import uuid
 
 from dataclasses import dataclass, field
 from enum import IntEnum
 
+from geometry import Rect
 from settings import PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_DUCK_HEIGHT
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
@@ -107,10 +107,10 @@ class Player:
         return self.position.matches_position(position, epsilon)
 
     @property
-    def rect(self) -> pygame.Rect:
+    def rect(self) -> Rect:
         height = PLAYER_DUCK_HEIGHT if self.position.is_ducking else PLAYER_HEIGHT
 
-        return pygame.Rect(
+        return Rect(
             self.position.x,
             self.position.y,
             PLAYER_WIDTH,

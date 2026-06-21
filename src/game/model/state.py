@@ -128,11 +128,10 @@ class GameState:
 
         # opponent position is not being predicted
         self.opponent_player.apply_position(opponent_pos)
-        
+
         saved_state = self._state_hist.get(last_client_tick)
         if saved_state is None:
             # no history for this tick, so we snap to server
-            print(f"TYPE 0 | Snap to server | server_x={client_pos.x}; server_y={client_pos.y}; server_velx={client_pos.vel_x}; server_vely={client_pos.vel_y}")
             self.client_player.apply_position(client_pos)
             self._state_hist[last_client_tick] = deepcopy(client_pos)
             self.last_reconcile_tick = self.tick_idx
@@ -144,12 +143,11 @@ class GameState:
             ticks_since_reconcile = self.tick_idx - self.last_reconcile_tick
 
             if dist < DEADZONE:
-                print(f"TYPE 1 | {dx=:.3f}; {dy=:.3f} | {dist=:.4f}")
                 # type 1 - tiny difference
                 self._state_hist[last_client_tick] = deepcopy(client_pos)
 
             elif dist > MAJOR_DESYNC or ticks_since_reconcile > RECONCILE_COOLDOWN:
-                print(f"TYPE 3 | {dx=:.3f}; {dy=:.3f} | {dist=:.4f} | {ticks_since_reconcile=}")
+
                 # type 3 - huge difference or cooldown
                 self.client_player.apply_position(client_pos)
                 self._state_hist[last_client_tick] = deepcopy(client_pos)
@@ -165,7 +163,6 @@ class GameState:
 
             else:
                 # type 2 - slightly off but we keep smooth visuals
-                print(f"TYPE 2 | {dx=:.3f}; {dy=:.3f} | {dist=:.4f}")
                 self._state_hist[last_client_tick] = deepcopy(client_pos)
 
         self.clear_redundant(last_client_tick)

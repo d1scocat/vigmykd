@@ -1,5 +1,3 @@
-import pygame
-
 from registry import register_consumer
 
 from controller.consumers.input_consumer import InputConsumer
@@ -7,6 +5,7 @@ from controller.consumers.input_consumer import InputConsumer
 from controller.input_model import PlayerInput
 from context import GameContext
 from game.model import GameState
+from geometry import Rect
 from player import Facing, Player
 
 from settings import MOVE_SPEED, \
@@ -53,7 +52,8 @@ class MovementConsumer(InputConsumer):
         dash_just_pressed = player_input.dash and not player.position.physics.last_dash_pressed
         if dash_just_pressed and not player.position.is_dashing:
             player.position.is_dashing = True
-            player.position.physics.dash_timer = DASH_DURATION_TICKS
+            player.position.physics.dash_timer = DASH_DURATION_TICKS + 1
+            player.position.physics.coyote_timer = 0
 
             # plunge down
             if not player.position.is_grounded and player_input.duck:
@@ -170,13 +170,19 @@ class MovementConsumer(InputConsumer):
         if coll_rect:
             overlap_left = (player.position.x + PLAYER_WIDTH) - coll_rect.left
             overlap_right = coll_rect.right - player.position.x
-
-            # step-up
             overlap_top = (player.position.y + PLAYER_HEIGHT) - coll_rect.top
 
+            stepped_up = False
             if player.position.is_grounded and 0 < overlap_top < STEP_HEIGHT:
-                player.position.y -= (overlap_top + 0.02)
-            else:
+                step_amount = overlap_top + 0.02
+                player.position.y -= step_amount
+
+                if not world.headless.get_collision(player.rect):
+                    stepped_up = True
+                else:
+                    player.position.y += step_amount
+
+            if not stepped_up:
                 if abs(overlap_left) < abs(overlap_right):
                     player.position.x = coll_rect.left - PLAYER_WIDTH
                 else:
@@ -202,7 +208,7 @@ class MovementConsumer(InputConsumer):
             # if falling or stationary, check if close enough to the ground
             # to snap to it
             if player.position.vel_y >= 0:
-                ground_rect = pygame.Rect(
+                ground_rect = Rect(
                     player.position.x,
                     player.position.y + PLAYER_HEIGHT,
                     PLAYER_WIDTH,
