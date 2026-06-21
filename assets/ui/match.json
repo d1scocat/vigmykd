@@ -9,7 +9,7 @@
         {
             "type": "button",
             "id": "mana-rectangle",
-            "z_index": 100,
+            "z_index": 1000,
             "position": { "x": 0.01, "y": 0.01, "anchor": "top-left" },
             "size": { "mode": "match-texture" },
             "texture": { "sheet": 5, "tile": [0, 0] },
@@ -17,7 +17,7 @@
             "text": {
                 "raw": "...",
                 "font": "LuckiestGuy-Regular",
-                "size": 50,
+                "size": 25,
                 "color": [255, 255, 255]
             },
 

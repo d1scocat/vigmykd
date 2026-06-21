@@ -94,8 +94,6 @@ class UIPage:
 
             renderer.queue_renderable(renderable)
 
-        # Type checking happens inside the function itself as well,
-        # so might as well skip it in here and just delegate it downwards
         self._submit_text(component, renderer)
 
         if isinstance(component, UIContainer):
@@ -147,16 +145,17 @@ class UIPage:
         draw_y = int(y + (h - text_h) / 2)
 
         renderer.queue_text(
-            component.z_index + 1,
+            component.z_index + 1000,
             surface,
-            (draw_x, draw_y)
+            (draw_x, draw_y),
+            component.is_hud
         )
 
-    def by_id(self, id: str) -> UIComponent | None:
+    def by_id(self, sought_id: str) -> UIComponent | None:
         stack = list(self.elements)
         while stack:
             el = stack.pop()
-            if el.id == id:
+            if el.id == sought_id:
                 return el
             if isinstance(el, UIContainer):
                 stack.extend(el.children)

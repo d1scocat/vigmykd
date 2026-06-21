@@ -13,6 +13,7 @@ class UIButton(UIComponent, UITextHolder):
         size: dict[str, int],
         states: dict[str, dict[str, Any]],
         action: str,
+        texture: dict[str, Any] | None,
         text: dict[str, Any] | None = None,
         default_state: str | None = None,
         is_hud: bool = False,
@@ -27,6 +28,8 @@ class UIButton(UIComponent, UITextHolder):
             default_state=default_state,
             is_hud=is_hud
         )
+
+        self.texture = texture
 
         self.action = action
 

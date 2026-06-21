@@ -18,7 +18,7 @@ class Renderer:
 
         self.render_queue: dict[int, list[tuple[Renderable, Surface]]] = {}
         self.static_render_queue: dict[int, list[tuple[Surface, tuple[float, float]]]] = {}
-        self.text_queue: list[tuple[int, Surface, tuple[int, int]]] = []
+        self.text_queue: list[tuple[int, Surface, tuple[int, int], bool]] = []
         self.rect_queue: list[tuple[int, Rect, Color]] = []
 
         self.scale_cache: dict[tuple[int, tuple[int, int], int, int], Surface] = {}
@@ -55,8 +55,8 @@ class Renderer:
     def queue_static(self, surface: Surface, location: tuple[float, float], z_index: int = 0):
         self.static_render_queue.setdefault(z_index, []).append((surface, location))
 
-    def queue_text(self, z_index: int, surface: Surface, pos: tuple[int, int]):
-        self.text_queue.append((z_index, surface, pos))
+    def queue_text(self, z_index: int, surface: Surface, pos: tuple[int, int], is_hud: bool = False):
+        self.text_queue.append((z_index, surface, pos, is_hud))
 
     def queue_rect(
         self,
@@ -83,10 +83,11 @@ class Renderer:
             for renderable, surface in self.render_queue[z]:
                 self._draw_surface(renderable, surface, camera_offset)
 
-        for z, surface, pos in sorted(self.text_queue, key=lambda x: x[0]):
+        for z, surface, pos, is_hud in sorted(self.text_queue, key=lambda x: x[0]):
             pos = list(pos)
-            pos[0] += int(camera_offset[0])
-            pos[1] += int(camera_offset[1])
+            if not is_hud:
+                pos[0] += int(camera_offset[0])
+                pos[1] += int(camera_offset[1])
 
             self.screen.blit(surface, pos)
 

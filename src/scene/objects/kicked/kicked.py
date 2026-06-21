@@ -31,7 +31,7 @@ class KickedScene(Scene):
 
         self._ui_page = self.get_ui(ctx.ui_path / "kicked-from-match.json")
 
-        self.action_mapping: dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
+        self.action_mapping = {
             "quit": self._back_to_menu
         }
 

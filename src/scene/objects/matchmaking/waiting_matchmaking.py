@@ -32,7 +32,7 @@ class WaitingToMatchmakeScene(Scene):
 
         self._ui_page = self.get_ui(ctx.ui_path / "waiting-to-matchmake.json")
 
-        self.action_mapping: dict[str, Callable[['Scene', GameState, GameContext], Any] | None] = {
+        self.action_mapping = {
         }
 
         self.ready_state = 0

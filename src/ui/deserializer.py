@@ -29,6 +29,7 @@ def build_component(obj: dict[str, Any]) -> component.UIComponent:
                 position=position,
                 size=size,
                 states=states,
+                texture=texture,
                 action=obj["action"],
                 text=obj.get("text"),
                 default_state=default_state,

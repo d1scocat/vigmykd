@@ -53,7 +53,7 @@ class MovementConsumer(InputConsumer):
         dash_just_pressed = player_input.dash and not player.position.physics.last_dash_pressed
         can_dash = player.mana >= DASH_MANA_COST
 
-        if dash_just_pressed and not player.position.is_dashing:
+        if can_dash and dash_just_pressed and not player.position.is_dashing:
             player.position.is_dashing = True
             player.position.physics.dash_timer = DASH_DURATION_TICKS + 1
             player.position.physics.coyote_timer = 0
