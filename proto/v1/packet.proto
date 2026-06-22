@@ -115,6 +115,9 @@ message KickedFromMatch {
     string reason_i18n = 3;
 }
 
+message LostMatch {}
+message WonMatch {}
+
 
 
 message MatchmakingEnter {
@@ -149,6 +152,8 @@ message ServerToClientPacket {
         RequestMatchInfoResponse request_match_info_response = 6;
         Reconcile reconcile = 7;
         KickedFromMatch kicked_from_match = 8;
+        LostMatch lost_match = 9;
+        WonMatch won_match = 10;
     }
 }
 
@@ -177,6 +182,11 @@ message InternalCommunicationPacket {
         uint64 expires = 5;
     }
 
+    message GameOver {
+        string won_id = 1;
+        string lost_id = 2;
+    }
+
     message RegisterMatchResponse {
         string joined_match_id = 1;
         string old_match_id = 2;
@@ -185,6 +195,7 @@ message InternalCommunicationPacket {
     oneof payload {
         RegisterMatch register_match = 1;
         RegisterMatchResponse register_match_response = 2;
+        GameOver game_over = 3;
     }
 }
 

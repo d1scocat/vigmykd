@@ -6,7 +6,9 @@ from context import GameContext
 from event.events import SceneSwitchRequestEvent, UDPReceivedEvent
 from game.model import GameState
 from player import Player
+from scene.objects.lost import LostScene
 from scene.objects.kicked import KickedScene
+from scene.objects.won import WonScene
 from scene.objects.match import actions
 from scene.scene import Scene
 from ui.components.page import UIPage
@@ -89,9 +91,17 @@ class MatchScene(Scene):
         if event.message_type == packet_pb2.KickedFromMatch:
             key = event.message.reason_i18n
             scene = KickedScene(self.model, self.ctx, key)
-
             self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(scene))
-
+            return
+        
+        if event.message_type == packet_pb2.LostMatch:
+            scene = LostScene(self.model, self.ctx)
+            self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(scene))
+            return
+        
+        if event.message_type == packet_pb2.WonMatch:
+            scene = WonScene(self.model, self.ctx)
+            self.ctx.event_manager.invoke_event(SceneSwitchRequestEvent(scene))
             return
 
         if event.message_type != packet_pb2.RequestMatchInfoResponse:

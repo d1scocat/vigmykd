@@ -378,7 +378,7 @@ class MovementConsumer(InputConsumer):
                 other.position.vel_x += nx * STOMP_KNOCKBACK_X * strength
                 other.position.vel_y += ny * STOMP_KNOCKBACK_Y * strength
 
-                other.health -= STOMP_DAMAGE
+                other.health = max(0, other.health - STOMP_DAMAGE)
 
                 success = True
 
@@ -402,7 +402,7 @@ class MovementConsumer(InputConsumer):
 
                 dist = dist_sq ** 0.5
 
-                other.health -= PUNCH_DAMAGE
+                other.health = max(0, other.health - PUNCH_DAMAGE)
                 other.position.physics.invulnerable_timer = PUNCH_IFRAMES
 
                 other.position.combo.hits = 0
