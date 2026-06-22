@@ -11,7 +11,6 @@ from event.events import GameQuitEvent
 from game.game import Game
 from initialize import init_logger, init_with_screen, init_registries, init_listeners
 from network import ApiClient, GameServerClient
-from sound import SoundManager
 from textures.loader import load_sheets
 
 from settings import TPS_DELTA, \
@@ -33,8 +32,6 @@ cfg = load_config(CFG_PATH / "config.json")
 
 event_manager = EventManager(logger=logger)
 
-sound_manager = SoundManager()
-
 api_client = ApiClient(
     base_url=cfg.server,
     event_manager=event_manager
@@ -43,7 +40,6 @@ api_client = ApiClient(
 ctx = GameContext(
     logger=logger,
     event_manager=event_manager,
-    sound_manager=sound_manager,
     assets_path=ASSETS_PATH,
     cfg_path=CFG_PATH,
     cfg=cfg,
