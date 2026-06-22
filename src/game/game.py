@@ -12,7 +12,7 @@ from player import Player
 from registry import registries
 from view import Renderer, Renderable
 
-from dataclasses import asdict
+from copy import deepcopy
 from uuid import UUID
 
 from scene.manager import SceneManager
@@ -36,8 +36,6 @@ class Game:
     ):
         from scene.objects import limbo
         from view.system import ViewSystem
-
-        from registry import registration_imports
 
         self.ctx = ctx
         self.screen = screen
@@ -87,8 +85,6 @@ class Game:
             for mutation in mutations:
                 mutation(player_input)  # edits in-place
 
-        print(player_input)
-
         self.event_manager.push()
 
         if self.model.client_player:
@@ -98,10 +94,9 @@ class Game:
             # self.model.simulate_input(self.ctx, self.model.client_player, player_input)
 
             current_tick = self.model.tick_idx
-            input_payload = asdict(player_input)
 
             if self.model.is_in_match:
-                packet = Packets.player_move_state(input_payload, current_tick)
+                packet = Packets.player_move_state(deepcopy(player_input), current_tick)
                 msg_id = packet.msg_id
                 self.model.server_client.enqueue(Packets.envelope(packet), msg_id)
 

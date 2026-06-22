@@ -80,6 +80,11 @@ _key_to_pygame = {
     "quote": pygame.K_QUOTE,
     "semicolon": pygame.K_SEMICOLON,
 
+    "[": pygame.K_LEFTBRACKET,
+    "left_bracket": pygame.K_LEFTBRACKET,
+    "]": pygame.K_RIGHTBRACKET,
+    "right_bracket": pygame.K_RIGHTBRACKET,
+
     "backspace": pygame.K_BACKSPACE,
     "erase": pygame.K_BACKSPACE,
 
@@ -138,7 +143,7 @@ _key_to_pygame = {
     "lctrl": pygame.K_LCTRL,
     "lshift": pygame.K_LSHIFT,
     "rctrl": pygame.K_RCTRL,
-    "rshift": pygame.K_RSHIFT
+    "rshift": pygame.K_RSHIFT,
 }
 
 

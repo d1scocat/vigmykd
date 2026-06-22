@@ -2,7 +2,6 @@
     "keymap": {
         "W": "jump",
         "UP": "jump",
-        "SPACE": "jump",
 
         "A": "move_left",
         "LEFT": "move_left",
@@ -14,10 +13,22 @@
         "DOWN": "duck",
 
         "LSHIFT": "dash",
+        "RSHIFT": "dash",
+        "X": "brake_dash",
+        "P": "reverse_dash",
 
-        "TAB": "menu_next",
-        "LSHIFT TAB": "menu_prev",
-        "ENTER": "menu_ok"
+        "R": "hang",
+
+        "LCTRL": "parry",
+
+        "V": "heavy",
+        "B": "light",
+        "G": "normal",
+
+        "ENTER": "push",
+        "LSHIFT Q": "stomp",
+        "RSHIFT LEFT_BRACKET": "stomp",
+        "SPACE": "punch"
     },
 
     "locale": "en-US",

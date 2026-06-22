@@ -147,7 +147,6 @@ class GameState:
                 self._state_hist[last_client_tick] = deepcopy(client_data)
 
             elif dist > MAJOR_DESYNC or ticks_since_reconcile > RECONCILE_COOLDOWN:
-
                 # type 3 - huge difference or cooldown
                 self.client_player.apply_snapshot(client_data)
                 self._state_hist[last_client_tick] = deepcopy(client_data)

@@ -65,7 +65,7 @@ class Packets:
 
     @staticmethod
     def player_move_state(
-        player_input: dict[str, Any],
+        player_input: PlayerInput,
         client_tick: int,
         msg_id: int | None = None
     ):
@@ -77,10 +77,21 @@ class Packets:
         packet.msg_id = msg_id
 
         move_state = packet_pb2.PlayerMoveState()
-        move_state.move_dir = player_input.get("move_dir", 0)
-        move_state.duck = player_input.get("duck", False)
-        move_state.jump = player_input.get("jump", False)
-        move_state.dash = player_input.get("dash", False)
+        move_state.move_dir = player_input.move_dir
+        move_state.duck = player_input.duck
+        move_state.jump = player_input.jump
+        move_state.dash = player_input.dash
+        move_state.brake_dash = player_input.brake_dash
+        move_state.reverse_dash = player_input.reverse_dash
+        move_state.hang = player_input.hang
+        move_state.parry = player_input.parry
+        move_state.gravity_heavy = player_input.gravity_heavy
+        move_state.gravity_light = player_input.gravity_light
+        move_state.gravity_normal = player_input.gravity_normal
+
+        move_state.punch = player_input.punch
+        move_state.push = player_input.push
+        move_state.stomp = player_input.stomp
 
         move_state.client_tick = client_tick
 

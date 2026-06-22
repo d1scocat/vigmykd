@@ -1,55 +1,39 @@
 import logging
-import time
 
 from pathlib import Path
 
 import pygame
-
-import registry
 
 from config import load_config
 from context import GameContext
 from event import EventManager
 from event.events import GameQuitEvent
 from game.game import Game
-from log import setup as log_setup
+from initialize import init_logger, init_with_screen, init_registries, init_listeners
 from network import ApiClient, GameServerClient
+from sound import SoundManager
 from textures.loader import load_sheets
 
 from settings import TPS_DELTA, \
-    MAX_TICKS_PER_FRAME as MAX_TICKS
+    MAX_TICKS_PER_FRAME as MAX_TICKS, \
+    CFG_PATH, \
+    ASSETS_PATH
 
 
 # ===== INITIALIZING SCREEN AND PYGAME ===== #
-pygame.init()
+logger = init_logger()
+init_registries()
+
+screen, screen_size = init_with_screen()
+
 running = True
 
-
-info = pygame.display.Info()
-
-screen_width = info.current_w
-screen_height = info.current_h
-screen_size = (screen_width - 300, screen_height - 300)
-screen = pygame.display.set_mode(screen_size)
-
-pygame.display.set_caption("vigmykd")
-
-pygame.scrap.init()
-pygame.scrap.set_mode(pygame.SCRAP_CLIPBOARD)
-
-# ===== INITIALIZING LOGGING ===== #
-log_setup()
-logger = logging.getLogger("vigmykd")
-
 # ===== INITIALIZING GLOBALLY SHARED DATA ===== #
-registry.registries.init_all()
-
-CFG_PATH = Path("cfg")
-ASSETS_PATH = Path("assets")
-
 cfg = load_config(CFG_PATH / "config.json")
 
 event_manager = EventManager(logger=logger)
+
+sound_manager = SoundManager()
 
 api_client = ApiClient(
     base_url=cfg.server,
@@ -59,6 +43,7 @@ api_client = ApiClient(
 ctx = GameContext(
     logger=logger,
     event_manager=event_manager,
+    sound_manager=sound_manager,
     assets_path=ASSETS_PATH,
     cfg_path=CFG_PATH,
     cfg=cfg,
@@ -92,17 +77,7 @@ def _aux_stop_running(_: GameQuitEvent):
 
 
 # ===== LISTENERS ===== #
-# TODO: extract this somewhere
-from event.events import HTTPResponseEvent
-from listeners import LoginListener, PubkeyListener
-
-listeners = [
-    (LoginListener(ctx), HTTPResponseEvent),
-    (PubkeyListener(ctx, game.model), HTTPResponseEvent)
-]
-
-for (listener, type) in listeners:
-    listener.sub(type, event_manager)
+init_listeners(ctx, game)
 
 event_manager.register_listener(GameQuitEvent, _aux_stop_running)
 

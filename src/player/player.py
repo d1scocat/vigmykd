@@ -1,88 +1,14 @@
 import uuid
 
-from dataclasses import dataclass, field
-from enum import IntEnum
-
+from anim import AnimationData
 from geometry import Rect
-from settings import PLAYER_WIDTH, \
-    PLAYER_HEIGHT, \
-    PLAYER_DUCK_HEIGHT, \
-    MAX_MANA
-
-from generated.proto.v1 import packet_pb2 as packet_pb2
-
-
-class Facing(IntEnum):
-    NEG_X = 0
-    POS_X = 1
-
-
-@dataclass
-class PlayerPhysics:
-    dash_timer: int = 0
-    coyote_timer: int = 0
-    jump_buffer_timer: int = 0
-    last_jump_pressed: bool = False
-    last_dash_pressed: bool = False
-
-
-@dataclass
-class Position:
-    x: float
-    y: float
-    facing: Facing
-    vel_x: float = 0
-    vel_y: float = 0
-    is_ducking: bool = False
-    is_dashing: bool = False
-    is_grounded: bool = False
-    physics: PlayerPhysics = field(default_factory=PlayerPhysics)
-
-    @classmethod
-    def from_packet(cls, packet: packet_pb2.ReconcileData):
-        return cls(
-            x=packet.x,
-            y=packet.y,
-            vel_x=packet.vel_x,
-            vel_y=packet.vel_y,
-            is_ducking=packet.is_ducking,
-            is_dashing=packet.is_dashing,
-            is_grounded=packet.is_grounded,
-
-            facing=(
-                Facing.NEG_X
-                if packet.facing == packet_pb2.Facing.FACING_NEG_X
-                else Facing.POS_X
-            ),
-
-            physics=PlayerPhysics(
-                dash_timer=packet.dash_timer,
-                coyote_timer=packet.coyote_timer,
-                jump_buffer_timer=packet.jump_buffer_timer,
-                last_dash_pressed=packet.last_dash_pressed,
-                last_jump_pressed=packet.last_jump_pressed
-            )
-        )
-
-    def matches_position(self, other: 'Position', epsilon: float = 0.01):
-        return self.facing == other.facing and \
-            abs(self.x - other.x) <= epsilon and \
-            abs(self.y - other.y) <= epsilon and \
-            abs(self.vel_x - other.vel_x) <= epsilon and \
-            abs(self.vel_y - other.vel_y) <= epsilon and \
-            self.is_ducking == other.is_ducking and \
-            self.is_dashing == other.is_dashing and \
-            self.is_grounded == other.is_grounded
-
-
-@dataclass
-class Snapshot:
-    position: Position
-    mana: int
+from player import Facing, Position, Snapshot
+from settings import *
 
 
 class Player:
     player_id: uuid.UUID
+    anim: AnimationData
 
     def __init__(
         self,
@@ -110,6 +36,7 @@ class Player:
         self.is_ducking = False
 
         self.mana = MAX_MANA
+        self.health = MAX_HEALTH
 
     def snap(self) -> Snapshot:
         return Snapshot(self.position, self.mana)

@@ -11,6 +11,7 @@ from config import Config
 from event import EventManager
 from i18n import Localization
 from network import ApiClient
+from sound import SoundManager
 from textures import loader, TextureManager
 from world import HeadlessWorld, World
 
@@ -20,6 +21,7 @@ class GameContext:
         self,
         logger: logging.Logger,
         event_manager: EventManager,
+        sound_manager: SoundManager,
         assets_path: Path,
         cfg_path: Path,
         cfg: Config,
@@ -28,6 +30,7 @@ class GameContext:
     ):
         self.logger = logger
         self.event_manager = event_manager
+        self.sound_manager = sound_manager
         self.screen_size = screen_size
 
         self.assets_path = assets_path

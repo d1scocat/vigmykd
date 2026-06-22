@@ -1,11 +1,22 @@
 {
   "jump": { "continuous": true, "prio": 10 },
   "duck": { "continuous": true, "prio": 10 },
+
   "dash": { "continuous": false, "prio": 10 },
+  "brake_dash": { "continuous": false, "prio": 10 },
+  "reverse_dash": { "continuous": false, "prio": 10 },
+
+  "hang": { "continuous": false, "prio": 10 },
+  "parry": { "continuous": false, "prio": 10 },
+
+  "heavy": { "continuous": false, "prio": 10 },
+  "light": { "continuous": false, "prio": 10 },
+  "normal": { "continuous": false, "prio": 10 },
+
+  "push": { "continuous": false, "prio": 10 },
+  "stomp": { "continuous": false, "prio": 10 },
+  "punch": { "continuous": false, "prio": 10 },
+
   "move_left": { "continuous": true, "prio": 1 },
-  "move_right": { "continuous": true, "prio": 1 },
-  
-  "menu_next": { "continuous": true, "prio": 2 },
-  "menu_prev": { "continuous": true, "prio": 2 },
-  "menu_ok": { "continuous": true, "prio": 2 }
+  "move_right": { "continuous": true, "prio": 1 }
 }
