@@ -51,6 +51,12 @@ class PlayerAdapter(ViewAdapter[Player]):
             renderable.flip_x = (object.position.facing == Facing.NEG_X)
             renderable.current_state = str(object.anim.current_state)
 
+            if hasattr(object, "anim"):
+                if object.position.vel_x == 0:
+                    object.anim.to_idle()
+                else:
+                    object.anim.to_next()
+
         hist = self.position_hist.get(object.player_id)
         if hist is None:
             return

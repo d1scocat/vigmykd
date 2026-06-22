@@ -30,8 +30,6 @@ class MovementConsumer(InputConsumer):
 
         player.position.cooldowns.reduce()
 
-        self._animate(player, player_input)
-
         self._handle_dash(player, player_input)
         self._handle_x_axis(player, player_input)
         self._handle_coyote(player)
@@ -48,14 +46,6 @@ class MovementConsumer(InputConsumer):
             self._handle_push(player, player_input, [other_player])
             self._handle_stomp(player, player_input, [other_player])
             self._handle_punch(player, player_input, [other_player])
-
-    def _animate(self, player: Player, player_input: PlayerInput):
-        if player_input.move_dir == 0:
-            if hasattr(player, "anim"):
-                player.anim.to_idle()
-        else:
-            if hasattr(player, "anim"):
-                player.anim.to_next()
 
     def _handle_dash(self, player: Player, player_input: PlayerInput):
         dash_just_pressed = player_input.dash and not player.position.physics.last_dash_pressed
@@ -330,17 +320,21 @@ class MovementConsumer(InputConsumer):
 
     def _handle_push(self, player: Player, player_input: PlayerInput, others: list[Player]):
         if player_input.push and player.position.cooldowns.can_push:
+            print("Can push and is pushing")
             success = False
 
             for other in others:
+                print(f"Pushing {other.player_id!r}")
                 if other.position.physics.invulnerable_timer > 0:
                     continue
+                print(f"- is not invulnerable")
 
                 dx = other.position.x - player.position.x
                 dy = abs(other.position.y - player.position.y)
 
                 if abs(dx) > PUSH_RANGE or dy <= PUSH_VERTICAL_TOLERANCE:
                     continue
+                print(f"- is within distance")
 
                 direction = 1 if dx >= 0 else -1
                 other.position.vel_x += direction * PUSH_FORCE_X
@@ -353,17 +347,21 @@ class MovementConsumer(InputConsumer):
                 other.position.combo.broken = True
 
                 success = True
+                print("Success")
 
             if success:
                 player.position.cooldowns.cooldown_push()
 
     def _handle_stomp(self, player: Player, player_input: PlayerInput, others: list[Player]):
         if player_input.stomp and player.position.is_grounded and player.position.cooldowns.can_stomp:
+            print("Can stop and is stomping")
             success = False
 
             for other in others:
+                print(f"Handling {other.player_id!r}")
                 if other.position.physics.invulnerable_timer > 0:
                     continue
+                print("- is not invulnerable")
 
                 dx = other.position.x - player.position.x
                 dy = other.position.y - player.position.y
@@ -371,6 +369,7 @@ class MovementConsumer(InputConsumer):
 
                 if dist_sq > (STOMP_RANGE ** 2):
                     continue
+                print("- is within distance")
 
                 dist = dist_sq ** 0.5
                 nx = dx / dist
@@ -391,17 +390,21 @@ class MovementConsumer(InputConsumer):
                 other.health -= STOMP_DAMAGE
 
                 success = True
+                print("Success")
 
             if success:
                 player.position.cooldowns.cooldown_stomp()
 
     def _handle_punch(self, player: Player, player_input: PlayerInput, others: list[Player]):
         if player_input.punch and player.position.cooldowns.can_punch:
+            print("Can punch and is punching")
             success = False
 
             for other in others:
+                print(f"Handling {other.player_id!r}")
                 if other.position.physics.invulnerable_timer > 0:
                     continue
+                print("- is not invulnerable")
 
                 dx = other.position.x - player.position.x
                 dy = other.position.y - player.position.y
@@ -409,6 +412,7 @@ class MovementConsumer(InputConsumer):
 
                 if dist_sq > (PUNCH_RANGE ** 2):
                     continue
+                print("- is within distance")
 
                 dist = dist_sq ** 0.5
 
@@ -421,12 +425,14 @@ class MovementConsumer(InputConsumer):
 
                 player.position.combo.hits += 1
                 player.position.combo.timer = PUNCH_COMBO_WINDOW_TICKS
+                print("Success")
 
                 if player.position.combo.hits >= PUNCHES_TO_KNOCKDOWN:
                     other.position.physics.stun_timer = PUNCH_STUN_TICKS
                     other.position.vel_x += (dx / max(dist, 0.0001)) * PUNCH_KNOCKDOWN_KB_X
                     other.position.vel_y = -PUNCH_KNOCKDOWN_KB_Y
                     other.position.is_grounded = False
+                    print("- Comboed")
 
                 recoil_dir = -1 if dx > 0 else 1
                 player.position.vel_x += recoil_dir * PUNCH_RECOIL_X

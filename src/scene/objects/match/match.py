@@ -66,7 +66,7 @@ class MatchScene(Scene):
                 self.ctx.logger.warning("No hp-rectangle found for MatchScene")
             else:
                 hp_word = self.ctx.i18n("match.hp")
-                hp_textbox.text.raw = f"{hp_word} | {client.health} / {MAX_HEALTH}"
+                hp_textbox.text.raw = f"{hp_word} | {client.health:.0f} / {MAX_HEALTH:.0f}"
 
     def on_enter(self):
         self.lids = [

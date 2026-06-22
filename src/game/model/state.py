@@ -113,7 +113,7 @@ class GameState:
 
         try:
             rec_data = {
-                UUID(data.uuid): Snapshot(Position.from_packet(data), int(data.mana))
+                UUID(data.uuid): Snapshot(Position.from_packet(data), data.mana, data.health)
                 for data in player_data
             }
 

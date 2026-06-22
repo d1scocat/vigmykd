@@ -26,8 +26,7 @@
         "G": "normal",
 
         "ENTER": "push",
-        "LSHIFT Q": "stomp",
-        "RSHIFT LEFT_BRACKET": "stomp",
+        "Q": "stomp",
         "SPACE": "punch"
     },
 

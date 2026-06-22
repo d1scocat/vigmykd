@@ -40,11 +40,12 @@ class Player:
         self.health = MAX_HEALTH
 
     def snap(self) -> Snapshot:
-        return Snapshot(self.position, self.mana)
+        return Snapshot(self.position, self.mana, self.health)
 
     def apply_snapshot(self, snapshot: Snapshot):
         self.position = snapshot.position
         self.mana = snapshot.mana
+        self.health = snapshot.health
 
     def matches_position(self, position: Position, epsilon: float = 0.01):
         return self.position.matches_position(position, epsilon)

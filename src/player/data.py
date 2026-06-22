@@ -213,3 +213,4 @@ class Position:
 class Snapshot:
     position: Position
     mana: int
+    health: float
