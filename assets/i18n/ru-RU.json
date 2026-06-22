@@ -1,0 +1,33 @@
+{
+    "_id": "ru-RU",
+
+    "please-wait": "Пожалуйста, подождите",
+    "matchmaking": "Подбор матча",
+    "waiting-to-matchmake": "Ожидание подбора матча",
+
+    "kicked-from-match": "Вы больше не участвуете в матче",
+    "kick-reason": "Причина:",
+    "kick": {
+        "no-keepalive": "В очередь никто не зашел, или сервер отключился от вас.",
+        "victory-by-resignation": "Вы победили (ваш противник сдался)."
+    },
+    
+    "main-menu": {
+        "login-button-label": "Войти",
+        "play-button-label": "Играть"
+    },
+
+    "login-form": {
+        "login-textarea-label": "Имя/почта",
+        "login-textarea-hint": "",
+        "password-textarea-label": "Пароль",
+        "password-textarea-hint": "",
+        "login-button-label": "Войти",
+        "not-everything-filled-error": "Заполните все поля прежде чем пытаться войти."
+    },
+
+    "match": {
+        "mana": "Мана",
+        "hp": "HP"
+    }
+}

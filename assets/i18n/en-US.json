@@ -5,8 +5,6 @@
     "matchmaking": "Matchmaking",
     "waiting-to-matchmake": "Waiting to matchmake",
 
-    "match-placeholder-text": "Match placeholder text",
-
     "kicked-from-match": "You have been removed from the match",
     "kick-reason": "Reason:",
     "kick": {
@@ -29,6 +27,7 @@
     },
 
     "match": {
-        "mana": "Mana"
+        "mana": "Mana",
+        "hp": "HP"
     }
 }

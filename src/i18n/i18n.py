@@ -12,7 +12,7 @@ class Localization:
         self._i18n: dict[str, dict[str, str]] = {}
 
         for loc_path in directory.glob("*.json"):
-            data: dict[str, _LocValue] = json.loads(loc_path.read_text())
+            data: dict[str, _LocValue] = json.loads(loc_path.read_text(encoding="utf-8"))
 
             loc_id = data.get("_id")
             if not isinstance(loc_id, str):

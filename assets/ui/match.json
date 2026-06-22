@@ -8,7 +8,7 @@
     "elements": [
         {
             "type": "button",
-            "id": "health-rectangle",
+            "id": "hp-rectangle",
             "z_index": 1000,
             "position": { "x": 0.01, "y": 0.01, "anchor": "top-left" },
             "size": { "mode": "match-texture" },

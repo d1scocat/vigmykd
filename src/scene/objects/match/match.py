@@ -15,7 +15,7 @@ from ui.interaction import UIInteractionSystem
 
 from generated.proto.v1 import packet_pb2 as packet_pb2
 
-from settings import MAX_MANA
+from settings import MAX_MANA, MAX_HEALTH
 
 
 class MatchScene(Scene):
@@ -57,10 +57,16 @@ class MatchScene(Scene):
             mana_textbox = self.page.by_id("mana-rectangle")
             if mana_textbox is None or not isinstance(mana_textbox, UITextHolder):
                 self.ctx.logger.warning("No mana-rectangle found for MatchScene")
-                return
-
-            mana_word = self.ctx.i18n("match.mana")
-            mana_textbox.text.raw = f"{mana_word}\n{client.mana} / {MAX_MANA}"
+            else:
+                mana_word = self.ctx.i18n("match.mana")
+                mana_textbox.text.raw = f"{mana_word} | {client.mana} / {MAX_MANA}"
+            
+            hp_textbox = self.page.by_id("hp-rectangle")
+            if hp_textbox is None or not isinstance(hp_textbox, UITextHolder):
+                self.ctx.logger.warning("No hp-rectangle found for MatchScene")
+            else:
+                hp_word = self.ctx.i18n("match.hp")
+                hp_textbox.text.raw = f"{hp_word} | {client.health} / {MAX_HEALTH}"
 
     def on_enter(self):
         self.lids = [

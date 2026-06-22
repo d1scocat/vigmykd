@@ -13,9 +13,9 @@
   "light": { "continuous": false, "prio": 10 },
   "normal": { "continuous": false, "prio": 10 },
 
-  "push": { "continuous": false, "prio": 10 },
-  "stomp": { "continuous": false, "prio": 10 },
-  "punch": { "continuous": false, "prio": 10 },
+  "push": { "continuous": false, "prio": 20 },
+  "stomp": { "continuous": false, "prio": 20 },
+  "punch": { "continuous": false, "prio": 20 },
 
   "move_left": { "continuous": true, "prio": 1 },
   "move_right": { "continuous": true, "prio": 1 }
