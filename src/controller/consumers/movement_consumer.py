@@ -415,7 +415,7 @@ class MovementConsumer(InputConsumer):
                 if player.position.combo.hits >= PUNCHES_TO_KNOCKDOWN:
                     other.position.physics.stun_timer = PUNCH_STUN_TICKS
                     other.position.vel_x += (dx / max(dist, 0.0001)) * PUNCH_KNOCKDOWN_KB_X
-                    other.position.vel_y = -PUNCH_KNOCKDOWN_KB_Y
+                    other.position.vel_y += PUNCH_KNOCKDOWN_KB_Y
                     other.position.is_grounded = False
 
                 recoil_dir = -1 if dx > 0 else 1
