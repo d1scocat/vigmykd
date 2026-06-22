@@ -49,13 +49,14 @@ class PlayerAdapter(ViewAdapter[Player]):
         def apply_current(x: float, y: float):
             renderable.location = (x, y)
             renderable.flip_x = (object.position.facing == Facing.NEG_X)
-            renderable.current_state = str(object.anim.current_state)
 
             if hasattr(object, "anim"):
                 if object.position.vel_x == 0:
                     object.anim.to_idle()
                 else:
                     object.anim.to_next()
+
+                renderable.current_state = str(object.anim.current_state)
 
         hist = self.position_hist.get(object.player_id)
         if hist is None:
