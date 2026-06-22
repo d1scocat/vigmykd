@@ -5,6 +5,7 @@ from geometry import Rect
 from player import Facing, Position, Snapshot
 from settings import *
 
+from generated.proto.v1 import packet_pb2 as packet_pb2
 
 class Player:
     player_id: uuid.UUID
