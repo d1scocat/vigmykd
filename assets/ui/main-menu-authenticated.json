@@ -41,22 +41,6 @@
 
         {
             "type": "button",
-            "id": "settings",
-            "z_index": 10,
-            "position": { "x": 0.01, "y": 0.97, "anchor": "bottom-left" },
-            "size": { "mode": "match-texture" },
-
-            "states": {
-                "normal": { "texture": { "sheet": 10, "tile": [0, 1] } },
-                "hovered": { "texture": { "sheet": 10, "tile": [1, 1] } },
-                "pressed": { "texture": { "sheet": 10, "tile": [2, 1] } }
-            },
-            
-            "action": "open_settings"
-        },
-
-        {
-            "type": "button",
             "id": "exit",
             "z_index": 10,
             "position": { "x": 0.01, "y": 0.01, "anchor": "top-left" },
