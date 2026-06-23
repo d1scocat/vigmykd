@@ -17,6 +17,9 @@
         "play-button-label": "Играть"
     },
 
+    "lost-match": "Вы проиграли!",
+    "won-match": "Вы победили!",
+
     "login-form": {
         "login-textarea-label": "Имя/почта",
         "login-textarea-hint": "",

@@ -17,6 +17,9 @@
         "play-button-label": "Play"
     },
 
+    "lost-match": "You lost!",
+    "won-match": "You won!",
+
     "login-form": {
         "login-textarea-label": "Username/email",
         "login-textarea-hint": "",
